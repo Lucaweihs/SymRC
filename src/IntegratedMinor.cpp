@@ -157,125 +157,6 @@ double IMKE::eval(const arma::mat& X, const arma::mat& Y) const {
   return fullSum / perms.n_rows;
 }
 
-std::vector<std::vector<bool> > IME::createWithLowers(int xDim, int yDim,
-                                                      const arma::uvec& xInds,
-                                                      const arma::uvec& yInds) const {
-  std::vector<std::vector<bool> > lowerBounds;
-
-  std::vector<bool> lower;
-  for (int i = 0; i < xDim + yDim; i++) { lower.push_back(true); }
-
-  // X small, Y small
-  lowerBounds.push_back(lower);
-
-  // X big, Y small
-  for (int i = 0; i < xDim + yDim; i++) { lower[i] = true; }
-  for (int i = 0; i < xInds.size(); i++) {
-    lower[xInds(i)] = false;
-  }
-  lowerBounds.push_back(lower);
-
-  // X small, Y big
-  for (int i = 0; i < xDim + yDim; i++) { lower[i] = true; }
-  for (int i = 0; i < yInds.size(); i++) {
-    lower[yInds(i) + xDim] = false;
-  }
-  lowerBounds.push_back(lower);
-
-  // X big, Y big
-  for (int i = 0; i < xDim + yDim; i++) { lower[i] = true; }
-  for (int i = 0; i < xInds.size(); i++) {
-    lower[xInds(i)] = false;
-  }
-  for (int i = 0; i < yInds.size(); i++) {
-    lower[yInds(i) + xDim] = false;
-  }
-  lowerBounds.push_back(lower);
-
-  return lowerBounds;
-}
-
-std::vector<std::vector<double> > IME::createLowers(const arma::vec& x,
-                                                  const arma::vec& y,
-                                                  const arma::uvec& xInds,
-                                                  const arma::uvec& yInds) const {
-  std::vector<std::vector<double> > lowers;
-
-  std::vector<double> lower;
-
-  // X small, Y small
-  lower = minLower;
-  lowers.push_back(lower);
-
-  // X big, Y small
-  lower = minLower;
-  for (int i = 0; i < xInds.size(); i++) {
-    lower[xInds(i)] = x(xInds(i));
-  }
-  lowers.push_back(lower);
-
-  // X small, Y big
-  lower = minLower;
-  for (int i = 0; i < yInds.size(); i++) {
-    lower[yInds(i) + xDim] = y(yInds(i));
-  }
-  lowers.push_back(lower);
-
-  // X big, Y big
-  lower = minLower;
-  for (int i = 0; i < xInds.size(); i++) {
-    lower[xInds(i)] = x(xInds(i));
-  }
-  for (int i = 0; i < yInds.size(); i++) {
-    lower[yInds(i) + xDim] = y(yInds(i));
-  }
-  lowers.push_back(lower);
-
-  return lowers;
-}
-
-std::vector<std::vector<double> > IME::createUppers(const arma::vec& x,
-                                                    const arma::vec& y,
-                                                    const arma::uvec& xInds,
-                                                    const arma::uvec& yInds) const {
-  std::vector<double> xAsStd = arma::conv_to<std::vector<double> >::from(x);
-  std::vector<double> yAsStd = arma::conv_to<std::vector<double> >::from(y);
-  std::vector<double> point = xAsStd;
-  point.insert(point.end(), yAsStd.begin(), yAsStd.end());
-
-  std::vector<std::vector<double> > uppers;
-  std::vector<double> upper;
-
-  // X small, Y small
-  uppers.push_back(point);
-
-  // X big, Y small
-  upper = point;
-  for (int i = 0; i < xInds.size(); i++) {
-    upper[xInds(i)] = std::numeric_limits<double>::max();
-  }
-  uppers.push_back(upper);
-
-  // X small, Y big
-  upper = point;
-  for (int i = 0; i < yInds.size(); i++) {
-    upper[yInds(i) + xDim] = std::numeric_limits<double>::max();
-  }
-  uppers.push_back(upper);
-
-  // X big, Y big
-  upper = point;
-  for (int i = 0; i < xInds.size(); i++) {
-    upper[xInds(i)] = std::numeric_limits<double>::max();
-  }
-  for (int i = 0; i < yInds.size(); i++) {
-    upper[yInds(i) + xDim] = std::numeric_limits<double>::max();
-  }
-  uppers.push_back(upper);
-
-  return uppers;
-}
-
 IME::IntegratedMinorEvaluator(int xDim, int yDim,
                               arma::uvec xInds0, arma::uvec xInds1,
                               arma::uvec yInds0, arma::uvec yInds1):
@@ -286,38 +167,9 @@ IME::IntegratedMinorEvaluator(int xDim, int yDim,
   yIndsEq = (yPart.getNonUniqueLeftInds().size() == yPart.getNonUniqueRightInds().size()) &&
     all(yPart.getNonUniqueLeftInds() == yPart.getNonUniqueRightInds());
 
-  withLower00 = createWithLowers(xDim, yDim, xInds0, yInds0);
-  withLower01 = createWithLowers(xDim, yDim, xInds0, yInds1);
-  withLower10 = createWithLowers(xDim, yDim, xInds1, yInds0);
-  withLower11 = createWithLowers(xDim, yDim, xInds1, yInds1);
-
   for (int i = 0; i < xDim + yDim; i++) {
     minLower.push_back(std::numeric_limits<double>::lowest());
-    withUpper.push_back(true);
   }
-}
-
-std::vector<int> IME::quadrantCounts(
-    const std::vector<std::vector<double> >& lowers,
-    const std::vector<std::vector<double> >& uppers,
-    const std::vector<std::vector<bool> >& withLowers,
-    const EmpiricalDistribution& ed) const {
-  std::vector<int> counts;
-
-  // std::cout << "Lowers (" << lowers.size() << "):" << std::endl;
-  // for (int i = 0; i < lowers.size(); i++) printVec(lowers[i]);
-  // std::cout << "Uppers (" << uppers.size() << "):"<< std::endl;
-  // for (int i = 0; i < uppers.size(); i++) printVec(uppers[i]);
-  // std::cout << "withLower (" << withLowers.size() << "):"<< std::endl;
-  // for (int i = 0; i < uppers.size(); i++) printVec(withLowers[i]);
-  // std::cout << "withUpper" << std::endl;
-  // printVec(withUpper);
-
-  for (int i = 0; i < lowers.size(); i++) {
-    int count = ed.countInRange(lowers[i], uppers[i], withLowers[i], withUpper);
-    counts.push_back(count);
-  }
-  return counts;
 }
 
 double choose2(double x) {
@@ -460,10 +312,3 @@ double IME::eval(const arma::mat& X, const arma::mat& Y) const {
   int n = X.n_rows;
   return val / (120 * nChooseM(1.0 * n, 1.0 * 5));
 }
-
-
-
-
-
-
-

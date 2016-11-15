@@ -73,12 +73,6 @@ private:
   SubsetMinorPartition xPart;
   SubsetMinorPartition yPart;
 
-  std::vector<std::vector<bool> > withLower00;
-  std::vector<std::vector<bool> > withLower10;
-  std::vector<std::vector<bool> > withLower01;
-  std::vector<std::vector<bool> > withLower11;
-  std::vector<bool> withUpper;
-
   std::vector<double> minLower;
 
   int xDim;
@@ -87,36 +81,18 @@ private:
   bool xIndsEq;
   bool yIndsEq;
 
-  std::vector<std::vector<bool> > createWithLowers(int xDim, int yDim,
-                                       const arma::uvec& xInds,
-                                       const arma::uvec& yInds) const;
-
-  std::vector<std::vector<double> > createLowers(const arma::vec& x,
-                                               const arma::vec& y,
-                                               const arma::uvec& xInds,
-                                               const arma::uvec& yInds) const;
-
-  std::vector<std::vector<double> > createUppers(const arma::vec& x,
-                                                 const arma::vec& y,
-                                                 const arma::uvec& xInds,
-                                                 const arma::uvec& yInds) const;
-
   double countGreaterInX(const std::vector<double> point,
                          const arma::uvec& xGreaterInds,
                          const EmpiricalDistribution& ed) const;
+
   double countGreaterInY(const std::vector<double> point,
                          const arma::uvec& yGreaterInds,
                          const EmpiricalDistribution& ed) const;
+
   double countGreaterInXY(const std::vector<double> point,
                           const arma::uvec& xGreaterInds,
                           const arma::uvec& yGreaterInds,
                           const EmpiricalDistribution& ed) const;
-
-  std::vector<int> quadrantCounts(
-      const std::vector<std::vector<double> >& lowers,
-      const std::vector<std::vector<double> >& uppers,
-      const std::vector<std::vector<bool> >& withLowers,
-      const EmpiricalDistribution& ed) const;
 
 public:
   IntegratedMinorEvaluator(int xDim, int yDim,

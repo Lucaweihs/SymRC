@@ -15,24 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// [[Rcpp::plugins(cpp11)]]
 #include "EmpiricalDistribution.h"
 
 typedef EmpiricalDistribution ed;
 
-ed::EmpiricalDistribution(arma::mat samples) : samples(samples) {
+ed::EmpiricalDistribution(const arma::mat& samples) : samples(samples) {
   std::vector<RangeTree::Point<int> > points;
   for (int i = 0; i < samples.n_rows; i++) {
     std::vector<double> position = arma::conv_to<std::vector<double> >::from(samples.row(i));
     RangeTree::Point<int> point(position, 0);
     points.push_back(point);
   }
-  rtree = std::shared_ptr<RangeTree::RangeTree<int> >(new RangeTree::RangeTree<int>(points));
+  if (points.size() != 0) {
+    rtree = std::shared_ptr<RangeTree::RangeTree<int> >(new RangeTree::RangeTree<int>(points));
+  }
 }
 
 int ed::countInRange(const std::vector<double>& lower,
                  const std::vector<double>& upper,
                  const std::vector<bool>& withLower,
                  const std::vector<bool>& withUpper) const {
+  if (size() == 0) {
+    return 0;
+  }
   return rtree->countInRange(lower, upper, withLower, withUpper);
 }
 
@@ -40,6 +46,17 @@ double ed::probOfRange(const std::vector<double>& lower,
                    const std::vector<double>& upper,
                    const std::vector<bool>& withLower,
                    const std::vector<bool>& withUpper) const {
+  if (size() == 0) {
+    return 0;
+  }
   return (1.0 * countInRange(lower, upper, withLower, withUpper)) /
     samples.n_rows;
+}
+
+int ed::size() const {
+  return samples.n_rows;
+}
+
+arma::mat ed::getSamples() const {
+  return samples;
 }

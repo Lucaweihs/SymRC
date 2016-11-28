@@ -37,6 +37,34 @@ orderStats <- function(M) {
     .Call('WCM_orderStats', PACKAGE = 'WCM', M)
 }
 
+partialTauStar <- function(X, Y) {
+    .Call('WCM_partialTauStar', PACKAGE = 'WCM', X, Y)
+}
+
+fullLexTauStarNaive <- function(X, Y) {
+    .Call('WCM_fullLexTauStarNaive', PACKAGE = 'WCM', X, Y)
+}
+
+fullLexTauStarNaiveApprox <- function(X, Y, sims) {
+    .Call('WCM_fullLexTauStarNaiveApprox', PACKAGE = 'WCM', X, Y, sims)
+}
+
+lexTauStarNaive <- function(X, Y, xPerm, yPerm) {
+    .Call('WCM_lexTauStarNaive', PACKAGE = 'WCM', X, Y, xPerm, yPerm)
+}
+
+lexTauStarNaiveApprox <- function(X, Y, xPerm, yPerm, sims) {
+    .Call('WCM_lexTauStarNaiveApprox', PACKAGE = 'WCM', X, Y, xPerm, yPerm, sims)
+}
+
+partialTauStarNaive <- function(X, Y) {
+    .Call('WCM_partialTauStarNaive', PACKAGE = 'WCM', X, Y)
+}
+
+partialTauStarNaiveApprox <- function(X, Y, sims) {
+    .Call('WCM_partialTauStarNaiveApprox', PACKAGE = 'WCM', X, Y, sims)
+}
+
 ism <- function(X, Y, xInds0, xInds1, yInds0, yInds1) {
     .Call('WCM_ism', PACKAGE = 'WCM', X, Y, xInds0, xInds1, yInds0, yInds1)
 }

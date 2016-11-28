@@ -27,7 +27,7 @@ private:
   arma::mat samples;
 
 public:
-  EmpiricalDistribution(arma::mat samples);
+  EmpiricalDistribution(const arma::mat& samples);
   int countInRange(const std::vector<double>& lower,
                    const std::vector<double>& upper,
                    const std::vector<bool>& withLower,
@@ -37,6 +37,8 @@ public:
                      const std::vector<double>& upper,
                      const std::vector<bool>& withLower,
                      const std::vector<bool>& withUpper) const;
+  int size() const;
+  arma::mat getSamples() const;
 };
 
 #endif

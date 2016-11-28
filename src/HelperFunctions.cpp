@@ -223,6 +223,10 @@ double nChooseM(double n, double m) {
   return std::exp(val);
 }
 
+double choose2(double x) {
+  return nChooseM(x, 2.0);
+}
+
 int factorial(int n) {
   if (n < 0) {
     throw std::domain_error("Factorial of negative numbers is not defined.");

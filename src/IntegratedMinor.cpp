@@ -172,10 +172,6 @@ IME::IntegratedMinorEvaluator(int xDim, int yDim,
   }
 }
 
-double choose2(double x) {
-  return nChooseM(x, 2.0);
-}
-
 double IME::countGreaterInX(const std::vector<double> point,
                             const arma::uvec& xGreaterInds,
                             const EmpiricalDistribution& ed) const {
@@ -219,9 +215,9 @@ double IME::countGreaterInXY(const std::vector<double> point,
   return ed.countInRange(lower, upper, withLower, withUpper);
 }
 
-double posConSum(double leqCount, double grCount00,
+double posConSum(double leqXYCount, double grCount00,
                              double grCount11, bool xIndsEq, bool yIndsEq) {
-  double toReturn = (2 * choose2(leqCount - 1));
+  double toReturn = (2 * choose2(leqXYCount - 1));
   if (xIndsEq && yIndsEq) {
     toReturn *= 2 * choose2(grCount00);
   } else {
@@ -247,9 +243,9 @@ double negConSum(double grXCount0, double grXCount1,
   return toReturn;
 }
 
-double disSum(double leqCount, double grXCount0,
+double disSum(double leqXYCount, double grXCount0,
               double grYCount0, double grXYCount11) {
-  return -2.0 * (1.0 * (leqCount - 1)) * grYCount0 * grXCount0 * grXYCount11;
+  return -2.0 * (1.0 * (leqXYCount - 1)) * grYCount0 * grXCount0 * grXYCount11;
 }
 
 double IME::eval(const arma::mat& X, const arma::mat& Y) const {

@@ -111,6 +111,97 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// partialTauStar
+double partialTauStar(const arma::mat& X, const arma::mat& Y);
+RcppExport SEXP WCM_partialTauStar(SEXP XSEXP, SEXP YSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    rcpp_result_gen = Rcpp::wrap(partialTauStar(X, Y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// fullLexTauStarNaive
+double fullLexTauStarNaive(const arma::mat& X, const arma::mat& Y);
+RcppExport SEXP WCM_fullLexTauStarNaive(SEXP XSEXP, SEXP YSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    rcpp_result_gen = Rcpp::wrap(fullLexTauStarNaive(X, Y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// fullLexTauStarNaiveApprox
+double fullLexTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y, int sims);
+RcppExport SEXP WCM_fullLexTauStarNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< int >::type sims(simsSEXP);
+    rcpp_result_gen = Rcpp::wrap(fullLexTauStarNaiveApprox(X, Y, sims));
+    return rcpp_result_gen;
+END_RCPP
+}
+// lexTauStarNaive
+double lexTauStarNaive(const arma::mat& X, const arma::mat& Y, const arma::uvec& xPerm, const arma::uvec& yPerm);
+RcppExport SEXP WCM_lexTauStarNaive(SEXP XSEXP, SEXP YSEXP, SEXP xPermSEXP, SEXP yPermSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type xPerm(xPermSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type yPerm(yPermSEXP);
+    rcpp_result_gen = Rcpp::wrap(lexTauStarNaive(X, Y, xPerm, yPerm));
+    return rcpp_result_gen;
+END_RCPP
+}
+// lexTauStarNaiveApprox
+double lexTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y, const arma::uvec& xPerm, const arma::uvec& yPerm, int sims);
+RcppExport SEXP WCM_lexTauStarNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP xPermSEXP, SEXP yPermSEXP, SEXP simsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type xPerm(xPermSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type yPerm(yPermSEXP);
+    Rcpp::traits::input_parameter< int >::type sims(simsSEXP);
+    rcpp_result_gen = Rcpp::wrap(lexTauStarNaiveApprox(X, Y, xPerm, yPerm, sims));
+    return rcpp_result_gen;
+END_RCPP
+}
+// partialTauStarNaive
+double partialTauStarNaive(const arma::mat& X, const arma::mat& Y);
+RcppExport SEXP WCM_partialTauStarNaive(SEXP XSEXP, SEXP YSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    rcpp_result_gen = Rcpp::wrap(partialTauStarNaive(X, Y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// partialTauStarNaiveApprox
+double partialTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y, int sims);
+RcppExport SEXP WCM_partialTauStarNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< int >::type sims(simsSEXP);
+    rcpp_result_gen = Rcpp::wrap(partialTauStarNaiveApprox(X, Y, sims));
+    return rcpp_result_gen;
+END_RCPP
+}
 // ism
 double ism(const arma::mat& X, const arma::mat& Y, const arma::uvec& xInds0, const arma::uvec& xInds1, const arma::uvec& yInds0, const arma::uvec& yInds1);
 RcppExport SEXP WCM_ism(SEXP XSEXP, SEXP YSEXP, SEXP xInds0SEXP, SEXP xInds1SEXP, SEXP yInds0SEXP, SEXP yInds1SEXP) {

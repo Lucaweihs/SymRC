@@ -30,6 +30,7 @@ int zeroOneVecToInt(const arma::uvec& zeroOneVec);
 unsigned int intPow(int base, int exponent);
 int nChooseM(int n, int m);
 double nChooseM(double n, double m);
+double choose2(double n);
 arma::umat permutations(int n);
 arma::mat orderStats(arma::mat M);
 

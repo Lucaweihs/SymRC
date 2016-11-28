@@ -18,7 +18,55 @@
 // [[Rcpp::plugins(cpp11)]]
 #include "NaiveUStatistics.h"
 #include "IntegratedMinor.h"
+#include "MultivariateTauStar.h"
 #include "RcppArmadillo.h"
+
+// [[Rcpp::export]]
+double partialTauStar(const arma::mat& X, const arma::mat& Y) {
+  PartialTauStarEvaluator ptse(X.n_cols, Y.n_cols);
+  return ptse.eval(X, Y);
+}
+
+// [[Rcpp::export]]
+double fullLexTauStarNaive(const arma::mat& X, const arma::mat& Y) {
+  FullLexTauStarKernelEvaluator fltske(X.n_cols, Y.n_cols);
+  return naiveUStat(X, Y, fltske);
+}
+
+// [[Rcpp::export]]
+double fullLexTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y,
+                             int sims) {
+  FullLexTauStarKernelEvaluator fltske(X.n_cols, Y.n_cols);
+  return approxNaiveUStat(X, Y, fltske, sims);
+}
+
+// [[Rcpp::export]]
+double lexTauStarNaive(const arma::mat& X, const arma::mat& Y,
+                       const arma::uvec& xPerm, const arma::uvec& yPerm) {
+  LexTauStarKernelEvaluator ltske(X.n_cols, Y.n_cols, xPerm, yPerm);
+  return naiveUStat(X, Y, ltske);
+}
+
+// [[Rcpp::export]]
+double lexTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y,
+                             const arma::uvec& xPerm, const arma::uvec& yPerm,
+                             int sims) {
+  LexTauStarKernelEvaluator ltske(X.n_cols, Y.n_cols, xPerm, yPerm);
+  return approxNaiveUStat(X, Y, ltske, sims);
+}
+
+// [[Rcpp::export]]
+double partialTauStarNaive(const arma::mat& X, const arma::mat& Y) {
+  PartialTauStarKernelEvaluator ptske(X.n_cols, Y.n_cols);
+  return naiveUStat(X, Y, ptske);
+}
+
+// [[Rcpp::export]]
+double partialTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y,
+                                 int sims) {
+  PartialTauStarKernelEvaluator ptske(X.n_cols, Y.n_cols);
+  return approxNaiveUStat(X, Y, ptske, sims);
+}
 
 // [[Rcpp::export]]
 double ism(const arma::mat& X, const arma::mat& Y,

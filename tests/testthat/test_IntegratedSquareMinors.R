@@ -1,4 +1,4 @@
-library(WCM)
+library(SymRC)
 context("Testing the ISM measures.")
 
 hoeffD <- function(x, y) {

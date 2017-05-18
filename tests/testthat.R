@@ -1,4 +1,4 @@
 library(testthat)
-library(IMIT)
+library(SymRC)
 
-test_check("IMIT")
+test_check("SymRC")

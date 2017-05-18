@@ -1,6 +1,6 @@
-Package: WCM
+Package: SymRC
 Type: Package
-Title: Independence Testing with Weighted Concordance Measures
+Title: Independence Testing with Symmetric Rank Covariance Measures
 Version: 0.0.1
 Date: 2016-11-02
 Authors@R: c(person("Luca", "Weihs", email="lucaw@uw.edu", role=c("aut", "cre")))

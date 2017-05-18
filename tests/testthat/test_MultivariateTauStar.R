@@ -1,4 +1,4 @@
-library(WCM)
+library(SymRC)
 library(TauStar)
 context("Testing the multivariate tau star measures.")
 
@@ -12,10 +12,12 @@ test_that("Check that multivariate measures agree with t* in 2 dims", {
     b = 4 * partialTauStarNaive(X, Y)
     c = 4 * lexTauStarNaive(X, Y, 0, 0)
     d = 4 * fullLexTauStarNaive(X, Y)
+    e = 4 * jointTauStarNaive(X, Y, 1, 1)
 
     expect_equal(a, b)
     expect_equal(a, c)
     expect_equal(a, d)
+    expect_equal(a, e)
   }
 
   for (i in 1:10) {
@@ -25,10 +27,12 @@ test_that("Check that multivariate measures agree with t* in 2 dims", {
     b = 4 * partialTauStarNaive(X, Y)
     c = 4 * lexTauStarNaive(X, Y, 0, 0)
     d = 4 * fullLexTauStarNaive(X, Y)
+    e = 4 * jointTauStarNaive(X, Y, 1, 1)
 
     expect_equal(a, b)
     expect_equal(a, c)
     expect_equal(a, d)
+    expect_equal(a, e)
   }
 })
 
@@ -67,7 +71,7 @@ test_that("Check that the RangeTree version of partial tau* agrees with naive", 
     expect_equal(a, b)
   }
 
-  n = 10
+  n = 20
   nXCols = 2
   nYCols = 2
   for (i in 1:10) {
@@ -75,10 +79,12 @@ test_that("Check that the RangeTree version of partial tau* agrees with naive", 
     Y = matrix(rpois(nYCols * n, 1), ncol = nYCols)
     a = partialTauStarNaive(X, Y)
     b = partialTauStar(X, Y)
+    a
+    b
     expect_equal(a, b)
   }
 
-  n = 6
+  n = 10
   nXCols = 2
   nYCols = 2
   for (i in 1:10) {
@@ -89,6 +95,55 @@ test_that("Check that the RangeTree version of partial tau* agrees with naive", 
     expect_equal(a, b)
   }
 })
+
+# n = 70
+# xOnOff = c(1)#c(1,0)
+# yOnOff = c(1,1)#c(1,0,1)
+# nXCols = length(xOnOff)
+# nYCols = length(yOnOff)
+# i = 0
+# while (abs(a - b) < 10^(-10)) {
+#   i = i + 1
+#   if (i %% 100 == 0) {
+#     print(i)
+#   }
+#   X = matrix(rpois(nXCols * n, 1), ncol = nXCols)
+#   Y = matrix(rpois(nYCols * n, 1), ncol = nYCols)
+#   # X = matrix(rnorm(nXCols * n), ncol = nXCols)
+#   # Y = matrix(rnorm(nYCols * n), ncol = nYCols)
+#   system.time({a = jointTauStarNaive(X, Y, xOnOff, yOnOff) })
+#   system.time({b = jointTauStar(X, Y, xOnOff, yOnOff) })
+#   a
+#   b
+#   expect_equal(a, b)
+# }
+
+# o = order(X)
+# X = X[o,,drop=F]
+# Y = Y[o,,drop=F]
+#
+# jointTauStarNaive(X, Y, xOnOff, yOnOff) * choose(n, 4) * 24
+# jointTauStar(X, Y, xOnOff, yOnOff)
+#
+# n = 60
+# nXCols = 2
+# nYCols = 1
+# i = 0
+# while (abs(a - b) < 10^(-10)) {
+#   i = i + 1
+#   if (i %% 100 == 0) {
+#     print(i)
+#   }
+#   # X = matrix(rpois(nXCols * n, 1), ncol = nXCols)
+#   # Y = matrix(rpois(nYCols * n, 1), ncol = nYCols)
+#   X = matrix(rnorm(nXCols * n), ncol = nXCols)
+#   Y = matrix(rnorm(nYCols * n), ncol = nYCols)
+#   system.time({a = partialTauStarNaive(X, Y) })
+#   system.time({b = partialTauStar(X, Y) })
+#   a
+#   b
+#   expect_equal(a, b)
+# }
 
 # library(foreach)
 # library(doRNG)

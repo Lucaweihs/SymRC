@@ -1,4 +1,4 @@
-library(WCM)
+library(SymRC)
 context("Testing the naive U-statistic functions.")
 
 kendallsTauTies <- function(x, y) {

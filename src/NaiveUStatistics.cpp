@@ -34,6 +34,22 @@ double naiveUStatRecurse(const arma::mat& X, const arma::mat& Y,
       val += kernel.eval(X.rows(currentIndex), Y.rows(currentIndex));
       index++;
     }
+  // } else if (order - dim - 1 == 5) {
+  //   currentIndex(dim) = index;
+  //   for (int i1 = index + 1; i1 < order - 3; i1++) {
+  //     currentIndex(dim + 1) = i1;
+  //     for (int i2 = i1 + 1; i2 < order - 2; i2++) {
+  //       currentIndex(dim + 2) = i2;
+  //       for (int i3 = i2 + 1; i3 < order - 1; i3++) {
+  //         currentIndex(dim + 3) = i3;
+  //         for (int i4 = i3 + 1; i4 < order; i4++) {
+  //           currentIndex(dim + 4) = i4;
+  //           val += kernel.eval(X.rows(currentIndex), Y.rows(currentIndex));
+  //         }
+  //       }
+  //     }
+  //   }
+  //   return val;
   } else {
     while (index + (order - (dim + 1)) < n) {
       // While there enough datapoints >index to fill up
@@ -109,7 +125,7 @@ int SpearmansRhoEvaluator::order() const {
 }
 
 double SpearmansRhoEvaluator::eval(const arma::mat& X, const arma::mat& Y) const {
-  auto sortIndex = arma::sort_index(X.col(0));
+  arma::uvec sortIndex = arma::sort_index(X.col(0));
   arma::vec sortedX = X.col(0);
   sortedX = sortedX.elem(sortIndex);
   if (sortedX(0) == sortedX(1) || sortedX(1) == sortedX(2)) {

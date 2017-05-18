@@ -2,94 +2,106 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 intersectSorted <- function(vec1, vec2) {
-    .Call('WCM_intersectSorted', PACKAGE = 'WCM', vec1, vec2)
+    .Call('SymRC_intersectSorted', PACKAGE = 'SymRC', vec1, vec2)
 }
 
 unionSorted <- function(vec1, vec2) {
-    .Call('WCM_unionSorted', PACKAGE = 'WCM', vec1, vec2)
+    .Call('SymRC_unionSorted', PACKAGE = 'SymRC', vec1, vec2)
 }
 
 setDiffSorted <- function(vec1, vec2) {
-    .Call('WCM_setDiffSorted', PACKAGE = 'WCM', vec1, vec2)
+    .Call('SymRC_setDiffSorted', PACKAGE = 'SymRC', vec1, vec2)
 }
 
 complementSorted <- function(inds, maxInd) {
-    .Call('WCM_complementSorted', PACKAGE = 'WCM', inds, maxInd)
+    .Call('SymRC_complementSorted', PACKAGE = 'SymRC', inds, maxInd)
 }
 
 intToUVec <- function(uint, length) {
-    .Call('WCM_intToUVec', PACKAGE = 'WCM', uint, length)
+    .Call('SymRC_intToUVec', PACKAGE = 'SymRC', uint, length)
 }
 
 zeroOneVecToInt <- function(zeroOneVec) {
-    .Call('WCM_zeroOneVecToInt', PACKAGE = 'WCM', zeroOneVec)
+    .Call('SymRC_zeroOneVecToInt', PACKAGE = 'SymRC', zeroOneVec)
 }
 
 intPow <- function(base, exponent) {
-    .Call('WCM_intPow', PACKAGE = 'WCM', base, exponent)
+    .Call('SymRC_intPow', PACKAGE = 'SymRC', base, exponent)
 }
 
 permutations <- function(n) {
-    .Call('WCM_permutations', PACKAGE = 'WCM', n)
+    .Call('SymRC_permutations', PACKAGE = 'SymRC', n)
 }
 
 orderStats <- function(M) {
-    .Call('WCM_orderStats', PACKAGE = 'WCM', M)
+    .Call('SymRC_orderStats', PACKAGE = 'SymRC', M)
+}
+
+jointTauStar <- function(X, Y, xOnOffVec, yOnOffVec) {
+    .Call('SymRC_jointTauStar', PACKAGE = 'SymRC', X, Y, xOnOffVec, yOnOffVec)
+}
+
+jointTauStarNaive <- function(X, Y, xOnOffVec, yOnOffVec) {
+    .Call('SymRC_jointTauStarNaive', PACKAGE = 'SymRC', X, Y, xOnOffVec, yOnOffVec)
+}
+
+jointTauStarNaiveApprox <- function(X, Y, xOnOffVec, yOnOffVec, sims) {
+    .Call('SymRC_jointTauStarNaiveApprox', PACKAGE = 'SymRC', X, Y, xOnOffVec, yOnOffVec, sims)
 }
 
 partialTauStar <- function(X, Y) {
-    .Call('WCM_partialTauStar', PACKAGE = 'WCM', X, Y)
+    .Call('SymRC_partialTauStar', PACKAGE = 'SymRC', X, Y)
 }
 
 fullLexTauStarNaive <- function(X, Y) {
-    .Call('WCM_fullLexTauStarNaive', PACKAGE = 'WCM', X, Y)
+    .Call('SymRC_fullLexTauStarNaive', PACKAGE = 'SymRC', X, Y)
 }
 
 fullLexTauStarNaiveApprox <- function(X, Y, sims) {
-    .Call('WCM_fullLexTauStarNaiveApprox', PACKAGE = 'WCM', X, Y, sims)
+    .Call('SymRC_fullLexTauStarNaiveApprox', PACKAGE = 'SymRC', X, Y, sims)
 }
 
 lexTauStarNaive <- function(X, Y, xPerm, yPerm) {
-    .Call('WCM_lexTauStarNaive', PACKAGE = 'WCM', X, Y, xPerm, yPerm)
+    .Call('SymRC_lexTauStarNaive', PACKAGE = 'SymRC', X, Y, xPerm, yPerm)
 }
 
 lexTauStarNaiveApprox <- function(X, Y, xPerm, yPerm, sims) {
-    .Call('WCM_lexTauStarNaiveApprox', PACKAGE = 'WCM', X, Y, xPerm, yPerm, sims)
+    .Call('SymRC_lexTauStarNaiveApprox', PACKAGE = 'SymRC', X, Y, xPerm, yPerm, sims)
 }
 
 partialTauStarNaive <- function(X, Y) {
-    .Call('WCM_partialTauStarNaive', PACKAGE = 'WCM', X, Y)
+    .Call('SymRC_partialTauStarNaive', PACKAGE = 'SymRC', X, Y)
 }
 
 partialTauStarNaiveApprox <- function(X, Y, sims) {
-    .Call('WCM_partialTauStarNaiveApprox', PACKAGE = 'WCM', X, Y, sims)
+    .Call('SymRC_partialTauStarNaiveApprox', PACKAGE = 'SymRC', X, Y, sims)
 }
 
 ism <- function(X, Y, xInds0, xInds1, yInds0, yInds1) {
-    .Call('WCM_ism', PACKAGE = 'WCM', X, Y, xInds0, xInds1, yInds0, yInds1)
+    .Call('SymRC_ism', PACKAGE = 'SymRC', X, Y, xInds0, xInds1, yInds0, yInds1)
 }
 
 ismNaive <- function(X, Y, xInds0, xInds1, yInds0, yInds1) {
-    .Call('WCM_ismNaive', PACKAGE = 'WCM', X, Y, xInds0, xInds1, yInds0, yInds1)
+    .Call('SymRC_ismNaive', PACKAGE = 'SymRC', X, Y, xInds0, xInds1, yInds0, yInds1)
 }
 
 ismNaiveApprox <- function(X, Y, xInds0, xInds1, yInds0, yInds1, sims) {
-    .Call('WCM_ismNaiveApprox', PACKAGE = 'WCM', X, Y, xInds0, xInds1, yInds0, yInds1, sims)
+    .Call('SymRC_ismNaiveApprox', PACKAGE = 'SymRC', X, Y, xInds0, xInds1, yInds0, yInds1, sims)
 }
 
 kendallsTauNaive <- function(X, Y) {
-    .Call('WCM_kendallsTauNaive', PACKAGE = 'WCM', X, Y)
+    .Call('SymRC_kendallsTauNaive', PACKAGE = 'SymRC', X, Y)
 }
 
 kendallsTauNaiveApprox <- function(X, Y, sims) {
-    .Call('WCM_kendallsTauNaiveApprox', PACKAGE = 'WCM', X, Y, sims)
+    .Call('SymRC_kendallsTauNaiveApprox', PACKAGE = 'SymRC', X, Y, sims)
 }
 
 spearmansRhoNaive <- function(X, Y) {
-    .Call('WCM_spearmansRhoNaive', PACKAGE = 'WCM', X, Y)
+    .Call('SymRC_spearmansRhoNaive', PACKAGE = 'SymRC', X, Y)
 }
 
 spearmansRhoNaiveApprox <- function(X, Y, sims) {
-    .Call('WCM_spearmansRhoNaiveApprox', PACKAGE = 'WCM', X, Y, sims)
+    .Call('SymRC_spearmansRhoNaiveApprox', PACKAGE = 'SymRC', X, Y, sims)
 }
 

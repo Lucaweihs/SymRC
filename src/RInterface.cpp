@@ -22,6 +22,31 @@
 #include "RcppArmadillo.h"
 
 // [[Rcpp::export]]
+double jointTauStar(const arma::mat& X, const arma::mat& Y,
+                         const arma::uvec& xOnOffVec,
+                         const arma::uvec& yOnOffVec) {
+  JointTauStarEvaluator jtse(xOnOffVec, yOnOffVec);
+  return jtse.eval(X, Y);
+}
+
+// [[Rcpp::export]]
+double jointTauStarNaive(const arma::mat& X, const arma::mat& Y,
+                         const arma::uvec& xOnOffVec,
+                         const arma::uvec& yOnOffVec) {
+  JointTauStarKernelEvaluator jtske(xOnOffVec, yOnOffVec);
+  return naiveUStat(X, Y, jtske);
+}
+
+// [[Rcpp::export]]
+double jointTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y,
+                               const arma::uvec& xOnOffVec,
+                               const arma::uvec& yOnOffVec,
+                               int sims) {
+  JointTauStarKernelEvaluator jtske(xOnOffVec, yOnOffVec);
+  return approxNaiveUStat(X, Y, jtske, sims);
+}
+
+// [[Rcpp::export]]
 double partialTauStar(const arma::mat& X, const arma::mat& Y) {
   PartialTauStarEvaluator ptse(X.n_cols, Y.n_cols);
   return ptse.eval(X, Y);

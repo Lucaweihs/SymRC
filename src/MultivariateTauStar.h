@@ -22,11 +22,12 @@
 #include "EmpiricalDistribution.h"
 
 class GenericTauStarKernelEvaluator : public KernelEvaluator {
-private:
+protected:
   static const int ord = 4;
   static const arma::umat perms;
   int xDim, yDim;
 
+private:
   virtual bool minorIndicatorX(const arma::vec& v0, const arma::vec& v1,
                       const arma::vec& v2, const arma::vec& v3) const = 0;
 
@@ -45,7 +46,6 @@ private:
                       const arma::vec& v2, const arma::vec& v3) const;
   bool minorIndicatorY(const arma::vec& v0, const arma::vec& v1,
                        const arma::vec& v2, const arma::vec& v3) const;
-
 public:
   PartialTauStarKernelEvaluator(int xDim, int yDim);
 };
@@ -110,14 +110,59 @@ private:
   EmpiricalDistribution createPairsED(const arma::mat& X,
                                             const arma::mat& Y) const;
 
-  EmpiricalDistribution createComparableED(const arma::mat& X,
-                                           const arma::mat& Y) const;
-
   EmpiricalDistribution createIncomparableED(const arma::mat& X,
                                              const arma::mat& Y) const;
 
 public:
   PartialTauStarEvaluator(int xDim, int yDim);
+  double eval(const arma::mat& X, const arma::mat& Y) const;
+};
+
+
+class JointTauStarKernelEvaluator : public GenericTauStarKernelEvaluator {
+private:
+  arma::uvec xOnOffVec;
+  arma::uvec yOnOffVec;
+  bool minorIndicator(const arma::vec& v0, const arma::vec& v1,
+                             const arma::vec& v2, const arma::vec& v3,
+                             const arma::uvec& onOffVec) const;
+  bool minorIndicatorX(const arma::vec& v0, const arma::vec& v1,
+                       const arma::vec& v2, const arma::vec& v3) const;
+  bool minorIndicatorY(const arma::vec& v0, const arma::vec& v1,
+                       const arma::vec& v2, const arma::vec& v3) const;
+
+public:
+  JointTauStarKernelEvaluator(const arma::uvec& xOnOffVec,
+                              const arma::uvec& yOnOffVec);
+};
+
+class JointTauStarEvaluator {
+private:
+  static bool lessInPartialOrder(const arma::vec& v0,
+                                 const arma::vec& v1,
+                                 const arma::uvec& onOffVec);
+  int xDim, yDim;
+  arma::uvec xOnOffVec;
+  arma::uvec yOnOffVec;
+
+  EmpiricalDistribution createComparableED(const arma::mat& X,
+                                           const arma::mat& Y) const;
+
+  double posConCount(const arma::vec& x0, const arma::vec& x1,
+                     const arma::vec& y0, const arma::vec& y1,
+                     const EmpiricalDistribution& ed) const;
+
+  double negConCount(const arma::vec& x0, const arma::vec& x1,
+                     const arma::vec& y0, const arma::vec& y1,
+                     const EmpiricalDistribution& ed) const;
+
+  double disCount(const arma::vec& x0, const arma::vec& x1,
+                  const arma::vec& y0, const arma::vec& y1,
+                  const EmpiricalDistribution& ed) const;
+
+public:
+  JointTauStarEvaluator(const arma::uvec& xOnOffVec,
+                        const arma::uvec& yOnOffVec);
   double eval(const arma::mat& X, const arma::mat& Y) const;
 };
 

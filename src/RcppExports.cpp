@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // intersectSorted
 arma::uvec intersectSorted(const arma::uvec& vec1, const arma::uvec& vec2);
-RcppExport SEXP WCM_intersectSorted(SEXP vec1SEXP, SEXP vec2SEXP) {
+RcppExport SEXP SymRC_intersectSorted(SEXP vec1SEXP, SEXP vec2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,7 +20,7 @@ END_RCPP
 }
 // unionSorted
 arma::uvec unionSorted(const arma::uvec& vec1, const arma::uvec& vec2);
-RcppExport SEXP WCM_unionSorted(SEXP vec1SEXP, SEXP vec2SEXP) {
+RcppExport SEXP SymRC_unionSorted(SEXP vec1SEXP, SEXP vec2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -32,7 +32,7 @@ END_RCPP
 }
 // setDiffSorted
 arma::uvec setDiffSorted(const arma::uvec& vec1, const arma::uvec& vec2);
-RcppExport SEXP WCM_setDiffSorted(SEXP vec1SEXP, SEXP vec2SEXP) {
+RcppExport SEXP SymRC_setDiffSorted(SEXP vec1SEXP, SEXP vec2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -44,7 +44,7 @@ END_RCPP
 }
 // complementSorted
 arma::uvec complementSorted(const arma::uvec& inds, int maxInd);
-RcppExport SEXP WCM_complementSorted(SEXP indsSEXP, SEXP maxIndSEXP) {
+RcppExport SEXP SymRC_complementSorted(SEXP indsSEXP, SEXP maxIndSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -56,7 +56,7 @@ END_RCPP
 }
 // intToUVec
 arma::uvec intToUVec(unsigned int uint, int length);
-RcppExport SEXP WCM_intToUVec(SEXP uintSEXP, SEXP lengthSEXP) {
+RcppExport SEXP SymRC_intToUVec(SEXP uintSEXP, SEXP lengthSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -68,7 +68,7 @@ END_RCPP
 }
 // zeroOneVecToInt
 int zeroOneVecToInt(const arma::uvec& zeroOneVec);
-RcppExport SEXP WCM_zeroOneVecToInt(SEXP zeroOneVecSEXP) {
+RcppExport SEXP SymRC_zeroOneVecToInt(SEXP zeroOneVecSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -79,7 +79,7 @@ END_RCPP
 }
 // intPow
 unsigned int intPow(int base, int exponent);
-RcppExport SEXP WCM_intPow(SEXP baseSEXP, SEXP exponentSEXP) {
+RcppExport SEXP SymRC_intPow(SEXP baseSEXP, SEXP exponentSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -91,7 +91,7 @@ END_RCPP
 }
 // permutations
 arma::umat permutations(int n);
-RcppExport SEXP WCM_permutations(SEXP nSEXP) {
+RcppExport SEXP SymRC_permutations(SEXP nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -102,7 +102,7 @@ END_RCPP
 }
 // orderStats
 arma::mat orderStats(arma::mat M);
-RcppExport SEXP WCM_orderStats(SEXP MSEXP) {
+RcppExport SEXP SymRC_orderStats(SEXP MSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -111,9 +111,52 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// jointTauStar
+double jointTauStar(const arma::mat& X, const arma::mat& Y, const arma::uvec& xOnOffVec, const arma::uvec& yOnOffVec);
+RcppExport SEXP SymRC_jointTauStar(SEXP XSEXP, SEXP YSEXP, SEXP xOnOffVecSEXP, SEXP yOnOffVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type xOnOffVec(xOnOffVecSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type yOnOffVec(yOnOffVecSEXP);
+    rcpp_result_gen = Rcpp::wrap(jointTauStar(X, Y, xOnOffVec, yOnOffVec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// jointTauStarNaive
+double jointTauStarNaive(const arma::mat& X, const arma::mat& Y, const arma::uvec& xOnOffVec, const arma::uvec& yOnOffVec);
+RcppExport SEXP SymRC_jointTauStarNaive(SEXP XSEXP, SEXP YSEXP, SEXP xOnOffVecSEXP, SEXP yOnOffVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type xOnOffVec(xOnOffVecSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type yOnOffVec(yOnOffVecSEXP);
+    rcpp_result_gen = Rcpp::wrap(jointTauStarNaive(X, Y, xOnOffVec, yOnOffVec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// jointTauStarNaiveApprox
+double jointTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y, const arma::uvec& xOnOffVec, const arma::uvec& yOnOffVec, int sims);
+RcppExport SEXP SymRC_jointTauStarNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP xOnOffVecSEXP, SEXP yOnOffVecSEXP, SEXP simsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type xOnOffVec(xOnOffVecSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type yOnOffVec(yOnOffVecSEXP);
+    Rcpp::traits::input_parameter< int >::type sims(simsSEXP);
+    rcpp_result_gen = Rcpp::wrap(jointTauStarNaiveApprox(X, Y, xOnOffVec, yOnOffVec, sims));
+    return rcpp_result_gen;
+END_RCPP
+}
 // partialTauStar
 double partialTauStar(const arma::mat& X, const arma::mat& Y);
-RcppExport SEXP WCM_partialTauStar(SEXP XSEXP, SEXP YSEXP) {
+RcppExport SEXP SymRC_partialTauStar(SEXP XSEXP, SEXP YSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -125,7 +168,7 @@ END_RCPP
 }
 // fullLexTauStarNaive
 double fullLexTauStarNaive(const arma::mat& X, const arma::mat& Y);
-RcppExport SEXP WCM_fullLexTauStarNaive(SEXP XSEXP, SEXP YSEXP) {
+RcppExport SEXP SymRC_fullLexTauStarNaive(SEXP XSEXP, SEXP YSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -137,7 +180,7 @@ END_RCPP
 }
 // fullLexTauStarNaiveApprox
 double fullLexTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y, int sims);
-RcppExport SEXP WCM_fullLexTauStarNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
+RcppExport SEXP SymRC_fullLexTauStarNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -150,7 +193,7 @@ END_RCPP
 }
 // lexTauStarNaive
 double lexTauStarNaive(const arma::mat& X, const arma::mat& Y, const arma::uvec& xPerm, const arma::uvec& yPerm);
-RcppExport SEXP WCM_lexTauStarNaive(SEXP XSEXP, SEXP YSEXP, SEXP xPermSEXP, SEXP yPermSEXP) {
+RcppExport SEXP SymRC_lexTauStarNaive(SEXP XSEXP, SEXP YSEXP, SEXP xPermSEXP, SEXP yPermSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -164,7 +207,7 @@ END_RCPP
 }
 // lexTauStarNaiveApprox
 double lexTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y, const arma::uvec& xPerm, const arma::uvec& yPerm, int sims);
-RcppExport SEXP WCM_lexTauStarNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP xPermSEXP, SEXP yPermSEXP, SEXP simsSEXP) {
+RcppExport SEXP SymRC_lexTauStarNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP xPermSEXP, SEXP yPermSEXP, SEXP simsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -179,7 +222,7 @@ END_RCPP
 }
 // partialTauStarNaive
 double partialTauStarNaive(const arma::mat& X, const arma::mat& Y);
-RcppExport SEXP WCM_partialTauStarNaive(SEXP XSEXP, SEXP YSEXP) {
+RcppExport SEXP SymRC_partialTauStarNaive(SEXP XSEXP, SEXP YSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -191,7 +234,7 @@ END_RCPP
 }
 // partialTauStarNaiveApprox
 double partialTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y, int sims);
-RcppExport SEXP WCM_partialTauStarNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
+RcppExport SEXP SymRC_partialTauStarNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -204,7 +247,7 @@ END_RCPP
 }
 // ism
 double ism(const arma::mat& X, const arma::mat& Y, const arma::uvec& xInds0, const arma::uvec& xInds1, const arma::uvec& yInds0, const arma::uvec& yInds1);
-RcppExport SEXP WCM_ism(SEXP XSEXP, SEXP YSEXP, SEXP xInds0SEXP, SEXP xInds1SEXP, SEXP yInds0SEXP, SEXP yInds1SEXP) {
+RcppExport SEXP SymRC_ism(SEXP XSEXP, SEXP YSEXP, SEXP xInds0SEXP, SEXP xInds1SEXP, SEXP yInds0SEXP, SEXP yInds1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -220,7 +263,7 @@ END_RCPP
 }
 // ismNaive
 double ismNaive(const arma::mat& X, const arma::mat& Y, const arma::uvec& xInds0, const arma::uvec& xInds1, const arma::uvec& yInds0, const arma::uvec& yInds1);
-RcppExport SEXP WCM_ismNaive(SEXP XSEXP, SEXP YSEXP, SEXP xInds0SEXP, SEXP xInds1SEXP, SEXP yInds0SEXP, SEXP yInds1SEXP) {
+RcppExport SEXP SymRC_ismNaive(SEXP XSEXP, SEXP YSEXP, SEXP xInds0SEXP, SEXP xInds1SEXP, SEXP yInds0SEXP, SEXP yInds1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -236,7 +279,7 @@ END_RCPP
 }
 // ismNaiveApprox
 double ismNaiveApprox(const arma::mat& X, const arma::mat& Y, const arma::uvec& xInds0, const arma::uvec& xInds1, const arma::uvec& yInds0, const arma::uvec& yInds1, int sims);
-RcppExport SEXP WCM_ismNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP xInds0SEXP, SEXP xInds1SEXP, SEXP yInds0SEXP, SEXP yInds1SEXP, SEXP simsSEXP) {
+RcppExport SEXP SymRC_ismNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP xInds0SEXP, SEXP xInds1SEXP, SEXP yInds0SEXP, SEXP yInds1SEXP, SEXP simsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -253,7 +296,7 @@ END_RCPP
 }
 // kendallsTauNaive
 double kendallsTauNaive(const arma::mat& X, const arma::mat& Y);
-RcppExport SEXP WCM_kendallsTauNaive(SEXP XSEXP, SEXP YSEXP) {
+RcppExport SEXP SymRC_kendallsTauNaive(SEXP XSEXP, SEXP YSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -265,7 +308,7 @@ END_RCPP
 }
 // kendallsTauNaiveApprox
 double kendallsTauNaiveApprox(const arma::mat& X, const arma::mat& Y, int sims);
-RcppExport SEXP WCM_kendallsTauNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
+RcppExport SEXP SymRC_kendallsTauNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -278,7 +321,7 @@ END_RCPP
 }
 // spearmansRhoNaive
 double spearmansRhoNaive(const arma::mat& X, const arma::mat& Y);
-RcppExport SEXP WCM_spearmansRhoNaive(SEXP XSEXP, SEXP YSEXP) {
+RcppExport SEXP SymRC_spearmansRhoNaive(SEXP XSEXP, SEXP YSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -290,7 +333,7 @@ END_RCPP
 }
 // spearmansRhoNaiveApprox
 double spearmansRhoNaiveApprox(const arma::mat& X, const arma::mat& Y, int sims);
-RcppExport SEXP WCM_spearmansRhoNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
+RcppExport SEXP SymRC_spearmansRhoNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;

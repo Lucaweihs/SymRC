@@ -17,13 +17,15 @@
 
 #include "MultivariateTauStar.h"
 #include "HelperFunctions.h"
+#include <chrono>
 
 typedef GenericTauStarKernelEvaluator GTSKE;
 typedef PartialTauStarKernelEvaluator PTSKE;
 typedef LexTauStarKernelEvaluator LTSKE;
 typedef FullLexTauStarKernelEvaluator FLTSKE;
-
 typedef PartialTauStarEvaluator PTSE;
+typedef JointTauStarKernelEvaluator JTSKE;
+typedef JointTauStarEvaluator JTSE;
 
 const arma::umat GTSKE::perms = permutations(4);
 
@@ -54,10 +56,10 @@ double GTSKE::eval(const arma::mat& X, const arma::mat& Y) const {
     if (minorIndicatorY(y0, y1, y2, y3)) {
       fullSum += 1.0;
     }
-    if(minorIndicatorY(y2, y3, y0, y1)) {
+    if (minorIndicatorY(y2, y3, y0, y1)) {
       fullSum += 1.0;
     }
-    if(minorIndicatorY(y0, y2, y1, y3)) {
+    if (minorIndicatorY(y0, y2, y1, y3)) {
       fullSum += -2.0;
     }
   }
@@ -330,35 +332,6 @@ std::vector<double> toVector(const arma::vec& v) {
   return arma::conv_to<std::vector<double> >::from(v);
 }
 
-EmpiricalDistribution PTSE::createComparableED(const arma::mat& X,
-                                               const arma::mat& Y) const {
-  std::vector<std::vector<double> > comparablePairs;
-  int n = X.n_rows;
-
-  for (int i = 0; i < n - 1; i++) {
-    for (int j = i + 1; j < n; j++) {
-      arma::vec x0 = X.row(i).t();
-      arma::vec x1 = X.row(j).t();
-      arma::vec y0 = Y.row(i).t();
-      arma::vec y1 = Y.row(j).t();
-
-      if (any(y0 != y1)) {
-        if (all(y0 <= y1)) {
-          comparablePairs.push_back(toVector(glue(x0, x1, y0, y1)));
-        } else if (all(y1 <= y0)) {
-          comparablePairs.push_back(toVector(glue(x1, x0, y1, y0)));
-        }
-      }
-    }
-  }
-
-  if (comparablePairs.size() != 0) {
-    return EmpiricalDistribution(vecOfVecsToMat(comparablePairs));
-  } else {
-    return EmpiricalDistribution(arma::zeros<arma::mat>(0, 2 * (xDim + yDim)));
-  }
-}
-
 EmpiricalDistribution PTSE::createIncomparableED(const arma::mat& X,
                                                  const arma::mat& Y) const {
   std::vector<std::vector<double> > incomparablePairs;
@@ -530,7 +503,11 @@ double PTSE::disCount(const arma::vec& x0, const arma::vec& x1,
 double PTSE::eval(const arma::mat& X, const arma::mat& Y) const {
   arma::mat allSamples = arma::join_rows(X, Y);
   EmpiricalDistribution ed(allSamples);
+  //auto start = std::chrono::steady_clock::now();
   EmpiricalDistribution pairsEd = createPairsED(X, Y);
+  //auto duration = std::chrono::duration_cast<std::chrono::milliseconds >(std::chrono::steady_clock::now() - start);
+  //std::cout << duration.count() / 1000.0 << std::endl;
+
   int numSamples = X.n_rows;
 
   double sum = 0;
@@ -607,4 +584,256 @@ double PTSE::eval(const arma::mat& X, const arma::mat& Y) const {
 
   return sum / (nChooseM(1.0 * numSamples, 4.0) * 24);
 }
+
+bool JTSKE::minorIndicatorX(const arma::vec& v0, const arma::vec& v1,
+                       const arma::vec& v2, const arma::vec& v3) const {
+  return minorIndicator(v0, v1, v2, v3, xOnOffVec);
+}
+
+bool JTSKE::minorIndicatorY(const arma::vec& v0, const arma::vec& v1,
+                       const arma::vec& v2, const arma::vec& v3) const {
+  return minorIndicator(v0, v1, v2, v3, yOnOffVec);
+}
+
+bool JTSKE::minorIndicator(const arma::vec& v0, const arma::vec& v1,
+                           const arma::vec& v2, const arma::vec& v3,
+                           const arma::uvec& onOffVec) const {
+  for (int i = 0; i < onOffVec.size(); i++) {
+      if ((onOffVec(i) == 0 && !(std::max(v2(i), v3(i)) <= std::min(v0(i), v1(i)))) ||
+          (onOffVec(i) == 1 && !(std::min(v2(i), v3(i)) > std::max(v0(i), v1(i))))) {
+      return false;
+    }
+  }
+  return true;
+}
+
+JTSKE::JointTauStarKernelEvaluator(const arma::uvec& xOnOffVec,
+                                   const arma::uvec& yOnOffVec):
+  GenericTauStarKernelEvaluator(xOnOffVec.size(), yOnOffVec.size()),
+  xOnOffVec(xOnOffVec), yOnOffVec(yOnOffVec) {
+  if (!any(xOnOffVec == 1.0) || !any(xOnOffVec == 1.0)) {
+    throw std::logic_error("Joint tau* requires a 0-1 valued vector as input");
+  }
+}
+
+bool JTSE::lessInPartialOrder(const arma::vec& v0,
+                              const arma::vec& v1,
+                              const arma::uvec& onOffVec) {
+  for (int i = 0; i < v0.size(); i++) {
+    if ((onOffVec(i) == 0 && !(v1(i) <= v0(i))) ||
+        (onOffVec(i) == 1 && !(v0(i) < v1(i)))) {
+      return false;
+    }
+  }
+  return true;
+}
+
+JTSE::JointTauStarEvaluator(const arma::uvec& xOnOffVec,
+                            const arma::uvec& yOnOffVec): xOnOffVec(xOnOffVec),
+                            yOnOffVec(yOnOffVec), xDim(xOnOffVec.size()),
+                            yDim(yOnOffVec.size()) {}
+
+EmpiricalDistribution JTSE::createComparableED(const arma::mat& X,
+                                               const arma::mat& Y) const {
+  std::vector<std::vector<double> > comparablePairs;
+  int n = X.n_rows;
+
+  for (int i = 0; i < n - 1; i++) {
+    for (int j = i + 1; j < n; j++) {
+      arma::vec x0 = X.row(i).t();
+      arma::vec x1 = X.row(j).t();
+      arma::vec y0 = Y.row(i).t();
+      arma::vec y1 = Y.row(j).t();
+
+      if (any(y0 != y1)) {
+        if (lessInPartialOrder(y0, y1, yOnOffVec)) {
+          comparablePairs.push_back(toVector(glue(x0, x1, y0, y1)));
+        } else if (lessInPartialOrder(y1, y0, yOnOffVec)) {
+          comparablePairs.push_back(toVector(glue(x1, x0, y1, y0)));
+        }
+      }
+    }
+  }
+
+  if (comparablePairs.size() != 0) {
+    return EmpiricalDistribution(vecOfVecsToMat(comparablePairs));
+  } else {
+    return EmpiricalDistribution(arma::zeros<arma::mat>(0, 2 * (xDim + yDim)));
+  }
+}
+
+double JTSE::posConCount(const arma::vec& x0, const arma::vec& x1,
+                   const arma::vec& y0, const arma::vec& y1,
+                   const EmpiricalDistribution& ed) const {
+  std::vector<double> lower, upper;
+  std::vector<bool> withLower, withUpper;
+
+  for (int i = 0; i < xDim; i++) {
+    if (xOnOffVec(i) == 0) {
+      double maxVal = std::max(x0(i), x1(i));
+      lower.push_back(maxVal);
+      upper.push_back(std::numeric_limits<double>::max());
+      withLower.push_back(true);
+      withUpper.push_back(true);
+    } else {
+      double minVal = std::min(x0(i), x1(i));
+      lower.push_back(std::numeric_limits<double>::lowest());
+      upper.push_back(minVal);
+      withLower.push_back(true);
+      withUpper.push_back(false);
+    }
+  }
+
+  for (int i = 0; i < yDim; i++) {
+    if (yOnOffVec(i) == 0) {
+      double maxVal = std::max(y0(i), y1(i));
+      lower.push_back(maxVal);
+      upper.push_back(std::numeric_limits<double>::max());
+      withLower.push_back(true);
+      withUpper.push_back(true);
+    } else {
+      double minVal = std::min(y0(i), y1(i));
+      lower.push_back(std::numeric_limits<double>::lowest());
+      upper.push_back(minVal);
+      withLower.push_back(true);
+      withUpper.push_back(false);
+    }
+  }
+
+  return 2.0 * choose2(ed.countInRange(lower, upper, withLower, withUpper));
+}
+
+double JTSE::negConCount(const arma::vec& x0, const arma::vec& x1,
+                         const arma::vec& y0, const arma::vec& y1,
+                         const EmpiricalDistribution& ed) const {
+  std::vector<double> lower, upper;
+  std::vector<bool> withLower, withUpper;
+
+  for (int i = 0; i < xDim; i++) {
+    if (xOnOffVec(i) == 0) {
+      double maxVal = std::max(x0(i), x1(i));
+      lower.push_back(maxVal);
+      upper.push_back(std::numeric_limits<double>::max());
+      withLower.push_back(true);
+      withUpper.push_back(true);
+    } else {
+      double minVal = std::min(x0(i), x1(i));
+      lower.push_back(std::numeric_limits<double>::lowest());
+      upper.push_back(minVal);
+      withLower.push_back(true);
+      withUpper.push_back(false);
+    }
+  }
+
+  for (int i = 0; i < yDim; i++) {
+    if (yOnOffVec(i) == 0) {
+      double minVal = std::min(y0(i), y1(i));
+      lower.push_back(std::numeric_limits<double>::lowest());
+      upper.push_back(minVal);
+      withLower.push_back(true);
+      withUpper.push_back(true);
+    } else {
+      double maxVal = std::max(y0(i), y1(i));
+      lower.push_back(maxVal);
+      upper.push_back(std::numeric_limits<double>::max());
+      withLower.push_back(false);
+      withUpper.push_back(true);
+    }
+  }
+
+  return 2.0 * choose2(ed.countInRange(lower, upper, withLower, withUpper));
+}
+
+double JTSE::disCount(const arma::vec& x0, const arma::vec& x1,
+                      const arma::vec& y0, const arma::vec& y1,
+                      const EmpiricalDistribution& ed) const {
+  std::vector<double> lower, upper;
+  std::vector<bool> withLower, withUpper;
+
+  for (int i = 0; i < xDim; i++) {
+    if (xOnOffVec(i) == 0) {
+      double maxVal = std::max(x0(i), x1(i));
+      lower.push_back(maxVal);
+      upper.push_back(std::numeric_limits<double>::max());
+      withLower.push_back(true);
+      withUpper.push_back(true);
+    } else {
+      double minVal = std::min(x0(i), x1(i));
+      lower.push_back(std::numeric_limits<double>::lowest());
+      upper.push_back(minVal);
+      withLower.push_back(true);
+      withUpper.push_back(false);
+    }
+  }
+  lower.insert(lower.end(), lower.begin(), lower.end());
+  upper.insert(upper.end(), upper.begin(), upper.end());
+  withLower.insert(withLower.end(), withLower.begin(), withLower.end());
+  withUpper.insert(withUpper.end(), withUpper.begin(), withUpper.end());
+
+  for (int i = 0; i < yDim; i++) {
+    if (yOnOffVec(i) == 0) {
+      lower.push_back(y1(i));
+      upper.push_back(std::numeric_limits<double>::max());
+      withLower.push_back(true);
+      withUpper.push_back(true);
+    } else {
+      lower.push_back(std::numeric_limits<double>::lowest());
+      upper.push_back(y1(i));
+      withLower.push_back(true);
+      withUpper.push_back(false);
+    }
+  }
+
+  for (int i = 0; i < yDim; i++) {
+    if (yOnOffVec(i) == 0) {
+      lower.push_back(std::numeric_limits<double>::lowest());
+      upper.push_back(y0(i));
+      withLower.push_back(true);
+      withUpper.push_back(true);
+    } else {
+      lower.push_back(y0(i));
+      upper.push_back(std::numeric_limits<double>::max());
+      withLower.push_back(false);
+      withUpper.push_back(true);
+    }
+  }
+
+  return ed.countInRange(lower, upper, withLower, withUpper);
+}
+
+double JTSE::eval(const arma::mat& X, const arma::mat& Y) const {
+  arma::mat allSamples = arma::join_rows(X, Y);
+  EmpiricalDistribution ed(allSamples);
+  auto start = std::chrono::steady_clock::now();
+  EmpiricalDistribution compEd = createComparableED(X, Y);
+  auto duration = std::chrono::duration_cast<std::chrono::milliseconds >(std::chrono::steady_clock::now() - start);
+  std::cout << duration.count() / 1000.0 << std::endl;
+
+  int numSamples = X.n_rows;
+
+  double sum = 0;
+  for(int i = 0; i < numSamples - 1; i++) {
+    for(int j = i + 1; j < numSamples; j++) {
+      arma::vec x0 = X.row(i).t();
+      arma::vec x1 = X.row(j).t();
+      arma::vec y0 = Y.row(i).t();
+      arma::vec y1 = Y.row(j).t();
+
+      sum += 2.0 * posConCount(x0, x1, y0, y1, ed);
+      sum += 2.0 * negConCount(x0, x1, y0, y1, ed);
+      if (lessInPartialOrder(y0, y1, yOnOffVec)) {
+        sum += -2.0 * disCount(x0, x1, y0, y1, compEd);
+      } else if (lessInPartialOrder(y1, y0, yOnOffVec)) {
+        sum += -2.0 * disCount(x1, x0, y1, y0, compEd);
+      }
+    }
+  }
+  return sum / (nChooseM(1.0 * numSamples, 4.0) * 24);
+}
+
+
+
+
+
+
 

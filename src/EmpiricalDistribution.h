@@ -23,7 +23,7 @@
 
 class EmpiricalDistribution {
 private:
-  std::shared_ptr<RangeTree::RangeTree<int> > rtree;
+  std::shared_ptr<RangeTree::RangeTree<double,bool> > rtree;
   arma::mat samples;
 
 public:

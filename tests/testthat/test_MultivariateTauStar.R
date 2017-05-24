@@ -38,6 +38,8 @@ test_that("Check that multivariate measures agree with t* in 2 dims", {
 
 
 test_that("Check that the RangeTree version of partial tau* agrees with naive", {
+  set.seed(123)
+
   n = 15
   nXCols = 1
   nYCols = 1
@@ -92,6 +94,75 @@ test_that("Check that the RangeTree version of partial tau* agrees with naive", 
     Y = matrix(rnorm(nYCols * n), ncol = nYCols)
     a = partialTauStarNaive(X, Y)
     b = partialTauStar(X, Y)
+    expect_equal(a, b)
+  }
+})
+
+test_that("Check that the RangeTree version of joint tau* agrees with naive", {
+  set.seed(1234)
+
+  n = 15
+  nXCols = 1
+  nYCols = 1
+  for (i in 1:10) {
+    xOnOffVec = sample(c(1, rbinom(nXCols - 1, size = 1, prob = 1/2)))
+    yOnOffVec = sample(c(1, rbinom(nYCols - 1, size = 1, prob = 1/2)))
+    X = matrix(rpois(nXCols * n, 1), ncol = nXCols)
+    Y = matrix(rpois(nYCols * n, 1), ncol = nYCols)
+    a = jointTauStarNaive(X, Y, xOnOffVec = xOnOffVec, yOnOffVec = yOnOffVec)
+    b = jointTauStar(X, Y, xOnOffVec = xOnOffVec, yOnOffVec = yOnOffVec)
+    expect_equal(a, b)
+  }
+
+  n = 15
+  nXCols = 2
+  nYCols = 1
+  for (i in 1:10) {
+    xOnOffVec = sample(c(1, rbinom(nXCols - 1, size = 1, prob = 1/2)))
+    yOnOffVec = sample(c(1, rbinom(nYCols - 1, size = 1, prob = 1/2)))
+    X = matrix(rpois(nXCols * n, 1), ncol = nXCols)
+    Y = matrix(rpois(nYCols * n, 1), ncol = nYCols)
+    a = jointTauStarNaive(X, Y, xOnOffVec = xOnOffVec, yOnOffVec = yOnOffVec)
+    b = jointTauStar(X, Y, xOnOffVec = xOnOffVec, yOnOffVec = yOnOffVec)
+    expect_equal(a, b)
+  }
+
+  n = 15
+  nXCols = 1
+  nYCols = 2
+  for (i in 1:10) {
+    xOnOffVec = sample(c(1, rbinom(nXCols - 1, size = 1, prob = 1/2)))
+    yOnOffVec = sample(c(1, rbinom(nYCols - 1, size = 1, prob = 1/2)))
+    X = matrix(rpois(nXCols * n, 1), ncol = nXCols)
+    Y = matrix(rpois(nYCols * n, 1), ncol = nYCols)
+    a = jointTauStarNaive(X, Y, xOnOffVec = xOnOffVec, yOnOffVec = yOnOffVec)
+    b = jointTauStar(X, Y, xOnOffVec = xOnOffVec, yOnOffVec = yOnOffVec)
+    expect_equal(a, b)
+  }
+
+  n = 20
+  nXCols = 2
+  nYCols = 2
+  for (i in 1:10) {
+    xOnOffVec = sample(c(1, rbinom(nXCols - 1, size = 1, prob = 1/2)))
+    yOnOffVec = sample(c(1, rbinom(nYCols - 1, size = 1, prob = 1/2)))
+    X = matrix(rpois(nXCols * n, 1), ncol = nXCols)
+    Y = matrix(rpois(nYCols * n, 1), ncol = nYCols)
+    a = jointTauStarNaive(X, Y, xOnOffVec = xOnOffVec, yOnOffVec = yOnOffVec)
+    b = jointTauStar(X, Y, xOnOffVec = xOnOffVec, yOnOffVec = yOnOffVec)
+    expect_equal(a, b)
+  }
+
+  n = 10
+  nXCols = 2
+  nYCols = 2
+  for (i in 1:10) {
+    xOnOffVec = sample(c(1, rbinom(nXCols - 1, size = 1, prob = 1/2)))
+    yOnOffVec = sample(c(1, rbinom(nYCols - 1, size = 1, prob = 1/2)))
+    X = matrix(rnorm(nXCols * n), ncol = nXCols)
+    Y = matrix(rnorm(nYCols * n), ncol = nYCols)
+    a = jointTauStarNaive(X, Y, xOnOffVec = xOnOffVec, yOnOffVec = yOnOffVec)
+    b = jointTauStar(X, Y, xOnOffVec = xOnOffVec, yOnOffVec = yOnOffVec)
     expect_equal(a, b)
   }
 })

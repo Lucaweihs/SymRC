@@ -29,6 +29,10 @@ typedef JointTauStarEvaluator JTSE;
 
 const arma::umat GTSKE::perms = permutations(4);
 
+/*********************************
+ * GenericTauStarKernelEvaluator
+ *********************************/
+
 GTSKE::GenericTauStarKernelEvaluator(int xDim, int yDim):
   xDim(xDim), yDim(yDim) {}
 
@@ -66,6 +70,10 @@ double GTSKE::eval(const arma::mat& X, const arma::mat& Y) const {
   return fullSum / perms.n_rows;
 }
 
+/*********************************
+ * PartialTauStarKernelEvaluator
+ *********************************/
+
 PTSKE::PartialTauStarKernelEvaluator(int xDim, int yDim):
   GenericTauStarKernelEvaluator(xDim, yDim) {}
 
@@ -97,6 +105,10 @@ bool PTSKE::minorIndicatorY(const arma::vec& v0, const arma::vec& v1,
                             const arma::vec& v2, const arma::vec& v3) const {
   return minorIndicatorX(v0, v1, v2, v3);
 }
+
+/*********************************
+ * LexTauStarKernelEvaluator
+ *********************************/
 
 LTSKE::LexTauStarKernelEvaluator(int xDim, int yDim,
                                  const arma::uvec& xPerm,
@@ -143,6 +155,10 @@ bool LTSKE::minorIndicatorY(const arma::vec& v0, const arma::vec& v1,
   return minorIndicator(v0, v1, v2, v3, yPerm);
 }
 
+/*********************************
+ * FullLexTauStarKernelEvaluator
+ *********************************/
+
 FLTSKE::FullLexTauStarKernelEvaluator(int xDim, int yDim): xDim(xDim), yDim(yDim) {
   arma::umat xPerms = permutations(xDim);
   arma::umat yPerms = permutations(yDim);
@@ -165,156 +181,119 @@ double FLTSKE::eval(const arma::mat& X, const arma::mat& Y) const {
 
 int FLTSKE::order() const { return ord; }
 
-PTSE::PartialTauStarEvaluator(int xDim, int yDim): xDim(xDim), yDim(yDim) {}
+/*********************************
+ * PartialTauStarEvaluator
+ *********************************/
 
-double PTSE::countGreaterEqInX(const arma::vec& x,
-                               const EmpiricalDistribution& ed) const {
-  arma::vec y = arma::zeros<arma::vec>(yDim);
-  for (int i = 0; i < y.size(); i++) {
-    y(i) = std::numeric_limits<double>::lowest();
-  }
-  return countGreaterEqInXY(x, y, ed);
+PTSE::PartialTauStarEvaluator(int xDim, int yDim): xDim(xDim), yDim(yDim),
+lowerBaseX(xDim), lowerBaseY(yDim), upperBaseX(xDim), upperBaseY(yDim) {
+  lowerBaseX.fill(0);
+  lowerBaseY.fill(0);
+  upperBaseX.fill(std::numeric_limits<unsigned int>::max());
+  upperBaseY.fill(std::numeric_limits<unsigned int>::max());
 }
 
-double PTSE::countGreaterEqInY(const arma::vec& y,
-                               const EmpiricalDistribution& ed) const {
-  arma::vec x = arma::zeros<arma::vec>(xDim);
-  for (int i = 0; i < x.size(); i++) {
-    x(i) = std::numeric_limits<double>::lowest();
-  }
-  return countGreaterEqInXY(x, y, ed);
-}
-
-double PTSE::countGreaterEqInXY(const arma::vec& x, const arma::vec& y,
-                              const EmpiricalDistribution& ed) const {
-  std::vector<double> lower, upper;
-  std::vector<bool> withLower, withUpper;
+double PTSE::countGreaterEqOrLesserEqInXY(
+    const arma::uvec& x,
+    const arma::uvec& y,
+    std::shared_ptr<OrthogonalRangeQuerier> orq,
+    const bool& greaterInX, const bool& greaterInY) const {
+  arma::uvec lower(xDim + yDim);
+  arma::uvec upper(xDim + yDim);
 
   for (int i = 0; i < xDim; i++) {
-    lower.push_back(x(i));
-    upper.push_back(std::numeric_limits<double>::max());
-    withLower.push_back(true);
-    withUpper.push_back(true);
+    if (greaterInX) {
+      lower(i) = x(i);
+      upper(i) = std::numeric_limits<unsigned int>::max();
+    } else {
+      lower(i) = std::numeric_limits<unsigned int>::lowest();
+      upper(i) = x(i);
+    }
   }
 
   for (int i = 0; i < yDim; i++) {
-    lower.push_back(y(i));
-    upper.push_back(std::numeric_limits<double>::max());
-    withLower.push_back(true);
-    withUpper.push_back(true);
+    if (greaterInY) {
+      lower(xDim + i) = y(i);
+      upper(xDim + i) = std::numeric_limits<unsigned int>::max();
+    } else {
+      lower(xDim + i) = std::numeric_limits<unsigned int>::lowest();
+      upper(xDim + i) = y(i);
+    }
   }
 
-  return ed.countInRange(lower, upper, withLower, withUpper);
+  return orq->countInRange(lower, upper);
 }
 
-double PTSE::countLesserEqInY(const arma::vec& y,
-                              const EmpiricalDistribution& ed) const {
-  arma::vec x = arma::zeros<arma::vec>(xDim);
-  for (int i = 0; i < x.size(); i++) {
-    x(i) = std::numeric_limits<double>::lowest();
+double PTSE::posConCount(const arma::uvec& x0, const arma::uvec& x1,
+                         const arma::uvec& y0, const arma::uvec& y1,
+                         std::shared_ptr<OrthogonalRangeQuerier> orq) const {
+  double val = 0;
+  for (int i1 = 0; i1 < 2; i1++) {
+    for (int i2 = 0; i2 < 2; i2++) {
+      for (int i3 = 0; i3 < 2; i3++) {
+        for (int i4 = 0; i4 < 2; i4++) {
+          arma::uvec x = upperBaseX;
+          arma::uvec y = upperBaseY;
+          if (i1 == 1) {
+            y = arma::min(y, y0);
+          }
+          if (i2 == 1) {
+            y = arma::min(y, y1);
+          }
+          if (i3 == 1) {
+            x = arma::min(x, x0);
+          }
+          if (i4 == 1) {
+            x = arma::min(x, x1);
+          }
+          val += std::pow(-1, i1 + i2 + i3 + i4) *
+            countGreaterEqOrLesserEqInXY(x, y, orq, false, false);
+        }
+      }
+    }
   }
-  return countGreaterEqXLesserEqY(x, y, ed);
+  return 2.0 * choose2(val);
 }
 
-double PTSE::countGreaterEqXLesserEqY(const arma::vec& x, const arma::vec& y,
-                              const EmpiricalDistribution& ed) const {
-  std::vector<double> lower, upper;
-  std::vector<bool> withLower, withUpper;
+double PTSE::negConCount(const arma::uvec& x0, const arma::uvec& x1,
+                         const arma::uvec& y0, const arma::uvec& y1,
+                         std::shared_ptr<OrthogonalRangeQuerier> orq) const {
+  double val = 0;
+  for (int i1 = 0; i1 < 2; i1++) {
+    for (int i2 = 0; i2 < 2; i2++) {
+      for (int i3 = 0; i3 < 2; i3++) {
+        for (int i4 = 0; i4 < 2; i4++) {
+          arma::uvec x = upperBaseX;
+          arma::uvec y = lowerBaseY;
 
-  for (int i = 0; i < xDim; i++) {
-    lower.push_back(x(i));
-    upper.push_back(std::numeric_limits<double>::max());
-    withLower.push_back(true);
-    withUpper.push_back(true);
+          if (i1 == 1) {
+            y = arma::max(y, y0);
+          }
+          if (i2 == 1) {
+            y = arma::max(y, y1);
+          }
+          if (i3 == 1) {
+            x = arma::min(x, x0);
+          }
+          if (i4 == 1) {
+            x = arma::min(x, x1);
+          }
+          val += std::pow(-1, i1 + i2 + i3 + i4) *
+            countGreaterEqOrLesserEqInXY(x, y, orq, false, true);
+        }
+      }
+    }
   }
-
-  for (int i = 0; i < yDim; i++) {
-    lower.push_back(std::numeric_limits<double>::lowest());
-    upper.push_back(y(i));
-    withLower.push_back(true);
-    withUpper.push_back(true);
-  }
-
-  return ed.countInRange(lower, upper, withLower, withUpper);
+  return 2.0 * choose2(val);
 }
 
-double PTSE::posConCount(const arma::vec& x0, const arma::vec& x1,
-                         const arma::vec& y0, const arma::vec& y1,
-                         const EmpiricalDistribution& ed) const {
-  arma::vec maxX01 = arma::max(x0, x1);
-  arma::vec maxY01 = arma::max(y0, y1);
-
-  double geqX0 = countGreaterEqInX(x0, ed);
-  double geqX1 = countGreaterEqInX(x1, ed);
-  double geqY0 = countGreaterEqInY(y0, ed);
-  double geqY1 = countGreaterEqInY(y1, ed);
-
-  double geqX01 = countGreaterEqInX(arma::max(x0, x1), ed);
-  double geqY01 = countGreaterEqInY(maxY01, ed);
-
-  double geqX0Y0 = countGreaterEqInXY(x0, y0, ed);
-  double geqX0Y1 = countGreaterEqInXY(x0, y1, ed);
-  double geqX1Y0 = countGreaterEqInXY(x1, y0, ed);
-  double geqX1Y1 = countGreaterEqInXY(x1, y1, ed);
-
-  double geqX01Y0 = countGreaterEqInXY(maxX01, y0, ed);
-  double geqX01Y1 = countGreaterEqInXY(maxX01, y1, ed);
-  double geqX0Y01 = countGreaterEqInXY(x0, maxY01, ed);
-  double geqX1Y01 = countGreaterEqInXY(x1, maxY01, ed);
-
-  double geqX01Y01 = countGreaterEqInXY(maxX01, maxY01, ed);
-
-    return 2.0 * choose2(
-      ed.size() - (
-          (geqX0 + geqX1 + geqY0 + geqY1) -
-            (geqX01 + geqY01 + geqX0Y0 + geqX0Y1 + geqX1Y0 + geqX1Y1) +
-            (geqX01Y0 + geqX01Y1 + geqX0Y01 + geqX1Y01) -
-            geqX01Y01)
-    );
-}
-
-double PTSE::negConCount(const arma::vec& x0, const arma::vec& x1,
-                         const arma::vec& y0, const arma::vec& y1,
-                         const EmpiricalDistribution& ed) const {
-  arma::vec maxX01 = arma::max(x0, x1);
-  arma::vec minY01 = arma::min(y0, y1);
-
-  double geqX0 = countGreaterEqInX(x0, ed);
-  double geqX1 = countGreaterEqInX(x1, ed);
-  double leqY0 = countLesserEqInY(y0, ed);
-  double leqY1 = countLesserEqInY(y1, ed);
-
-  double geqX01 = countGreaterEqInX(arma::max(x0, x1), ed);
-  double leqY01 = countLesserEqInY(minY01, ed);
-
-  double geqX0leqY0 = countGreaterEqXLesserEqY(x0, y0, ed);
-  double geqX0leqY1 = countGreaterEqXLesserEqY(x0, y1, ed);
-  double geqX1leqY0 = countGreaterEqXLesserEqY(x1, y0, ed);
-  double geqX1leqY1 = countGreaterEqXLesserEqY(x1, y1, ed);
-
-  double geqX01leqY0 = countGreaterEqXLesserEqY(maxX01, y0, ed);
-  double geqX01leqY1 = countGreaterEqXLesserEqY(maxX01, y1, ed);
-  double geqX0leqY01 = countGreaterEqXLesserEqY(x0, minY01, ed);
-  double geqX1leqY01 = countGreaterEqXLesserEqY(x1, minY01, ed);
-
-  double geqX01leqY01 = countGreaterEqXLesserEqY(maxX01, minY01, ed);
-
-  return 2.0 * choose2(
-      ed.size() - (
-          (geqX0 + geqX1 + leqY0 + leqY1) -
-            (geqX01 + leqY01 + geqX0leqY0 + geqX0leqY1 + geqX1leqY0 + geqX1leqY1) +
-            (geqX01leqY0 + geqX01leqY1 + geqX0leqY01 + geqX1leqY01) -
-            geqX01leqY01)
-  );
-}
-
-arma::mat vecOfVecsToMat(const std::vector<std::vector<double> >& vecOfVecs) {
+arma::umat vecOfVecsToMat(const std::vector<std::vector<unsigned int> >& vecOfVecs) {
   if (vecOfVecs.size() == 0) {
     throw std::logic_error("Cannot construct a matrix from an empty vec of vecs");
   }
   int nrows = vecOfVecs.size();
   int ncols = vecOfVecs[0].size();
-  arma::mat M = arma::zeros<arma::mat>(nrows, ncols);
+  arma::umat M = arma::zeros<arma::umat>(nrows, ncols);
   for (int i = 0; i < nrows; i++) {
     for (int j = 0; j < ncols; j++) {
       M(i,j) = vecOfVecs[i][j];
@@ -323,266 +302,177 @@ arma::mat vecOfVecsToMat(const std::vector<std::vector<double> >& vecOfVecs) {
   return M;
 }
 
-arma::vec glue(const arma::vec& v0, const arma::vec& v1, const arma::vec& v2,
-               const arma::vec& v3) {
+arma::uvec glue(const arma::uvec& v0, const arma::uvec& v1, const arma::uvec& v2,
+               const arma::uvec& v3) {
   return arma::join_cols(arma::join_cols(v0, v1), arma::join_cols(v2, v3));
 }
 
-std::vector<double> toVector(const arma::vec& v) {
-  return arma::conv_to<std::vector<double> >::from(v);
+std::vector<unsigned int> toVector(const arma::uvec& v) {
+  return arma::conv_to<std::vector<unsigned int> >::from(v);
 }
 
-EmpiricalDistribution PTSE::createIncomparableED(const arma::mat& X,
-                                                 const arma::mat& Y) const {
-  std::vector<std::vector<double> > incomparablePairs;
+std::shared_ptr<OrthogonalRangeQuerier> PTSE::createComparableOrq(const arma::umat& X,
+                                                 const arma::umat& Y) const {
+  std::vector<std::vector<unsigned int> > comparablePairs;
   int n = X.n_rows;
 
   for (int i = 0; i < n - 1; i++) {
     for (int j = i + 1; j < n; j++) {
-      arma::vec x0 = X.row(i).t();
-      arma::vec x1 = X.row(j).t();
-      arma::vec y0 = Y.row(i).t();
-      arma::vec y1 = Y.row(j).t();
+      arma::uvec x0 = X.row(i).t();
+      arma::uvec x1 = X.row(j).t();
+      arma::uvec y0 = Y.row(i).t();
+      arma::uvec y1 = Y.row(j).t();
 
-      if (!all(y0 <= y1) && !all(y1 <= y0)) {
-        incomparablePairs.push_back(toVector(glue(x0, x1, y0, y1)));
-        incomparablePairs.push_back(toVector(glue(x1, x0, y1, y0)));
+      if (all(y0 <= y1)) {
+        comparablePairs.push_back(toVector(glue(x0, x1, y0, y1)));
+      }
+      if (all(y1 <= y0)) {
+        comparablePairs.push_back(toVector(glue(x1, x0, y1, y0)));
       }
     }
   }
-  if (incomparablePairs.size() != 0) {
-    return EmpiricalDistribution(vecOfVecsToMat(incomparablePairs));
+  if (comparablePairs.size() != 0) {
+    return std::shared_ptr<OrthogonalRangeQuerier>(new AlignedRangeTree(vecOfVecsToMat(comparablePairs)));
   } else {
-    return EmpiricalDistribution(arma::zeros<arma::mat>(0, 2 * (xDim + yDim)));
+    return std::shared_ptr<OrthogonalRangeQuerier>(new AlignedRangeTree(arma::zeros<arma::umat>(0, 2 * (xDim + yDim))));
   }
 }
 
-EmpiricalDistribution PTSE::createPairsED(const arma::mat& X,
-                                          const arma::mat& Y) const {
+std::shared_ptr<OrthogonalRangeQuerier> PTSE::createPairsOrq(const arma::umat& X,
+                                            const arma::umat& Y) const {
   int n = X.n_rows;
-  arma::mat pairs = arma::zeros<arma::mat>(n * n, 2 * (xDim + yDim));
+  arma::umat pairs = arma::zeros<arma::umat>(n * n, 2 * (xDim + yDim));
 
   int k = 0;
   for (int i = 0; i < n - 1; i++) {
     for (int j = i + 1; j < n; j++) {
-      arma::vec x0 = X.row(i).t();
-      arma::vec x1 = X.row(j).t();
-      arma::vec y0 = Y.row(i).t();
-      arma::vec y1 = Y.row(j).t();
+      arma::uvec x0 = X.row(i).t();
+      arma::uvec x1 = X.row(j).t();
+      arma::uvec y0 = Y.row(i).t();
+      arma::uvec y1 = Y.row(j).t();
 
-      if (!all(y1 <= y0)) {
-        pairs.row(k) = glue(x0, x1, y0, y1).t();
-        k++;
-      }
-      if (!all(y0 <= y1)) {
-        pairs.row(k) = glue(x1, x0, y1, y0).t();
-        k++;
-      }
+      pairs.row(k) = glue(x0, x1, y0, y1).t();
+      k++;
+      pairs.row(k) = glue(x1, x0, y1, y0).t();
+      k++;
     }
   }
   pairs.resize(k, 2 * (xDim + yDim));
-  return EmpiricalDistribution(pairs);
+  return std::shared_ptr<OrthogonalRangeQuerier>(new AlignedRangeTree(pairs));
 }
 
-double PTSE::disCount(const arma::vec& x0, const arma::vec& x1,
-                      const arma::vec& y0, const arma::vec& y1,
-                      const EmpiricalDistribution& ed) const {
-  std::vector<bool> withLower, withUpper;
-  arma::vec lowerBaseX = arma::ones<arma::vec>(x0.size());
-  arma::vec lowerBaseY = arma::ones<arma::vec>(y0.size());
-  arma::vec upperBaseX = arma::ones<arma::vec>(x0.size());
-  arma::vec upperBaseY = arma::ones<arma::vec>(y0.size());
-  lowerBaseX *= std::numeric_limits<double>::lowest();
-  lowerBaseY *= std::numeric_limits<double>::lowest();
-  upperBaseX *= std::numeric_limits<double>::max();
-  upperBaseY *= std::numeric_limits<double>::max();
-  for (int i = 0; i < 2*(xDim + yDim); i++) {
-    withLower.push_back(true);
-    withUpper.push_back(true);
-  }
-
+double PTSE::disCount(const arma::uvec& x0, const arma::uvec& x1,
+                      const arma::uvec& y0, const arma::uvec& y1,
+                      std::shared_ptr<OrthogonalRangeQuerier> compOrq,
+                      std::shared_ptr<OrthogonalRangeQuerier> pairsOrq) const {
   double count = 0;
-  bool firstLoop = true;
-  // std::cout << "\nSTARTING LOOP" << std::endl;
   for (int i1 = 0; i1 < 2; i1++) {
     for (int i2 = 0; i2 < 2; i2++) {
       for (int i3 = 0; i3 < 2; i3++) {
         for (int i4 = 0; i4 < 2; i4++) {
           for (int i5 = 0; i5 < 2; i5++) {
             for (int i6 = 0; i6 < 2; i6++) {
-              for (int i7 = 0; i7 < 2; i7++) {
-                for (int i8 = 0; i8 < 2; i8++) {
-              if (firstLoop) {
-                firstLoop = false;
-                continue;
+              arma::uvec lowerX0 = lowerBaseX, lowerX1 = lowerBaseX;
+              arma::uvec lowerY0 = lowerBaseY, lowerY1 = lowerBaseY;
+              arma::uvec upperX0 = upperBaseX, upperX1 = upperBaseX;
+              arma::uvec upperY0 = upperBaseY, upperY1 = upperBaseY;
+
+              if (i1 == 1) {
+                upperX0 = arma::min(upperX0, x0);
               }
-                  arma::vec lowerX0 = lowerBaseX, lowerX1 = lowerBaseX;
-                  arma::vec lowerY0 = lowerBaseY, lowerY1 = lowerBaseY;
-                  arma::vec upperX0 = upperBaseX, upperX1 = upperBaseX;
-                  arma::vec upperY0 = upperBaseY, upperY1 = upperBaseY;
 
-                  if (i1 == 1) { // X3 <= X2
-                    lowerX0 = arma::max(lowerX0, x0);
-                  }
-
-                  if (i2 == 1) { // X4 <= X2
-                    lowerX0 = arma::max(lowerX0, x1);
-                  }
-
-                  if (i3 == 1) { // X3 <= X1
-                    lowerX1 = arma::max(lowerX1, x0);
-                  }
-
-                  if (i4 == 1) { // X4 <= X1
-                    lowerX1 = arma::max(lowerX1, x1);
-                  }
-
-                  if (i5 == 1) { // Y1 <= Y3
-                    upperY0 = arma::min(upperY0, y0);
-                  }
-
-                  if (i6 == 1) { // Y4 <= Y1
-                    lowerY0 = arma::max(lowerY0, y1);
-                  }
-
-                  if (i7 == 1) { // Y2 <= Y3
-                    upperY1 = arma::min(upperY1, y0);
-                  }
-
-                  if (i8 == 1) { // Y4 <= Y2
-                    lowerY1 = arma::max(lowerY1, y1);
-                  }
-
-                  double val = std::pow(-1, i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + 1) *
-                    ed.countInRange(toVector(glue(lowerX0, lowerX1, lowerY0, lowerY1)),
-                                    toVector(glue(upperX0, upperX1, upperY0, upperY1)),
-                                    withLower, withUpper);
-                  count += val;
-
-                  // if (val != 0) {
-                  //   std::cout << "Points" << std::endl;
-                  //   x0.t().print();
-                  //   x1.t().print();
-                  //   y0.t().print();
-                  //   y1.t().print();
-                  //
-                  //   std::cout << "Lowers" << std::endl;
-                  //
-                  //   lowerX0.t().print();
-                  //   lowerX1.t().print();
-                  //   lowerY0.t().print();
-                  //   lowerY1.t().print();
-                  //
-                  //   std::cout << "Uppers" << std::endl;
-                  //   upperX0.t().print();
-                  //   upperX1.t().print();
-                  //   upperY0.t().print();
-                  //   upperY1.t().print();
-                  //
-                  //   std::cout << "withLower and withUpper" << std::endl;
-                  //   printVec(withLower);
-                  //   printVec(withUpper);
-                  //   std::cout << "(signed) Points in subregion: " << val << std::endl;
-                  // }
-                }
+              if (i2 == 1) {
+                upperX0 = arma::min(upperX0, x1);
               }
+
+              if (i3 == 1) {
+                upperX1 = arma::min(upperX1, x0);
+              }
+
+              if (i4 == 1) {
+                upperX1 = arma::min(upperX1, x1);
+              }
+
+              if (i5 == 1) {
+                upperY0 = arma::min(upperY0, y0);
+              }
+
+              if (i6 == 1) {
+                lowerY1 = arma::max(lowerY1, y1);
+              }
+
+              count += std::pow(-1, i1 + i2 + i3 + i4 + i5 + i6) *
+                pairsOrq->countInRange(toVector(glue(lowerX0, lowerX1, lowerY0, lowerY1)),
+                                toVector(glue(upperX0, upperX1, upperY0, upperY1)));
+
+              count += std::pow(-1, i1 + i2 + i3 + i4 + i5 + i6 + 1) *
+                compOrq->countInRange(toVector(glue(lowerX0, lowerX1, lowerY0, lowerY1)),
+                                     toVector(glue(upperX0, upperX1, upperY0, upperY1)));
             }
           }
         }
       }
     }
   }
-  // std::cout << "Pairs in empirical distribution: " << std::endl;
-  // ed.getSamples().print();
-  // std::cout << "\nTotal # pairs: " <<ed.size() << ", pairs in region: " << count << std::endl;
-  // std::cout << "ENDING LOOP" << std::endl;
-
-  return ed.size() - count;
+  return count;
 }
 
 double PTSE::eval(const arma::mat& X, const arma::mat& Y) const {
-  arma::mat allSamples = arma::join_rows(X, Y);
-  EmpiricalDistribution ed(allSamples);
-  //auto start = std::chrono::steady_clock::now();
-  EmpiricalDistribution pairsEd = createPairsED(X, Y);
-  //auto duration = std::chrono::duration_cast<std::chrono::milliseconds >(std::chrono::steady_clock::now() - start);
-  //std::cout << duration.count() / 1000.0 << std::endl;
+  arma::umat xJointRanks = toJointRankMatrix(X);
+  arma::umat yJointRanks = toJointRankMatrix(Y);
+  arma::umat allJointRanks = arma::join_rows(xJointRanks, yJointRanks);
+  std::shared_ptr<OrthogonalRangeQuerier> orq =
+    std::shared_ptr<OrthogonalRangeQuerier>(new AlignedRangeTree(allJointRanks));
+  std::shared_ptr<OrthogonalRangeQuerier> compOrq = createComparableOrq(xJointRanks, yJointRanks);
+  std::shared_ptr<OrthogonalRangeQuerier> pairsOrq = createPairsOrq(xJointRanks, yJointRanks);
 
-  int numSamples = X.n_rows;
+  int numSamples = xJointRanks.n_rows;
 
   double sum = 0;
   for(int i = 0; i < numSamples - 1; i++) {
     for(int j = i + 1; j < numSamples; j++) {
-      arma::vec x0 = X.row(i).t();
-      arma::vec x1 = X.row(j).t();
-      arma::vec y0 = Y.row(i).t();
-      arma::vec y1 = Y.row(j).t();
+      arma::uvec x0 = xJointRanks.row(i).t();
+      arma::uvec x1 = xJointRanks.row(j).t();
+      arma::uvec y0 = yJointRanks.row(i).t();
+      arma::uvec y1 = yJointRanks.row(j).t();
 
-      sum += 2.0 * posConCount(x0, x1, y0, y1, ed);
-      sum += 2.0 * negConCount(x0, x1, y0, y1, ed);
+      sum += 2.0 * posConCount(x0, x1, y0, y1, orq);
+      sum += 2.0 * negConCount(x0, x1, y0, y1, orq);
 
       if (any(y0 < y1)) {
-        double leqY0 = countLesserEqInY(y0, ed);
-        double geqY1 = countGreaterEqInY(y1, ed);
-
-        double geqX0 = countGreaterEqInX(x0, ed);
-        double geqX1 = countGreaterEqInX(x1, ed);
-        double geqX01 = countGreaterEqInX(arma::max(x0, x1), ed);
-        double geqX0leqY0 = countGreaterEqXLesserEqY(x0, y0, ed);
-        double geqX1leqY0 = countGreaterEqXLesserEqY(x1, y0, ed);
-        double geqX01leqY0 = countGreaterEqXLesserEqY(arma::max(x0, x1), y0, ed);
-
-        double geqX0Y1 = countGreaterEqInXY(x0, y1, ed);
-        double geqX1Y1 = countGreaterEqInXY(x1, y1, ed);
-        double geqX01Y1 = countGreaterEqInXY(arma::max(x0, x1), y1, ed);
-
-        int countCorrectX = ed.size() - geqX0 - geqX1 + geqX01;
-
-        int countLessEq0 = leqY0 - geqX0leqY0 - geqX1leqY0 + geqX01leqY0;
-        int countGreater1 = geqY1 - geqX0Y1 - geqX1Y1 + geqX01Y1;
-        int countGreater0 = countCorrectX - countLessEq0;
-        int countMiddle = countCorrectX - countLessEq0 - countGreater1;
-
-        int a = countLessEq0 * countGreater0;
-        int b = countMiddle * countGreater1;
-        int c = disCount(x0, x1, y0, y1, pairsEd);
-        sum += -2 * (a + b + c);
+        sum -= 2.0 * disCount(x0, x1, y0, y1, compOrq, pairsOrq);
       }
 
       if (any(y1 < y0)) {
-        arma::vec tmp;
-        tmp = y0; y0 = y1; y1 = tmp;
-        tmp = x0; x0 = x1; x1 = tmp;
-        double leqY0 = countLesserEqInY(y0, ed);
-        double geqY1 = countGreaterEqInY(y1, ed);
-
-        double geqX0 = countGreaterEqInX(x0, ed);
-        double geqX1 = countGreaterEqInX(x1, ed);
-        double geqX01 = countGreaterEqInX(arma::max(x0, x1), ed);
-        double geqX0leqY0 = countGreaterEqXLesserEqY(x0, y0, ed);
-        double geqX1leqY0 = countGreaterEqXLesserEqY(x1, y0, ed);
-        double geqX01leqY0 = countGreaterEqXLesserEqY(arma::max(x0, x1), y0, ed);
-
-        double geqX0Y1 = countGreaterEqInXY(x0, y1, ed);
-        double geqX1Y1 = countGreaterEqInXY(x1, y1, ed);
-        double geqX01Y1 = countGreaterEqInXY(arma::max(x0, x1), y1, ed);
-
-        int countCorrectX = ed.size() - geqX0 - geqX1 + geqX01;
-
-        int countLessEq0 = leqY0 - geqX0leqY0 - geqX1leqY0 + geqX01leqY0;
-        int countGreater1 = geqY1 - geqX0Y1 - geqX1Y1 + geqX01Y1;
-        int countGreater0 = countCorrectX - countLessEq0;
-        int countMiddle = countCorrectX - countLessEq0 - countGreater1;
-
-        int a = countLessEq0 * countGreater0;
-        int b = countMiddle * countGreater1;
-        int c = disCount(x0, x1, y0, y1, pairsEd);
-        sum += -2 * (a + b + c);
+        sum -= 2.0 * disCount(x1, x0, y1, y0, compOrq, pairsOrq);
       }
     }
   }
 
   return sum / (nChooseM(1.0 * numSamples, 4.0) * 24);
+}
+
+/*********************************
+ * JointTauStarKernelEvaluator
+ *********************************/
+
+JTSKE::JointTauStarKernelEvaluator(const arma::uvec& xOnOffVec,
+                                   const arma::uvec& yOnOffVec):
+  GenericTauStarKernelEvaluator(xOnOffVec.size(), yOnOffVec.size()),
+  xOnOffVec(xOnOffVec), yOnOffVec(yOnOffVec) {
+  for (int i = 0; i < xOnOffVec.size(); i++) {
+    if (xOnOffVec(i) != 0.0 && xOnOffVec(i) != 1.0) {
+      throw std::logic_error("Joint tau* requires a 0-1 valued vector as input");
+    }
+  }
+  for (int i = 0; i < yOnOffVec.size(); i++) {
+    if (yOnOffVec(i) != 0.0 && yOnOffVec(i) != 1.0) {
+      throw std::logic_error("Joint tau* requires a 0-1 valued vector as input");
+    }
+  }
+  if (!any(xOnOffVec == 1.0) || !any(yOnOffVec == 1.0)) {
+    throw std::logic_error("Joint tau* input vectors must have >= one 1 each.");
+  }
 }
 
 bool JTSKE::minorIndicatorX(const arma::vec& v0, const arma::vec& v1,
@@ -607,17 +497,17 @@ bool JTSKE::minorIndicator(const arma::vec& v0, const arma::vec& v1,
   return true;
 }
 
-JTSKE::JointTauStarKernelEvaluator(const arma::uvec& xOnOffVec,
-                                   const arma::uvec& yOnOffVec):
-  GenericTauStarKernelEvaluator(xOnOffVec.size(), yOnOffVec.size()),
-  xOnOffVec(xOnOffVec), yOnOffVec(yOnOffVec) {
-  if (!any(xOnOffVec == 1.0) || !any(xOnOffVec == 1.0)) {
-    throw std::logic_error("Joint tau* requires a 0-1 valued vector as input");
-  }
-}
+/*********************************
+ * JointTauStarEvaluator
+ *********************************/
 
-bool JTSE::lessInPartialOrder(const arma::vec& v0,
-                              const arma::vec& v1,
+JTSE::JointTauStarEvaluator(const arma::uvec& xOnOffVec,
+                            const arma::uvec& yOnOffVec): xOnOffVec(xOnOffVec),
+                            yOnOffVec(yOnOffVec), xDim(xOnOffVec.size()),
+                            yDim(yOnOffVec.size()) {}
+
+bool JTSE::lessInPartialOrder(const arma::uvec& v0,
+                              const arma::uvec& v1,
                               const arma::uvec& onOffVec) {
   for (int i = 0; i < v0.size(); i++) {
     if ((onOffVec(i) == 0 && !(v1(i) <= v0(i))) ||
@@ -628,22 +518,18 @@ bool JTSE::lessInPartialOrder(const arma::vec& v0,
   return true;
 }
 
-JTSE::JointTauStarEvaluator(const arma::uvec& xOnOffVec,
-                            const arma::uvec& yOnOffVec): xOnOffVec(xOnOffVec),
-                            yOnOffVec(yOnOffVec), xDim(xOnOffVec.size()),
-                            yDim(yOnOffVec.size()) {}
-
-EmpiricalDistribution JTSE::createComparableED(const arma::mat& X,
-                                               const arma::mat& Y) const {
-  std::vector<std::vector<double> > comparablePairs;
+std::shared_ptr<OrthogonalRangeQuerier> JTSE::createComparableOrq(
+    const arma::umat& X,
+    const arma::umat& Y) const {
+  std::vector<std::vector<unsigned int> > comparablePairs;
   int n = X.n_rows;
 
   for (int i = 0; i < n - 1; i++) {
     for (int j = i + 1; j < n; j++) {
-      arma::vec x0 = X.row(i).t();
-      arma::vec x1 = X.row(j).t();
-      arma::vec y0 = Y.row(i).t();
-      arma::vec y1 = Y.row(j).t();
+      arma::uvec x0 = X.row(i).t();
+      arma::uvec x1 = X.row(j).t();
+      arma::uvec y0 = Y.row(i).t();
+      arma::uvec y1 = Y.row(j).t();
 
       if (any(y0 != y1)) {
         if (lessInPartialOrder(y0, y1, yOnOffVec)) {
@@ -656,175 +542,150 @@ EmpiricalDistribution JTSE::createComparableED(const arma::mat& X,
   }
 
   if (comparablePairs.size() != 0) {
-    return EmpiricalDistribution(vecOfVecsToMat(comparablePairs));
+    return std::shared_ptr<OrthogonalRangeQuerier>(new AlignedRangeTree(vecOfVecsToMat(comparablePairs)));
   } else {
-    return EmpiricalDistribution(arma::zeros<arma::mat>(0, 2 * (xDim + yDim)));
+    return std::shared_ptr<OrthogonalRangeQuerier>(new AlignedRangeTree(arma::zeros<arma::umat>(0, 2 * (xDim + yDim))));
   }
 }
 
-double JTSE::posConCount(const arma::vec& x0, const arma::vec& x1,
-                   const arma::vec& y0, const arma::vec& y1,
-                   const EmpiricalDistribution& ed) const {
-  std::vector<double> lower, upper;
-  std::vector<bool> withLower, withUpper;
+double JTSE::posConCount(
+    const arma::uvec& x0, const arma::uvec& x1,
+    const arma::uvec& y0, const arma::uvec& y1,
+    std::shared_ptr<OrthogonalRangeQuerier> orq) const {
+  arma::uvec lower(xDim + yDim);
+  arma::uvec upper(xDim + yDim);
 
   for (int i = 0; i < xDim; i++) {
     if (xOnOffVec(i) == 0) {
-      double maxVal = std::max(x0(i), x1(i));
-      lower.push_back(maxVal);
-      upper.push_back(std::numeric_limits<double>::max());
-      withLower.push_back(true);
-      withUpper.push_back(true);
+      unsigned int maxVal = std::max(x0(i), x1(i));
+      lower(i) = maxVal;
+      upper(i) = std::numeric_limits<unsigned int>::max();
     } else {
-      double minVal = std::min(x0(i), x1(i));
-      lower.push_back(std::numeric_limits<double>::lowest());
-      upper.push_back(minVal);
-      withLower.push_back(true);
-      withUpper.push_back(false);
+      unsigned int minVal = std::min(x0(i), x1(i));
+      lower(i) = std::numeric_limits<unsigned int>::lowest();
+      upper(i) = minVal - 1; // Minus 1 since not including upper
     }
   }
 
   for (int i = 0; i < yDim; i++) {
     if (yOnOffVec(i) == 0) {
-      double maxVal = std::max(y0(i), y1(i));
-      lower.push_back(maxVal);
-      upper.push_back(std::numeric_limits<double>::max());
-      withLower.push_back(true);
-      withUpper.push_back(true);
+      unsigned int maxVal = std::max(y0(i), y1(i));
+      lower(i + xDim) = maxVal;
+      upper(i + xDim) = std::numeric_limits<unsigned int>::max();
     } else {
-      double minVal = std::min(y0(i), y1(i));
-      lower.push_back(std::numeric_limits<double>::lowest());
-      upper.push_back(minVal);
-      withLower.push_back(true);
-      withUpper.push_back(false);
+      unsigned int minVal = std::min(y0(i), y1(i));
+      lower(i + xDim) = std::numeric_limits<unsigned int>::lowest();
+      upper(i + xDim) = minVal - 1; //Minus 1 since not including upper
     }
   }
 
-  return 2.0 * choose2(ed.countInRange(lower, upper, withLower, withUpper));
+  return 2.0 * choose2(orq->countInRange(lower, upper));
 }
 
-double JTSE::negConCount(const arma::vec& x0, const arma::vec& x1,
-                         const arma::vec& y0, const arma::vec& y1,
-                         const EmpiricalDistribution& ed) const {
-  std::vector<double> lower, upper;
-  std::vector<bool> withLower, withUpper;
+double JTSE::negConCount(const arma::uvec& x0, const arma::uvec& x1,
+                         const arma::uvec& y0, const arma::uvec& y1,
+                         std::shared_ptr<OrthogonalRangeQuerier> orq) const {
+  arma::uvec lower(xDim + yDim);
+  arma::uvec upper(xDim + yDim);
 
   for (int i = 0; i < xDim; i++) {
     if (xOnOffVec(i) == 0) {
-      double maxVal = std::max(x0(i), x1(i));
-      lower.push_back(maxVal);
-      upper.push_back(std::numeric_limits<double>::max());
-      withLower.push_back(true);
-      withUpper.push_back(true);
+      unsigned int maxVal = std::max(x0(i), x1(i));
+      lower(i) = maxVal;
+      upper(i) = std::numeric_limits<unsigned int>::max();
     } else {
-      double minVal = std::min(x0(i), x1(i));
-      lower.push_back(std::numeric_limits<double>::lowest());
-      upper.push_back(minVal);
-      withLower.push_back(true);
-      withUpper.push_back(false);
+      unsigned int minVal = std::min(x0(i), x1(i));
+      lower(i) = std::numeric_limits<unsigned int>::lowest();
+      upper(i) = minVal - 1; //Minus 1 since not including upper
     }
   }
 
   for (int i = 0; i < yDim; i++) {
     if (yOnOffVec(i) == 0) {
-      double minVal = std::min(y0(i), y1(i));
-      lower.push_back(std::numeric_limits<double>::lowest());
-      upper.push_back(minVal);
-      withLower.push_back(true);
-      withUpper.push_back(true);
+      unsigned int minVal = std::min(y0(i), y1(i));
+      lower(i + xDim) = std::numeric_limits<unsigned int>::lowest();
+      upper(i + xDim) = minVal;
     } else {
-      double maxVal = std::max(y0(i), y1(i));
-      lower.push_back(maxVal);
-      upper.push_back(std::numeric_limits<double>::max());
-      withLower.push_back(false);
-      withUpper.push_back(true);
+      unsigned int maxVal = std::max(y0(i), y1(i));
+      lower(i + xDim) = maxVal + 1; // Plus 1 since not including lower
+      upper(i + xDim) = std::numeric_limits<unsigned int>::max();
     }
   }
 
-  return 2.0 * choose2(ed.countInRange(lower, upper, withLower, withUpper));
+  return 2.0 * choose2(orq->countInRange(lower, upper));
 }
 
-double JTSE::disCount(const arma::vec& x0, const arma::vec& x1,
-                      const arma::vec& y0, const arma::vec& y1,
-                      const EmpiricalDistribution& ed) const {
-  std::vector<double> lower, upper;
-  std::vector<bool> withLower, withUpper;
+double JTSE::disCount(const arma::uvec& x0, const arma::uvec& x1,
+                      const arma::uvec& y0, const arma::uvec& y1,
+                      std::shared_ptr<OrthogonalRangeQuerier> orq) const {
+  arma::uvec lower(2 * (xDim + yDim));
+  arma::uvec upper(2 * (xDim + yDim));
 
   for (int i = 0; i < xDim; i++) {
     if (xOnOffVec(i) == 0) {
-      double maxVal = std::max(x0(i), x1(i));
-      lower.push_back(maxVal);
-      upper.push_back(std::numeric_limits<double>::max());
-      withLower.push_back(true);
-      withUpper.push_back(true);
+      unsigned int maxVal = std::max(x0(i), x1(i));
+      lower(i) = maxVal;
+      upper(i) = std::numeric_limits<unsigned int>::max();
     } else {
-      double minVal = std::min(x0(i), x1(i));
-      lower.push_back(std::numeric_limits<double>::lowest());
-      upper.push_back(minVal);
-      withLower.push_back(true);
-      withUpper.push_back(false);
+      unsigned int minVal = std::min(x0(i), x1(i));
+      lower(i) = std::numeric_limits<unsigned int>::lowest();
+      upper(i) = minVal - 1; // Minus 1 since not including upper
     }
+    // Duplicating for the other x
+    lower(i + xDim) = lower(i);
+    upper(i + xDim) = upper(i);
   }
-  lower.insert(lower.end(), lower.begin(), lower.end());
-  upper.insert(upper.end(), upper.begin(), upper.end());
-  withLower.insert(withLower.end(), withLower.begin(), withLower.end());
-  withUpper.insert(withUpper.end(), withUpper.begin(), withUpper.end());
 
   for (int i = 0; i < yDim; i++) {
     if (yOnOffVec(i) == 0) {
-      lower.push_back(y1(i));
-      upper.push_back(std::numeric_limits<double>::max());
-      withLower.push_back(true);
-      withUpper.push_back(true);
+      lower(i + 2 * xDim) = y1(i);
+      upper(i + 2 * xDim) = std::numeric_limits<unsigned int>::max();
     } else {
-      lower.push_back(std::numeric_limits<double>::lowest());
-      upper.push_back(y1(i));
-      withLower.push_back(true);
-      withUpper.push_back(false);
+      lower(i + 2 * xDim) = std::numeric_limits<unsigned int>::lowest();
+      upper(i + 2 * xDim) = y1(i) - 1; // Minus 1 since not including upper
     }
   }
 
   for (int i = 0; i < yDim; i++) {
     if (yOnOffVec(i) == 0) {
-      lower.push_back(std::numeric_limits<double>::lowest());
-      upper.push_back(y0(i));
-      withLower.push_back(true);
-      withUpper.push_back(true);
+      lower(i + 2 * xDim + yDim) = std::numeric_limits<unsigned int>::lowest();
+      upper(i + 2 * xDim + yDim) = y0(i);
     } else {
-      lower.push_back(y0(i));
-      upper.push_back(std::numeric_limits<double>::max());
-      withLower.push_back(false);
-      withUpper.push_back(true);
+      lower(i + 2 * xDim + yDim) = y0(i) + 1; // Plus 1 since not including lower
+      upper(i + 2 * xDim + yDim) = std::numeric_limits<unsigned int>::max();
     }
   }
 
-  return ed.countInRange(lower, upper, withLower, withUpper);
+  return orq->countInRange(lower, upper);
 }
 
 double JTSE::eval(const arma::mat& X, const arma::mat& Y) const {
-  arma::mat allSamples = arma::join_rows(X, Y);
-  EmpiricalDistribution ed(allSamples);
-  auto start = std::chrono::steady_clock::now();
-  EmpiricalDistribution compEd = createComparableED(X, Y);
-  auto duration = std::chrono::duration_cast<std::chrono::milliseconds >(std::chrono::steady_clock::now() - start);
-  std::cout << duration.count() / 1000.0 << std::endl;
+  arma::umat xJointRanks = toJointRankMatrix(X);
+  arma::umat yJointRanks = toJointRankMatrix(Y);
+  arma::umat allJointRanks = arma::join_rows(xJointRanks, yJointRanks);
+  std::shared_ptr<OrthogonalRangeQuerier> orq =
+    std::shared_ptr<OrthogonalRangeQuerier>(new AlignedRangeTree(allJointRanks));
+  //auto start = std::chrono::steady_clock::now();
+  std::shared_ptr<OrthogonalRangeQuerier> compOrq = createComparableOrq(xJointRanks, yJointRanks);
+  //auto duration = std::chrono::duration_cast<std::chrono::milliseconds >(std::chrono::steady_clock::now() - start);
+  //std::cout << duration.count() / 1000.0 << std::endl;
 
   int numSamples = X.n_rows;
 
   double sum = 0;
   for(int i = 0; i < numSamples - 1; i++) {
     for(int j = i + 1; j < numSamples; j++) {
-      arma::vec x0 = X.row(i).t();
-      arma::vec x1 = X.row(j).t();
-      arma::vec y0 = Y.row(i).t();
-      arma::vec y1 = Y.row(j).t();
+      arma::uvec x0 = xJointRanks.row(i).t();
+      arma::uvec x1 = xJointRanks.row(j).t();
+      arma::uvec y0 = yJointRanks.row(i).t();
+      arma::uvec y1 = yJointRanks.row(j).t();
 
-      sum += 2.0 * posConCount(x0, x1, y0, y1, ed);
-      sum += 2.0 * negConCount(x0, x1, y0, y1, ed);
+      sum += 2.0 * posConCount(x0, x1, y0, y1, orq);
+      sum += 2.0 * negConCount(x0, x1, y0, y1, orq);
       if (lessInPartialOrder(y0, y1, yOnOffVec)) {
-        sum += -2.0 * disCount(x0, x1, y0, y1, compEd);
+        sum += -2.0 * disCount(x0, x1, y0, y1, compOrq);
       } else if (lessInPartialOrder(y1, y0, yOnOffVec)) {
-        sum += -2.0 * disCount(x1, x0, y1, y0, compEd);
+        sum += -2.0 * disCount(x1, x0, y1, y0, compOrq);
       }
     }
   }

@@ -21,14 +21,14 @@
 typedef EmpiricalDistribution ed;
 
 ed::EmpiricalDistribution(const arma::mat& samples) : samples(samples) {
-  std::vector<RangeTree::Point<int> > points;
+  std::vector<RangeTree::Point<double,bool> > points;
   for (int i = 0; i < samples.n_rows; i++) {
     std::vector<double> position = arma::conv_to<std::vector<double> >::from(samples.row(i));
-    RangeTree::Point<int> point(position, 0);
+    RangeTree::Point<double,bool> point(position, true);
     points.push_back(point);
   }
   if (points.size() != 0) {
-    rtree = std::shared_ptr<RangeTree::RangeTree<int> >(new RangeTree::RangeTree<int>(points));
+    rtree = std::shared_ptr<RangeTree::RangeTree<double,bool> >(new RangeTree::RangeTree<double,bool>(points));
   }
 }
 

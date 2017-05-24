@@ -21,6 +21,8 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include "RcppArmadillo.h"
 
+arma::umat powerSetMat(unsigned int n);
+arma::umat toJointRankMatrix(const arma::mat& samples);
 arma::uvec intersectSorted(const arma::uvec& vec1, const arma::uvec& vec2);
 arma::uvec unionSorted(const arma::uvec& vec1, const arma::uvec& vec2);
 arma::uvec setDiffSorted(const arma::uvec& vec1, const arma::uvec& vec2);

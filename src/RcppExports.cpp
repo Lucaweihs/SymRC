@@ -6,6 +6,28 @@
 
 using namespace Rcpp;
 
+// powerSetMat
+arma::umat powerSetMat(unsigned int n);
+RcppExport SEXP SymRC_powerSetMat(SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< unsigned int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(powerSetMat(n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// toJointRankMatrix
+arma::umat toJointRankMatrix(const arma::mat& samples);
+RcppExport SEXP SymRC_toJointRankMatrix(SEXP samplesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type samples(samplesSEXP);
+    rcpp_result_gen = Rcpp::wrap(toJointRankMatrix(samples));
+    return rcpp_result_gen;
+END_RCPP
+}
 // intersectSorted
 arma::uvec intersectSorted(const arma::uvec& vec1, const arma::uvec& vec2);
 RcppExport SEXP SymRC_intersectSorted(SEXP vec1SEXP, SEXP vec2SEXP) {
@@ -343,4 +365,69 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(spearmansRhoNaiveApprox(X, Y, sims));
     return rcpp_result_gen;
 END_RCPP
+}
+// orthRangeTensorCount
+arma::uvec orthRangeTensorCount(const arma::mat& samples, const arma::umat& lowerMat, const arma::umat& upperMat);
+RcppExport SEXP SymRC_orthRangeTensorCount(SEXP samplesSEXP, SEXP lowerMatSEXP, SEXP upperMatSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type samples(samplesSEXP);
+    Rcpp::traits::input_parameter< const arma::umat& >::type lowerMat(lowerMatSEXP);
+    Rcpp::traits::input_parameter< const arma::umat& >::type upperMat(upperMatSEXP);
+    rcpp_result_gen = Rcpp::wrap(orthRangeTensorCount(samples, lowerMat, upperMat));
+    return rcpp_result_gen;
+END_RCPP
+}
+// alignedRangeTreeCount
+arma::uvec alignedRangeTreeCount(const arma::mat& samples, const arma::umat& lowerMat, const arma::umat& upperMat);
+RcppExport SEXP SymRC_alignedRangeTreeCount(SEXP samplesSEXP, SEXP lowerMatSEXP, SEXP upperMatSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type samples(samplesSEXP);
+    Rcpp::traits::input_parameter< const arma::umat& >::type lowerMat(lowerMatSEXP);
+    Rcpp::traits::input_parameter< const arma::umat& >::type upperMat(upperMatSEXP);
+    rcpp_result_gen = Rcpp::wrap(alignedRangeTreeCount(samples, lowerMat, upperMat));
+    return rcpp_result_gen;
+END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"SymRC_powerSetMat", (DL_FUNC) &SymRC_powerSetMat, 1},
+    {"SymRC_toJointRankMatrix", (DL_FUNC) &SymRC_toJointRankMatrix, 1},
+    {"SymRC_intersectSorted", (DL_FUNC) &SymRC_intersectSorted, 2},
+    {"SymRC_unionSorted", (DL_FUNC) &SymRC_unionSorted, 2},
+    {"SymRC_setDiffSorted", (DL_FUNC) &SymRC_setDiffSorted, 2},
+    {"SymRC_complementSorted", (DL_FUNC) &SymRC_complementSorted, 2},
+    {"SymRC_intToUVec", (DL_FUNC) &SymRC_intToUVec, 2},
+    {"SymRC_zeroOneVecToInt", (DL_FUNC) &SymRC_zeroOneVecToInt, 1},
+    {"SymRC_intPow", (DL_FUNC) &SymRC_intPow, 2},
+    {"SymRC_permutations", (DL_FUNC) &SymRC_permutations, 1},
+    {"SymRC_orderStats", (DL_FUNC) &SymRC_orderStats, 1},
+    {"SymRC_jointTauStar", (DL_FUNC) &SymRC_jointTauStar, 4},
+    {"SymRC_jointTauStarNaive", (DL_FUNC) &SymRC_jointTauStarNaive, 4},
+    {"SymRC_jointTauStarNaiveApprox", (DL_FUNC) &SymRC_jointTauStarNaiveApprox, 5},
+    {"SymRC_partialTauStar", (DL_FUNC) &SymRC_partialTauStar, 2},
+    {"SymRC_fullLexTauStarNaive", (DL_FUNC) &SymRC_fullLexTauStarNaive, 2},
+    {"SymRC_fullLexTauStarNaiveApprox", (DL_FUNC) &SymRC_fullLexTauStarNaiveApprox, 3},
+    {"SymRC_lexTauStarNaive", (DL_FUNC) &SymRC_lexTauStarNaive, 4},
+    {"SymRC_lexTauStarNaiveApprox", (DL_FUNC) &SymRC_lexTauStarNaiveApprox, 5},
+    {"SymRC_partialTauStarNaive", (DL_FUNC) &SymRC_partialTauStarNaive, 2},
+    {"SymRC_partialTauStarNaiveApprox", (DL_FUNC) &SymRC_partialTauStarNaiveApprox, 3},
+    {"SymRC_ism", (DL_FUNC) &SymRC_ism, 6},
+    {"SymRC_ismNaive", (DL_FUNC) &SymRC_ismNaive, 6},
+    {"SymRC_ismNaiveApprox", (DL_FUNC) &SymRC_ismNaiveApprox, 7},
+    {"SymRC_kendallsTauNaive", (DL_FUNC) &SymRC_kendallsTauNaive, 2},
+    {"SymRC_kendallsTauNaiveApprox", (DL_FUNC) &SymRC_kendallsTauNaiveApprox, 3},
+    {"SymRC_spearmansRhoNaive", (DL_FUNC) &SymRC_spearmansRhoNaive, 2},
+    {"SymRC_spearmansRhoNaiveApprox", (DL_FUNC) &SymRC_spearmansRhoNaiveApprox, 3},
+    {"SymRC_orthRangeTensorCount", (DL_FUNC) &SymRC_orthRangeTensorCount, 3},
+    {"SymRC_alignedRangeTreeCount", (DL_FUNC) &SymRC_alignedRangeTreeCount, 3},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_SymRC(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

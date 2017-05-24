@@ -42,6 +42,7 @@
 #include <iostream>
 #include <sstream>
 #include <numeric>
+#include <type_traits>
 
 namespace RangeTree {
 
@@ -54,11 +55,12 @@ namespace RangeTree {
 * each point. Points can also have a multiplicity/count, this corresponds
 * to having several duplicates of the same point.
 */
-template<class T>
+template<typename T, class S>
 class Point {
+  static_assert(std::is_arithmetic<T>::value, "Type T must be numeric");
 private:
-  std::vector<double> vec;
-  T val;
+  std::vector<T> vec;
+  S val;
   int multiplicity;
 
 public:
@@ -79,7 +81,7 @@ public:
   * @param vec the position in euclidean space.
   * @param val the value associated with the point.
   */
-  Point(const std::vector<double>& vec, const T& val): val(val), vec(vec), multiplicity(1) {}
+  Point(const std::vector<T>& vec, const S& val): val(val), vec(vec), multiplicity(1) {}
 
   /**
   * Constructs a point.
@@ -89,7 +91,7 @@ public:
   * @param vec the position in euclidean space.
   * @param val the value associated with the point.
   */
-  Point(const Point<T>& p): val(p.val), vec(p.vec), multiplicity(p.count()) {}
+  Point(const Point<T,S>& p): val(p.val), vec(p.vec), multiplicity(p.count()) {}
 
 
   /**
@@ -97,7 +99,7 @@ public:
   *
   * @return the euclidean position of the point as a std::vector.
   */
-  const std::vector<double>& asVector() const {
+  const std::vector<T>& asVector() const {
     return vec;
   }
 
@@ -137,7 +139,7 @@ public:
   *
   * @return the value stored in the point.
   */
-  T value() const {
+  S value() const {
     return val;
   }
 
@@ -150,7 +152,7 @@ public:
   * @param index the coordinate to index.
   * @return the coordinate value.
   */
-  double operator[](int index) const {
+  T operator[](int index) const {
     if(index < 0 || index >= dim()) {
       throw std::out_of_range("[] access index for point is out of range.");
     }
@@ -166,7 +168,7 @@ public:
   * @param p some other point
   * @return true if \p equals the current point, otherwise false.
   */
-  double operator==(const Point<T>& p) const {
+  bool operator==(const Point<T,S>& p) const {
     return vec == p.vec && multiplicity == p.multiplicity && val == p.val;
   }
 
@@ -178,7 +180,7 @@ public:
   * @param p some other point.
   * @return false if \p equals the current point, otherwise true.
   */
-  double operator!=(const Point<T>& p) const {
+  bool operator!=(const Point<T,S>& p) const {
     return !((*this) == p);
   }
 
@@ -206,7 +208,7 @@ public:
 };
 
 /**
-* A class that totally orders Point<T>'s in euclidean space.
+* A class that totally orders Point<T,S>'s in euclidean space.
 *
 * A total order of Points is required in the RangeTree. This is an implementation
 * detail that can be ignored. Given a start index \compareStartIndex, this class
@@ -222,8 +224,9 @@ public:
 *
 * again using the usual lexicographic order.
 */
-template <class T>
+template <typename T, class S>
 class PointOrdering {
+  static_assert(std::is_arithmetic<T>::value, "Type T must be numeric");
 private:
   int compareStartIndex;
 
@@ -234,7 +237,7 @@ public:
     }
   }
 
-  static bool equals(const Point<T>& p1, const Point<T>& p2) {
+  static bool equals(const Point<T,S>& p1, const Point<T,S>& p2) {
     return p1.asVector() == p2.asVector();
   }
 
@@ -242,7 +245,7 @@ public:
     return compareStartIndex;
   }
 
-  bool less(const Point<T>& p1, const Point<T>& p2) const {
+  bool less(const Point<T,S>& p1, const Point<T,S>& p2) const {
     if (p1.dim() != p2.dim()) {
       throw std::logic_error("Points are incomparable (differing dims).");
     }
@@ -266,19 +269,19 @@ public:
     return false;
   }
 
-  bool lessOrEq(const Point<T>& p1, const Point<T>& p2) const {
+  bool lessOrEq(const Point<T,S>& p1, const Point<T,S>& p2) const {
     return less(p1, p2) || equals(p1, p2);
   }
 
-  bool greater(const Point<T>& p1, const Point<T>& p2) const {
+  bool greater(const Point<T,S>& p1, const Point<T,S>& p2) const {
     return less(p2, p1);
   }
 
-  bool greaterOrEq(const Point<T>& p1, const Point<T>& p2) const {
+  bool greaterOrEq(const Point<T,S>& p1, const Point<T,S>& p2) const {
     return greater(p1, p2) || equals(p1,p2);
   }
 
-  bool operator()(const Point<T>& p1, const Point<T>& p2) const {
+  bool operator()(const Point<T,S>& p1, const Point<T,S>& p2) const {
     return this->less(p1, p2);
   }
 };
@@ -287,35 +290,36 @@ public:
 * A class representing a single node in a RangeTree. These should not be
 * constructed directly, instead use the RangeTree class.
 */
-template <class T>
+template <typename T, class S>
 class RangeTreeNode {
+  static_assert(std::is_arithmetic<T>::value, "Type T must be numeric");
 private:
-  std::shared_ptr<RangeTreeNode<T> > left; /**< Contains points <= the comparison point **/
-std::shared_ptr<RangeTreeNode<T> > right; /**< Contains points > the comparison point **/
-std::shared_ptr<RangeTreeNode<T> > treeOnNextDim; /**< Tree on the next dimension **/
-Point<T>* point; /**< The comparison point **/
+  std::shared_ptr<RangeTreeNode<T,S> > left; /**< Contains points <= the comparison point **/
+std::shared_ptr<RangeTreeNode<T,S> > right; /**< Contains points > the comparison point **/
+std::shared_ptr<RangeTreeNode<T,S> > treeOnNextDim; /**< Tree on the next dimension **/
+Point<T,S>* point; /**< The comparison point **/
 bool isLeaf; /**< Whether or not the point is a leaf **/
 int pointCountSum; /**< Total number of points, counting multiplicities, at leaves of the tree **/
-PointOrdering<T> pointOrdering; /**< Helper to totally order input points **/
+PointOrdering<T,S> pointOrdering; /**< Helper to totally order input points **/
 
 /**
 * Create a range tree structure from input points.
 *
-* Let P = {p_1,...,p_n} be a collection of Point<T>'s that have be sorted according to the
+* Let P = {p_1,...,p_n} be a collection of Point<T,S>'s that have be sorted according to the
 * lexicographic order defined by \compareStartInd (see PointOrdering) and which contain no duplicates
 * (i.e. p_i is strictly less than p_{i+1} for all i). Then creates a range tree structure on the points
 * p_{first} to p_{last} given the lexicographic order (when appropriate, sub range tree structures are
 * created using a lexicographic order defined by \compareStartInd + 1).
 *
-* @param sortedUniquePoints a std::vector of Point<T>s sorted according to the lexicographic order defined
+* @param sortedUniquePoints a std::vector of Point<T,S>s sorted according to the lexicographic order defined
 *                           above (these points must be unique with respect to that order).
 * @param first an int defining the first point to use from the input collection.
 * @param last an int defining the last point to use from the input collection.
 * @param compareStartInd an int defining the PointOrdering lexicographic order.
 * @return a RangeTreeNode representing the root of a new range tree structure.
 */
-std::shared_ptr<RangeTreeNode<T> > sortedPointsToBinaryTree(
-    const std::vector<Point<T>* >& sortedUniquePoints,
+std::shared_ptr<RangeTreeNode<T,S> > sortedPointsToBinaryTree(
+    const std::vector<Point<T,S>* >& sortedUniquePoints,
     int first, int last, int compareStartInd) {
   if (sortedUniquePoints.size() == 0) {
     throw std::logic_error("Number of points input to sortedPointsToBinaryTree must be >0.");
@@ -327,19 +331,19 @@ std::shared_ptr<RangeTreeNode<T> > sortedPointsToBinaryTree(
     "last < the number of input points (" << sortedUniquePoints.size() << ").";
     throw std::logic_error(out.str());
   } else if (first == last) {
-    return std::shared_ptr<RangeTreeNode<T> >(
+    return std::shared_ptr<RangeTreeNode<T,S> >(
         new RangeTreeNode(sortedUniquePoints[first], compareStartInd));
   } else {
     int mid = (first + last) / 2;
     auto left = sortedPointsToBinaryTree(sortedUniquePoints, first, mid, compareStartInd);
     auto right = sortedPointsToBinaryTree(sortedUniquePoints, mid + 1, last, compareStartInd);
 
-    std::vector<Point<T>* > subVec;
+    std::vector<Point<T,S>* > subVec;
     for (int i = first; i <= last; i++) {
       subVec.push_back(sortedUniquePoints[i]);
     }
 
-    return std::shared_ptr<RangeTreeNode<T> >(
+    return std::shared_ptr<RangeTreeNode<T,S> >(
         new RangeTreeNode(left, right,
                           subVec,
                           sortedUniquePoints[mid],
@@ -358,7 +362,7 @@ public:
   * @param compareStartInd the index to use for the lexicographic order
   * @return a range tree structure
   */
-  RangeTreeNode(std::vector<Point<T>* > uniquePoints, int compareStartInd): pointOrdering(compareStartInd) {
+  RangeTreeNode(std::vector<Point<T,S>* > uniquePoints, int compareStartInd): pointOrdering(compareStartInd) {
     if (uniquePoints.size() == 0) {
       throw std::range_error("Range tree requires input vector of points to not be empty.");
     }
@@ -368,7 +372,7 @@ public:
     //                 return pointOrdering.less(points[i1], points[i2]); });
 
     std::sort(uniquePoints.begin(), uniquePoints.end(),
-              [this](const Point<T>* p1, const Point<T>* p2) {
+              [this](const Point<T,S>* p1, const Point<T,S>* p2) {
                 return this->pointOrdering.less(*p1, *p2);
               });
 
@@ -395,7 +399,7 @@ public:
   * Construct a range tree structure
   *
   * Creates a range tree structure similarily as for
-  * RangeTreeNode(std::vector<Point<T> > sortedUniquePoints, int compareStartInd) but where the root node's left and
+  * RangeTreeNode(std::vector<Point<T,S> > sortedUniquePoints, int compareStartInd) but where the root node's left and
   * right subtrees are already known.
   *
   * @param left std::shared_ptr to left subtree
@@ -404,16 +408,16 @@ public:
   * @param comparePoint the point at the node to be constructed that is used as the comparison point
   * @param compareStartInd the index defining the lexicographic order
   */
-  RangeTreeNode(const std::shared_ptr<RangeTreeNode<T> >& left,
-                const std::shared_ptr<RangeTreeNode<T> >& right,
-                const std::vector<Point<T>* >& sortedUniquePoints,
-                Point<T>* comparePoint,
+  RangeTreeNode(const std::shared_ptr<RangeTreeNode<T,S> >& left,
+                const std::shared_ptr<RangeTreeNode<T,S> >& right,
+                const std::vector<Point<T,S>* >& sortedUniquePoints,
+                Point<T,S>* comparePoint,
                 int compareStartInd) :
   left(left), right(right),
   point(comparePoint), isLeaf(false),
   pointOrdering(compareStartInd) {
     if (compareStartInd + 1 != point->dim()) {
-      treeOnNextDim = std::shared_ptr<RangeTreeNode<T> >(new RangeTreeNode<T>(sortedUniquePoints,
+      treeOnNextDim = std::shared_ptr<RangeTreeNode<T,S> >(new RangeTreeNode<T,S>(sortedUniquePoints,
                                                                               compareStartInd + 1));
     }
     pointCountSum = (*left).totalPoints() + (*right).totalPoints();
@@ -426,7 +430,7 @@ public:
   * @param compareStartInd the index defining the lexicographic ordering.
   * @return
   */
-  RangeTreeNode(Point<T>* pointAtLeaf, int compareStartInd) :
+  RangeTreeNode(Point<T,S>* pointAtLeaf, int compareStartInd) :
   point(pointAtLeaf), isLeaf(true), pointCountSum(pointAtLeaf->count()), pointOrdering(compareStartInd) {}
 
   /**
@@ -444,9 +448,9 @@ public:
   * Return all points at the leaves of the range tree rooted at this node.
   * @return all the points.
   */
-  std::vector<Point<T> > getAllPoints() const {
+  std::vector<Point<T,S> > getAllPoints() const {
     if (isLeaf) {
-      std::vector<Point<T> > vec;
+      std::vector<Point<T,S> > vec;
       vec.push_back(*point);
       return vec;
     }
@@ -476,9 +480,9 @@ public:
   * @param withUpper as for \withLower but for the upper bounds.
   * @return true if the point is in the rectangle, false otherwise.
   */
-  bool pointInRange(const Point<T>& point,
-                    const std::vector<double>& lower,
-                    const std::vector<double>& upper,
+  bool pointInRange(const Point<T,S>& point,
+                    const std::vector<T>& lower,
+                    const std::vector<T>& upper,
                     const std::vector<bool>& withLower,
                     const std::vector<bool>& withUpper) const {
     for (int i = 0; i < point.dim(); i++) {
@@ -494,9 +498,9 @@ public:
     return true;
   }
 
-  bool pointInRange(const Point<T>* point,
-                    const std::vector<double>& lower,
-                    const std::vector<double>& upper,
+  bool pointInRange(const Point<T,S>* point,
+                    const std::vector<T>& lower,
+                    const std::vector<T>& upper,
                     const std::vector<bool>& withLower,
                     const std::vector<bool>& withUpper) const {
     return pointInRange(*point, lower, upper, withLower, withUpper);
@@ -511,10 +515,15 @@ public:
   * @param withUpper
   * @return the count.
   */
-  int countInRange(const std::vector<double>& lower,
-                   const std::vector<double>& upper,
+  int countInRange(const std::vector<T>& lower,
+                   const std::vector<T>& upper,
                    const std::vector<bool>& withLower,
                    const std::vector<bool>& withUpper) const {
+    if (lower.size() != upper.size() || lower.size() != withLower.size() ||
+        lower.size() != withUpper.size()) {
+      throw std::logic_error("All sizes of vectors inputted to countInRange "
+                               "must be the same length.");
+    }
     if (isLeaf) {
       if (pointInRange(point, lower, upper, withLower, withUpper)) {
         return totalPoints();
@@ -533,7 +542,7 @@ public:
       return (*right).countInRange(lower, upper, withLower, withUpper);
     }
 
-    std::vector<std::shared_ptr<RangeTreeNode<T> > > canonicalNodes;
+    std::vector<std::shared_ptr<RangeTreeNode<T,S> > > canonicalNodes;
 
     if ((*left).isLeaf) {
       canonicalNodes.push_back(left);
@@ -549,7 +558,7 @@ public:
 
     int numPointsInRange = 0;
     for (int i = 0; i < canonicalNodes.size(); i++) {
-      std::shared_ptr<RangeTreeNode<T> > node = canonicalNodes[i];
+      std::shared_ptr<RangeTreeNode<T,S> > node = canonicalNodes[i];
       if ((*node).isLeaf) {
         if (pointInRange((*node).point, lower, upper, withLower, withUpper)) {
           numPointsInRange += (*node).totalPoints();
@@ -573,11 +582,11 @@ public:
   * @param withUpper
   * @return a std::vector of the Points.
   */
-  std::vector<Point<T> > pointsInRange(const std::vector<double>& lower,
-                                       const std::vector<double>& upper,
+  std::vector<Point<T,S> > pointsInRange(const std::vector<T>& lower,
+                                       const std::vector<T>& upper,
                                        const std::vector<bool>& withLower,
                                        const std::vector<bool>& withUpper) const {
-    std::vector<Point<T> > pointsToReturn = {};
+    std::vector<Point<T,S> > pointsToReturn = {};
     if (isLeaf) {
       if (pointInRange(point, lower, upper, withLower, withUpper)) {
         pointsToReturn.push_back(*point);
@@ -595,7 +604,7 @@ public:
       return (*right).pointsInRange(lower, upper, withLower, withUpper);
     }
 
-    std::vector<std::shared_ptr<RangeTreeNode<T> > > canonicalNodes = {};
+    std::vector<std::shared_ptr<RangeTreeNode<T,S> > > canonicalNodes = {};
 
     if ((*left).isLeaf) {
       canonicalNodes.push_back(left);
@@ -610,7 +619,7 @@ public:
     }
 
     for (int i = 0; i < canonicalNodes.size(); i++) {
-      std::shared_ptr<RangeTreeNode<T> > node = canonicalNodes[i];
+      std::shared_ptr<RangeTreeNode<T,S> > node = canonicalNodes[i];
       if ((*node).isLeaf) {
         if (pointInRange((*node).point, lower, upper, withLower, withUpper)) {
           pointsToReturn.push_back(*(node->point));
@@ -633,9 +642,9 @@ public:
   * @param withLower
   * @param nodes
   */
-  void leftCanonicalNodes(const std::vector<double>& lower,
+  void leftCanonicalNodes(const std::vector<T>& lower,
                           const std::vector<bool>& withLower,
-                          std::vector<std::shared_ptr<RangeTreeNode<T> > >& nodes) {
+                          std::vector<std::shared_ptr<RangeTreeNode<T,S> > >& nodes) {
     if (isLeaf) {
       throw std::logic_error("Should never have a leaf deciding if its canonical.");
     }
@@ -664,9 +673,9 @@ public:
   * @param withUpper
   * @param nodes
   */
-  void rightCanonicalNodes(const std::vector<double>& upper,
+  void rightCanonicalNodes(const std::vector<T>& upper,
                            const std::vector<bool>& withUpper,
-                           std::vector<std::shared_ptr<RangeTreeNode<T> > >& nodes) {
+                           std::vector<std::shared_ptr<RangeTreeNode<T,S> > >& nodes) {
     if (isLeaf) {
       throw std::logic_error("Should never have a leaf deciding if its canonical.");
     }
@@ -728,11 +737,12 @@ public:
 * Mark de Berg, Otfried Cheong, Marc van Kreveld, and Mark Overmars. 2008.
 * Computational Geometry: Algorithms and Applications (3rd ed. ed.). TELOS, Santa Clara, CA, USA.
 */
-template <class T>
+template <typename T, class S>
 class RangeTree {
+  static_assert(std::is_arithmetic<T>::value, "Type T must be numeric");
 private:
-  std::shared_ptr<RangeTreeNode<T> > root;
-  std::vector<std::shared_ptr<Point<T> > > sortedUniquePoints;
+  std::shared_ptr<RangeTreeNode<T,S> > root;
+  std::vector<std::shared_ptr<Point<T,S> > > sortedUniquePoints;
 
 public:
   /**
@@ -744,7 +754,7 @@ public:
   *
   * @param points the points from which to create a RangeTree
   */
-  RangeTree(const std::vector<Point<T> >& points) {
+  RangeTree(const std::vector<Point<T,S> >& points) {
     if (points.size() != 0) {
       int dim = points[0].dim();
       for (int i = 1; i < points.size(); i++) {
@@ -754,9 +764,9 @@ public:
       }
     }
 
-    PointOrdering<T> pointOrdering(0);
+    PointOrdering<T,S> pointOrdering(0);
 
-    sortedUniquePoints.push_back(std::shared_ptr<Point<T> >(new Point<T>(points[0])));
+    sortedUniquePoints.push_back(std::shared_ptr<Point<T,S> >(new Point<T,S>(points[0])));
     int k = 0;
     for (int i = 1; i < points.size(); i++) {
       if (pointOrdering.equals(*(sortedUniquePoints[k]), points[i])) {
@@ -765,17 +775,17 @@ public:
         }
         sortedUniquePoints[k]->increaseCountBy(points[i].count());
       } else {
-        sortedUniquePoints.push_back(std::shared_ptr<Point<T> >(new Point<T>(points[i])));
+        sortedUniquePoints.push_back(std::shared_ptr<Point<T,S> >(new Point<T,S>(points[i])));
         k++;
       }
     }
 
-    std::vector<Point<T>* > sortedUniquePointsRaw;
+    std::vector<Point<T,S>* > sortedUniquePointsRaw;
     for (int i = 0; i < sortedUniquePoints.size(); i++) {
       sortedUniquePointsRaw.push_back(&(*sortedUniquePoints[i]));
     }
 
-    root = std::shared_ptr<RangeTreeNode<T> >(new RangeTreeNode<T>(sortedUniquePointsRaw, 0));
+    root = std::shared_ptr<RangeTreeNode<T,S> >(new RangeTreeNode<T,S>(sortedUniquePointsRaw, 0));
   }
 
   /**
@@ -796,8 +806,8 @@ public:
   * @param withUpper as for \withLower but for the upper bounds.
   * @return the number of points in the rectangle.
   */
-  int countInRange(const std::vector<double>& lower,
-                   const std::vector<double>& upper,
+  int countInRange(const std::vector<T>& lower,
+                   const std::vector<T>& upper,
                    const std::vector<bool>& withLower,
                    const std::vector<bool>& withUpper) const {
     return (*root).countInRange(lower, upper, withLower, withUpper);
@@ -822,8 +832,8 @@ public:
   * @param withUpper as for \withLower but for the upper bounds.
   * @return the number of points in the rectangle.
   */
-  std::vector<Point<T> > pointsInRange(const std::vector<double>& lower,
-                                       const std::vector<double>& upper,
+  std::vector<Point<T,S> > pointsInRange(const std::vector<T>& lower,
+                                       const std::vector<T>& upper,
                                        const std::vector<bool>& withLower,
                                        const std::vector<bool>& withUpper) const {
     return (*root).pointsInRange(lower, upper, withLower, withUpper);
@@ -838,14 +848,15 @@ public:
 * A class which is used to naively count the number of points in a given rectangle. This class is used
 * for testing an benchmarking, it should not be used in practice.
 */
-template <class T>
+template <typename T, class S>
 class NaiveRangeCounter {
+  static_assert(std::is_arithmetic<T>::value, "Type T must be numeric");
 private:
-  std::vector<Point<T> > points;
+  std::vector<Point<T,S> > points;
 
-  static bool pointInRange(const Point<T>& point,
-                           const std::vector<double>& lower,
-                           const std::vector<double>& upper,
+  static bool pointInRange(const Point<T,S>& point,
+                           const std::vector<T>& lower,
+                           const std::vector<T>& upper,
                            const std::vector<bool>& withLower,
                            const std::vector<bool>& withUpper) {
     for (int i = 0; i < point.dim(); i++) {
@@ -862,10 +873,10 @@ private:
   }
 
 public:
-  NaiveRangeCounter(std::vector<Point<T> > points): points(points) {}
+  NaiveRangeCounter(std::vector<Point<T,S> > points): points(points) {}
 
-  int countInRange(const std::vector<double>& lower,
-                   const std::vector<double>& upper,
+  int countInRange(const std::vector<T>& lower,
+                   const std::vector<T>& upper,
                    const std::vector<bool>& withLower,
                    const std::vector<bool>& withUpper) const {
     int count = 0;
@@ -877,11 +888,11 @@ public:
     return count;
   }
 
-  std::vector<Point<T> > pointsInRange(const std::vector<double>& lower,
-                                       const std::vector<double>& upper,
+  std::vector<Point<T,S> > pointsInRange(const std::vector<T>& lower,
+                                       const std::vector<T>& upper,
                                        const std::vector<bool>& withLower,
                                        const std::vector<bool>& withUpper) const {
-    std::vector<Point<T> > selectedPoints = {};
+    std::vector<Point<T,S> > selectedPoints = {};
     for (int i = 0; i < points.size(); i++) {
       if (pointInRange(points[i], lower, upper, withLower, withUpper)) {
         selectedPoints.push_back(points[i]);

@@ -20,6 +20,8 @@
 #include "IntegratedMinor.h"
 #include "MultivariateTauStar.h"
 #include "RcppArmadillo.h"
+#include "HelperFunctions.h"
+#include "OrthogonalRangeQuerier.h"
 
 // [[Rcpp::export]]
 double jointTauStar(const arma::mat& X, const arma::mat& Y,
@@ -148,3 +150,31 @@ double spearmansRhoNaiveApprox(const arma::mat& X,
   SpearmansRhoEvaluator sr;
   return approxNaiveUStat(X, Y, sr, sims);
 }
+
+// [[Rcpp::export]]
+arma::uvec orthRangeTensorCount(const arma::mat& samples,
+                         const arma::umat& lowerMat,
+                         const arma::umat& upperMat) {
+  arma::umat jointRanks = toJointRankMatrix(samples);
+  arma::uvec counts(lowerMat.n_rows);
+  OrthogonalRangeTensor ort(jointRanks);
+  for (int i = 0; i < lowerMat.n_rows; i++) {
+    counts(i) = ort.countInRange(lowerMat.row(i).t(), upperMat.row(i).t());
+  }
+  return counts;
+}
+
+// [[Rcpp::export]]
+arma::uvec alignedRangeTreeCount(const arma::mat& samples,
+                                 const arma::umat& lowerMat,
+                                 const arma::umat& upperMat) {
+  arma::umat jointRanks = toJointRankMatrix(samples);
+  arma::uvec counts(lowerMat.n_rows);
+  AlignedRangeTree art(jointRanks);
+  for (int i = 0; i < lowerMat.n_rows; i++) {
+    counts(i) = art.countInRange(lowerMat.row(i).t(), upperMat.row(i).t());
+  }
+  return counts;
+}
+
+

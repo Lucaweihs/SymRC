@@ -20,6 +20,7 @@
 
 #include "NaiveUStatistics.h"
 #include "EmpiricalDistribution.h"
+#include "OrthogonalRangeQuerier.h"
 
 class GenericTauStarKernelEvaluator : public KernelEvaluator {
 protected:
@@ -46,6 +47,7 @@ private:
                       const arma::vec& v2, const arma::vec& v3) const;
   bool minorIndicatorY(const arma::vec& v0, const arma::vec& v1,
                        const arma::vec& v2, const arma::vec& v3) const;
+
 public:
   PartialTauStarKernelEvaluator(int xDim, int yDim);
 };
@@ -84,34 +86,35 @@ public:
 class PartialTauStarEvaluator {
 private:
   int xDim, yDim;
-  double countGreaterEqInX(const arma::vec& x,
-                         const EmpiricalDistribution& ed) const;
-  double countGreaterEqInY(const arma::vec& y,
-                         const EmpiricalDistribution& ed) const;
-  double countGreaterEqInXY(const arma::vec& x, const arma::vec& y,
-                          const EmpiricalDistribution& ed) const;
-  double countLesserEqInY(const arma::vec& y,
-                          const EmpiricalDistribution& ed) const;
-  double countGreaterEqXLesserEqY(const arma::vec& x, const arma::vec& y,
-                                  const EmpiricalDistribution& ed) const;
+  arma::uvec lowerBaseX;
+  arma::uvec lowerBaseY;
+  arma::uvec upperBaseX;
+  arma::uvec upperBaseY;
 
-  double posConCount(const arma::vec& x0, const arma::vec& x1,
-                     const arma::vec& y0, const arma::vec& y1,
-                     const EmpiricalDistribution& ed) const;
+  double countGreaterEqOrLesserEqInXY(
+      const arma::uvec& x,
+      const arma::uvec& y,
+      std::shared_ptr<OrthogonalRangeQuerier> orq,
+      const bool& greaterInX, const bool& greaterInY) const;
 
-  double negConCount(const arma::vec& x0, const arma::vec& x1,
-                     const arma::vec& y0, const arma::vec& y1,
-                     const EmpiricalDistribution& ed) const;
+  double posConCount(const arma::uvec& x0, const arma::uvec& x1,
+                     const arma::uvec& y0, const arma::uvec& y1,
+                     std::shared_ptr<OrthogonalRangeQuerier> orq) const;
 
-  double disCount(const arma::vec& x0, const arma::vec& x1,
-                  const arma::vec& y0, const arma::vec& y1,
-                  const EmpiricalDistribution& ed) const;
+  double negConCount(const arma::uvec& x0, const arma::uvec& x1,
+                     const arma::uvec& y0, const arma::uvec& y1,
+                     std::shared_ptr<OrthogonalRangeQuerier> orq) const;
 
-  EmpiricalDistribution createPairsED(const arma::mat& X,
-                                            const arma::mat& Y) const;
+  double disCount(const arma::uvec& x0, const arma::uvec& x1,
+                  const arma::uvec& y0, const arma::uvec& y1,
+                  std::shared_ptr<OrthogonalRangeQuerier> compOrq,
+                  std::shared_ptr<OrthogonalRangeQuerier> pairsOrq) const;
 
-  EmpiricalDistribution createIncomparableED(const arma::mat& X,
-                                             const arma::mat& Y) const;
+  std::shared_ptr<OrthogonalRangeQuerier> createPairsOrq(const arma::umat& X,
+                                            const arma::umat& Y) const;
+
+  std::shared_ptr<OrthogonalRangeQuerier> createComparableOrq(const arma::umat& X,
+                                           const arma::umat& Y) const;
 
 public:
   PartialTauStarEvaluator(int xDim, int yDim);
@@ -138,27 +141,27 @@ public:
 
 class JointTauStarEvaluator {
 private:
-  static bool lessInPartialOrder(const arma::vec& v0,
-                                 const arma::vec& v1,
+  static bool lessInPartialOrder(const arma::uvec& v0,
+                                 const arma::uvec& v1,
                                  const arma::uvec& onOffVec);
   int xDim, yDim;
   arma::uvec xOnOffVec;
   arma::uvec yOnOffVec;
 
-  EmpiricalDistribution createComparableED(const arma::mat& X,
-                                           const arma::mat& Y) const;
+  std::shared_ptr<OrthogonalRangeQuerier> createComparableOrq(
+      const arma::umat& X, const arma::umat& Y) const;
 
-  double posConCount(const arma::vec& x0, const arma::vec& x1,
-                     const arma::vec& y0, const arma::vec& y1,
-                     const EmpiricalDistribution& ed) const;
+  double posConCount(const arma::uvec& x0, const arma::uvec& x1,
+                     const arma::uvec& y0, const arma::uvec& y1,
+                     std::shared_ptr<OrthogonalRangeQuerier> orq) const;
 
-  double negConCount(const arma::vec& x0, const arma::vec& x1,
-                     const arma::vec& y0, const arma::vec& y1,
-                     const EmpiricalDistribution& ed) const;
+  double negConCount(const arma::uvec& x0, const arma::uvec& x1,
+                     const arma::uvec& y0, const arma::uvec& y1,
+                     std::shared_ptr<OrthogonalRangeQuerier> orq) const;
 
-  double disCount(const arma::vec& x0, const arma::vec& x1,
-                  const arma::vec& y0, const arma::vec& y1,
-                  const EmpiricalDistribution& ed) const;
+  double disCount(const arma::uvec& x0, const arma::uvec& x1,
+                  const arma::uvec& y0, const arma::uvec& y1,
+                  std::shared_ptr<OrthogonalRangeQuerier> orq) const;
 
 public:
   JointTauStarEvaluator(const arma::uvec& xOnOffVec,

@@ -19,6 +19,44 @@
 #include <cmath>
 
 // [[Rcpp::export]]
+arma::umat powerSetMat(unsigned int n) {
+  if (n == 0) {
+    arma::umat toReturn(1,0);
+    return toReturn;
+  } else if (n == 1) {
+    arma::umat toReturn(2,1);
+    toReturn(0,0) = 0;
+    toReturn(1,0) = 1;
+    return toReturn;
+  } else {
+    arma::uvec zeros = arma::zeros<arma::uvec>(1 << (n - 1));
+    arma::umat smallerMat = powerSetMat(n - 1);
+    arma::umat toReturn = arma::join_cols(
+      arma::join_rows(zeros, smallerMat),
+      arma::join_rows(1 + zeros, smallerMat)
+    );
+    return toReturn;
+  }
+}
+
+// [[Rcpp::export]]
+arma::umat toJointRankMatrix(const arma::mat& samples) {
+  arma::umat jointRanks(samples.n_rows, samples.n_cols);
+  for (int i = 0; i < samples.n_cols; i++) {
+    arma::uvec sortInd = arma::sort_index(samples.col(i));
+    int k = 0;
+    for (int j = 0; j < samples.n_rows; j++) {
+      if (j != 0 && samples(sortInd(j), i) != samples(sortInd(j - 1), i)) {
+        k++;
+      }
+      jointRanks(sortInd(j), i) = k;
+    }
+
+  }
+  return 1 + jointRanks;
+}
+
+// [[Rcpp::export]]
 arma::uvec intersectSorted(const arma::uvec& vec1, const arma::uvec& vec2) {
   int initialSize = (vec1.size() < vec2.size()) ? vec1.size() : vec2.size();
   arma::uvec intersectedVec = arma::uvec(initialSize, arma::fill::zeros);

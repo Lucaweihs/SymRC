@@ -15,61 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WCM_MultivariateTauStar
-#define WCM_MultivariateTauStar
+#ifndef SymRC_MultivariateTauStar
+#define SymRC_MultivariateTauStar
 
 #include "NaiveUStatistics.h"
-#include "EmpiricalDistribution.h"
 #include "OrthogonalRangeQuerier.h"
-
-class GenericTauStarKernelEvaluator : public KernelEvaluator {
-protected:
-  static const int ord = 4;
-  static const arma::umat perms;
-  int xDim, yDim;
-
-private:
-  virtual bool minorIndicatorX(const arma::vec& v0, const arma::vec& v1,
-                      const arma::vec& v2, const arma::vec& v3) const = 0;
-
-  virtual bool minorIndicatorY(const arma::vec& v0, const arma::vec& v1,
-                               const arma::vec& v2, const arma::vec& v3) const = 0;
-
-public:
-  GenericTauStarKernelEvaluator(int xDim, int yDim);
-  int order() const;
-  double eval(const arma::mat& X, const arma::mat& Y) const;
-};
-
-class PartialTauStarKernelEvaluator : public GenericTauStarKernelEvaluator {
-private:
-  bool minorIndicatorX(const arma::vec& v0, const arma::vec& v1,
-                      const arma::vec& v2, const arma::vec& v3) const;
-  bool minorIndicatorY(const arma::vec& v0, const arma::vec& v1,
-                       const arma::vec& v2, const arma::vec& v3) const;
-
-public:
-  PartialTauStarKernelEvaluator(int xDim, int yDim);
-};
-
-class LexTauStarKernelEvaluator : public GenericTauStarKernelEvaluator {
-private:
-  arma::uvec xPerm;
-  arma::uvec yPerm;
-
-  bool minorIndicator(const arma::vec& v0, const arma::vec& v1,
-                      const arma::vec& v2, const arma::vec& v3,
-                      const arma::uvec& perm) const;
-  bool minorIndicatorX(const arma::vec& v0, const arma::vec& v1,
-                       const arma::vec& v2, const arma::vec& v3) const;
-  bool minorIndicatorY(const arma::vec& v0, const arma::vec& v1,
-                       const arma::vec& v2, const arma::vec& v3) const;
-
-public:
-  LexTauStarKernelEvaluator(int xDim, int yDim, const arma::uvec& xPerm,
-                            const arma::uvec& yPerm);
-};
-
 
 class FullLexTauStarKernelEvaluator : public KernelEvaluator {
 private:
@@ -121,18 +71,14 @@ public:
   double eval(const arma::mat& X, const arma::mat& Y) const;
 };
 
-
-class JointTauStarKernelEvaluator : public GenericTauStarKernelEvaluator {
+class JointTauStarKernelEvaluator : public SymRCKernelEvaluator {
 private:
   arma::uvec xOnOffVec;
   arma::uvec yOnOffVec;
-  bool minorIndicator(const arma::vec& v0, const arma::vec& v1,
-                             const arma::vec& v2, const arma::vec& v3,
-                             const arma::uvec& onOffVec) const;
-  bool minorIndicatorX(const arma::vec& v0, const arma::vec& v1,
-                       const arma::vec& v2, const arma::vec& v3) const;
-  bool minorIndicatorY(const arma::vec& v0, const arma::vec& v1,
-                       const arma::vec& v2, const arma::vec& v3) const;
+  bool minorIndicator(const arma::mat& vecs,
+                        const arma::uvec& onOffVec) const;
+  bool minorIndicatorX(const arma::mat& vecs) const;
+  bool minorIndicatorY(const arma::mat& vecs) const;
 
 public:
   JointTauStarKernelEvaluator(const arma::uvec& xOnOffVec,

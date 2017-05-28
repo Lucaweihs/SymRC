@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WCM_NaiveUStatistics
-#define WCM_NaiveUStatistics
+#ifndef SymRC_NaiveUStatistics
+#define SymRC_NaiveUStatistics
 
 // [[Rcpp::depends(RcppArmadillo)]]
 #include "RcppArmadillo.h"
@@ -32,6 +32,54 @@ double naiveUStat(const arma::mat& X, const arma::mat& Y,
 
 double approxNaiveUStat(const arma::mat& X, const arma::mat& Y,
                         const KernelEvaluator& kernel, int sims);
+
+/*********************************
+ * SymRCKernelEvaluator
+ *********************************/
+class SymRCKernelEvaluator : public KernelEvaluator {
+protected:
+  const int ord;
+  const arma::umat perms;
+  const int xDim, yDim;
+  const arma::umat posPerms;
+  const arma::umat negPerms;
+
+private:
+  virtual bool minorIndicatorX(const arma::mat& vecs) const = 0;
+
+  virtual bool minorIndicatorY(const arma::mat& vecs) const = 0;
+
+public:
+  SymRCKernelEvaluator(int xDim, int yDim,
+                       const arma::umat& posPerms,
+                       const arma::umat& negPerms);
+  double eval(const arma::mat& X, const arma::mat& Y) const;
+  int order() const;
+};
+
+class PartialTauStarKernelEvaluator : public SymRCKernelEvaluator {
+private:
+  bool minorIndicatorX(const arma::mat& vecs) const;
+  bool minorIndicatorY(const arma::mat& vecs) const;
+
+public:
+  PartialTauStarKernelEvaluator(int xDim, int yDim);
+};
+
+class LexTauStarKernelEvaluator : public SymRCKernelEvaluator {
+private:
+  arma::uvec xPerm;
+  arma::uvec yPerm;
+
+  bool minorIndicator(const arma::mat& vecs, const arma::uvec& perm) const;
+  bool minorIndicatorX(const arma::mat& vecs) const;
+  bool minorIndicatorY(const arma::mat& vecs) const;
+
+public:
+  LexTauStarKernelEvaluator(int xDim, int yDim,
+                            const arma::uvec& xPerm,
+                            const arma::uvec& yPerm);
+};
 
 /******************************
  * Example U-statistic kernels.

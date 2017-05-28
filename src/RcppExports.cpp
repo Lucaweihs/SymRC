@@ -133,6 +133,54 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// hoeffdingR
+double hoeffdingR(const arma::mat& X, const arma::mat& Y);
+RcppExport SEXP SymRC_hoeffdingR(SEXP XSEXP, SEXP YSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    rcpp_result_gen = Rcpp::wrap(hoeffdingR(X, Y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// hoeffdingRNaive
+double hoeffdingRNaive(const arma::mat& X, const arma::mat& Y);
+RcppExport SEXP SymRC_hoeffdingRNaive(SEXP XSEXP, SEXP YSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    rcpp_result_gen = Rcpp::wrap(hoeffdingRNaive(X, Y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// hoeffdingD
+double hoeffdingD(const arma::mat& X, const arma::mat& Y);
+RcppExport SEXP SymRC_hoeffdingD(SEXP XSEXP, SEXP YSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    rcpp_result_gen = Rcpp::wrap(hoeffdingD(X, Y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// hoeffdingDNaive
+double hoeffdingDNaive(const arma::mat& X, const arma::mat& Y);
+RcppExport SEXP SymRC_hoeffdingDNaive(SEXP XSEXP, SEXP YSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    rcpp_result_gen = Rcpp::wrap(hoeffdingDNaive(X, Y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // jointTauStar
 double jointTauStar(const arma::mat& X, const arma::mat& Y, const arma::uvec& xOnOffVec, const arma::uvec& yOnOffVec);
 RcppExport SEXP SymRC_jointTauStar(SEXP XSEXP, SEXP YSEXP, SEXP xOnOffVecSEXP, SEXP yOnOffVecSEXP) {
@@ -405,6 +453,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"SymRC_intPow", (DL_FUNC) &SymRC_intPow, 2},
     {"SymRC_permutations", (DL_FUNC) &SymRC_permutations, 1},
     {"SymRC_orderStats", (DL_FUNC) &SymRC_orderStats, 1},
+    {"SymRC_hoeffdingR", (DL_FUNC) &SymRC_hoeffdingR, 2},
+    {"SymRC_hoeffdingRNaive", (DL_FUNC) &SymRC_hoeffdingRNaive, 2},
+    {"SymRC_hoeffdingD", (DL_FUNC) &SymRC_hoeffdingD, 2},
+    {"SymRC_hoeffdingDNaive", (DL_FUNC) &SymRC_hoeffdingDNaive, 2},
     {"SymRC_jointTauStar", (DL_FUNC) &SymRC_jointTauStar, 4},
     {"SymRC_jointTauStarNaive", (DL_FUNC) &SymRC_jointTauStarNaive, 4},
     {"SymRC_jointTauStarNaiveApprox", (DL_FUNC) &SymRC_jointTauStarNaiveApprox, 5},

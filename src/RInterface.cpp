@@ -22,6 +22,31 @@
 #include "RcppArmadillo.h"
 #include "HelperFunctions.h"
 #include "OrthogonalRangeQuerier.h"
+#include "Hoeffding.h"
+
+// [[Rcpp::export]]
+double hoeffdingR(const arma::mat& X, const arma::mat& Y) {
+  HoeffdingREvaluator hre(X.n_cols, Y.n_cols);
+  return hre.eval(X, Y);
+}
+
+// [[Rcpp::export]]
+double hoeffdingRNaive(const arma::mat& X, const arma::mat& Y) {
+  HoeffdingRKernelEvaluator hrke(X.n_cols, Y.n_cols);
+  return 0.25 * naiveUStat(X, Y, hrke);
+}
+
+// [[Rcpp::export]]
+double hoeffdingD(const arma::mat& X, const arma::mat& Y) {
+  HoeffdingDEvaluator hde(X.n_cols, Y.n_cols);
+  return hde.eval(X, Y);
+}
+
+// [[Rcpp::export]]
+double hoeffdingDNaive(const arma::mat& X, const arma::mat& Y) {
+  HoeffdingDKernelEvaluator hdke(X.n_cols, Y.n_cols);
+  return 0.25 * naiveUStat(X, Y, hdke);
+}
 
 // [[Rcpp::export]]
 double jointTauStar(const arma::mat& X, const arma::mat& Y,

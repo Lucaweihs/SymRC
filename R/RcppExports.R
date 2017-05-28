@@ -45,6 +45,22 @@ orderStats <- function(M) {
     .Call('SymRC_orderStats', PACKAGE = 'SymRC', M)
 }
 
+hoeffdingR <- function(X, Y) {
+    .Call('SymRC_hoeffdingR', PACKAGE = 'SymRC', X, Y)
+}
+
+hoeffdingRNaive <- function(X, Y) {
+    .Call('SymRC_hoeffdingRNaive', PACKAGE = 'SymRC', X, Y)
+}
+
+hoeffdingD <- function(X, Y) {
+    .Call('SymRC_hoeffdingD', PACKAGE = 'SymRC', X, Y)
+}
+
+hoeffdingDNaive <- function(X, Y) {
+    .Call('SymRC_hoeffdingDNaive', PACKAGE = 'SymRC', X, Y)
+}
+
 jointTauStar <- function(X, Y, xOnOffVec, yOnOffVec) {
     .Call('SymRC_jointTauStar', PACKAGE = 'SymRC', X, Y, xOnOffVec, yOnOffVec)
 }

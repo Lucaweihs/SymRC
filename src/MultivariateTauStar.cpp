@@ -19,7 +19,7 @@
 #include "HelperFunctions.h"
 #include <chrono>
 
-typedef GenericTauStarKernelEvaluator GTSKE;
+typedef SymRCKernelEvaluator SymRCKE;
 typedef PartialTauStarKernelEvaluator PTSKE;
 typedef LexTauStarKernelEvaluator LTSKE;
 typedef FullLexTauStarKernelEvaluator FLTSKE;
@@ -27,63 +27,22 @@ typedef PartialTauStarEvaluator PTSE;
 typedef JointTauStarKernelEvaluator JTSKE;
 typedef JointTauStarEvaluator JTSE;
 
-const arma::umat GTSKE::perms = permutations(4);
-
-/*********************************
- * GenericTauStarKernelEvaluator
- *********************************/
-
-GTSKE::GenericTauStarKernelEvaluator(int xDim, int yDim):
-  xDim(xDim), yDim(yDim) {}
-
-int GTSKE::order() const {
-  return ord;
-}
-
-double GTSKE::eval(const arma::mat& X, const arma::mat& Y) const {
-  double fullSum = 0;
-  for (int i = 0; i < perms.n_rows; i++) {
-    arma::vec x0 = X.row(perms(i,0)).t();
-    arma::vec x1 = X.row(perms(i,1)).t();
-    arma::vec x2 = X.row(perms(i,2)).t();
-    arma::vec x3 = X.row(perms(i,3)).t();
-
-    if (!minorIndicatorX(x0, x1, x2, x3)) {
-      continue;
-    }
-
-    arma::vec y0 = Y.row(perms(i,0)).t();
-    arma::vec y1 = Y.row(perms(i,1)).t();
-    arma::vec y2 = Y.row(perms(i,2)).t();
-    arma::vec y3 = Y.row(perms(i,3)).t();
-
-    if (minorIndicatorY(y0, y1, y2, y3)) {
-      fullSum += 1.0;
-    }
-    if (minorIndicatorY(y2, y3, y0, y1)) {
-      fullSum += 1.0;
-    }
-    if (minorIndicatorY(y0, y2, y1, y3)) {
-      fullSum += -2.0;
-    }
-  }
-  return fullSum / perms.n_rows;
-}
+const arma::umat tauStarPosPerms = {{0,1,2,3}, {3,2,1,0}};
+const arma::umat tauStarNegPerms = {{3,1,2,0}, {0,2,1,3}};
 
 /*********************************
  * PartialTauStarKernelEvaluator
  *********************************/
 
 PTSKE::PartialTauStarKernelEvaluator(int xDim, int yDim):
-  GenericTauStarKernelEvaluator(xDim, yDim) {}
+  SymRCKernelEvaluator(xDim, yDim, tauStarPosPerms, tauStarNegPerms) {}
 
-bool PTSKE::minorIndicatorX(const arma::vec& v0, const arma::vec& v1,
-                      const arma::vec& v2, const arma::vec& v3) const {
+bool PTSKE::minorIndicatorX(const arma::mat& vecs) const {
   bool flag2 = false;
   bool flag3 = false;
-  for (int i = 0; (!flag2 || !flag3) && (i < v0.size()); i++) {
-    flag2 = flag2 || v0(i) < v2(i);
-    flag3 = flag3 || v0(i) < v3(i);
+  for (int i = 0; (!flag2 || !flag3) && (i < vecs.n_cols); i++) {
+    flag2 = flag2 || vecs(0,i) < vecs(2,i);
+    flag3 = flag3 || vecs(0,i) < vecs(3,i);
   }
   if (!flag2 || !flag3) {
     return false;
@@ -91,9 +50,9 @@ bool PTSKE::minorIndicatorX(const arma::vec& v0, const arma::vec& v1,
 
   flag2 = false;
   flag3 = false;
-  for (int i = 0; (!flag2 || !flag3) && (i < v0.size()); i++) {
-    flag2 = flag2 || v1(i) < v2(i);
-    flag3 = flag3 || v1(i) < v3(i);
+  for (int i = 0; (!flag2 || !flag3) && (i < vecs.n_cols); i++) {
+    flag2 = flag2 || vecs(1,i) < vecs(2,i);
+    flag3 = flag3 || vecs(1,i) < vecs(3,i);
   }
   if (!flag2 || !flag3) {
     return false;
@@ -101,9 +60,8 @@ bool PTSKE::minorIndicatorX(const arma::vec& v0, const arma::vec& v1,
   return true;
 }
 
-bool PTSKE::minorIndicatorY(const arma::vec& v0, const arma::vec& v1,
-                            const arma::vec& v2, const arma::vec& v3) const {
-  return minorIndicatorX(v0, v1, v2, v3);
+bool PTSKE::minorIndicatorY(const arma::mat& vecs) const {
+  return minorIndicatorX(vecs);
 }
 
 /*********************************
@@ -113,7 +71,8 @@ bool PTSKE::minorIndicatorY(const arma::vec& v0, const arma::vec& v1,
 LTSKE::LexTauStarKernelEvaluator(int xDim, int yDim,
                                  const arma::uvec& xPerm,
                                  const arma::uvec& yPerm) :
-  GenericTauStarKernelEvaluator(xDim, yDim), xPerm(xPerm), yPerm(yPerm) {}
+  SymRCKernelEvaluator(xDim, yDim, tauStarPosPerms, tauStarNegPerms),
+  xPerm(xPerm), yPerm(yPerm) {}
 
 bool lexLessThan(const arma::vec& v0, const arma::vec& v1,
                  const arma::uvec& perm) {
@@ -127,39 +86,38 @@ bool lexLessThan(const arma::vec& v0, const arma::vec& v1,
   return false;
 }
 
-bool lexLessThan(const arma::vec& v0, const arma::vec& v1) {
-  for (int i = 0; i < v0.size(); i++) {
-    if (v0(i) > v1(i)) {
-      return false;
-    } else if (v0(i) < v1(i)) {
-      return true;
-    }
-  }
-  return false;
+// bool lexLessThan(const arma::vec& v0, const arma::vec& v1) {
+//   for (int i = 0; i < v0.size(); i++) {
+//     if (v0(i) > v1(i)) {
+//       return false;
+//     } else if (v0(i) < v1(i)) {
+//       return true;
+//     }
+//   }
+//   return false;
+// }
+
+bool LTSKE::minorIndicator(const arma::mat& vecs, const arma::uvec& perm) const {
+  return lexLessThan(vecs.row(0), vecs.row(2), perm) &&
+    lexLessThan(vecs.row(0), vecs.row(3), perm) &&
+    lexLessThan(vecs.row(1), vecs.row(2), perm) &&
+    lexLessThan(vecs.row(1), vecs.row(3), perm);
 }
 
-bool LTSKE::minorIndicator(const arma::vec& v0, const arma::vec& v1,
-                            const arma::vec& v2, const arma::vec& v3,
-                            const arma::uvec& perm) const {
-  return lexLessThan(v0, v2, perm) && lexLessThan(v0, v3, perm) &&
-    lexLessThan(v1, v2, perm) && lexLessThan(v1, v3, perm);
+bool LTSKE::minorIndicatorX(const arma::mat& vecs) const {
+  return minorIndicator(vecs, xPerm);
 }
 
-bool LTSKE::minorIndicatorX(const arma::vec& v0, const arma::vec& v1,
-                           const arma::vec& v2, const arma::vec& v3) const {
-  return minorIndicator(v0, v1, v2, v3, xPerm);
-}
-
-bool LTSKE::minorIndicatorY(const arma::vec& v0, const arma::vec& v1,
-                            const arma::vec& v2, const arma::vec& v3) const {
-  return minorIndicator(v0, v1, v2, v3, yPerm);
+bool LTSKE::minorIndicatorY(const arma::mat& vecs) const {
+  return minorIndicator(vecs, yPerm);
 }
 
 /*********************************
  * FullLexTauStarKernelEvaluator
  *********************************/
 
-FLTSKE::FullLexTauStarKernelEvaluator(int xDim, int yDim): xDim(xDim), yDim(yDim) {
+FLTSKE::FullLexTauStarKernelEvaluator(int xDim, int yDim):
+  xDim(xDim), yDim(yDim) {
   arma::umat xPerms = permutations(xDim);
   arma::umat yPerms = permutations(yDim);
 
@@ -449,7 +407,7 @@ double PTSE::eval(const arma::mat& X, const arma::mat& Y) const {
     }
   }
 
-  return sum / (nChooseM(1.0 * numSamples, 4.0) * 24);
+  return 4 * sum / (nChooseM(1.0 * numSamples, 4.0) * 24);
 }
 
 /*********************************
@@ -458,7 +416,7 @@ double PTSE::eval(const arma::mat& X, const arma::mat& Y) const {
 
 JTSKE::JointTauStarKernelEvaluator(const arma::uvec& xOnOffVec,
                                    const arma::uvec& yOnOffVec):
-  GenericTauStarKernelEvaluator(xOnOffVec.size(), yOnOffVec.size()),
+  SymRCKernelEvaluator(xOnOffVec.size(), yOnOffVec.size(), tauStarPosPerms, tauStarNegPerms),
   xOnOffVec(xOnOffVec), yOnOffVec(yOnOffVec) {
   for (int i = 0; i < xOnOffVec.size(); i++) {
     if (xOnOffVec(i) != 0.0 && xOnOffVec(i) != 1.0) {
@@ -475,22 +433,19 @@ JTSKE::JointTauStarKernelEvaluator(const arma::uvec& xOnOffVec,
   }
 }
 
-bool JTSKE::minorIndicatorX(const arma::vec& v0, const arma::vec& v1,
-                       const arma::vec& v2, const arma::vec& v3) const {
-  return minorIndicator(v0, v1, v2, v3, xOnOffVec);
+bool JTSKE::minorIndicatorX(const arma::mat& vecs) const {
+  return minorIndicator(vecs, xOnOffVec);
 }
 
-bool JTSKE::minorIndicatorY(const arma::vec& v0, const arma::vec& v1,
-                       const arma::vec& v2, const arma::vec& v3) const {
-  return minorIndicator(v0, v1, v2, v3, yOnOffVec);
+bool JTSKE::minorIndicatorY(const arma::mat& vecs) const {
+  return minorIndicator(vecs, yOnOffVec);
 }
 
-bool JTSKE::minorIndicator(const arma::vec& v0, const arma::vec& v1,
-                           const arma::vec& v2, const arma::vec& v3,
+bool JTSKE::minorIndicator(const arma::mat& vecs,
                            const arma::uvec& onOffVec) const {
   for (int i = 0; i < onOffVec.size(); i++) {
-      if ((onOffVec(i) == 0 && !(std::max(v2(i), v3(i)) <= std::min(v0(i), v1(i)))) ||
-          (onOffVec(i) == 1 && !(std::min(v2(i), v3(i)) > std::max(v0(i), v1(i))))) {
+      if ((onOffVec(i) == 0 && !(std::max(vecs(2,i), vecs(3,i)) <= std::min(vecs(0,i), vecs(1,i)))) ||
+          (onOffVec(i) == 1 && !(std::min(vecs(2,i), vecs(3,i)) > std::max(vecs(0,i), vecs(1,i))))) {
       return false;
     }
   }
@@ -689,7 +644,7 @@ double JTSE::eval(const arma::mat& X, const arma::mat& Y) const {
       }
     }
   }
-  return sum / (nChooseM(1.0 * numSamples, 4.0) * 24);
+  return 4 * sum / (nChooseM(1.0 * numSamples, 4.0) * 24);
 }
 
 

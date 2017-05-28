@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WCM_EmpiricalDistribution
-#define WCM_EmpiricalDistribution
+#ifndef SymRC_EmpiricalDistribution
+#define SymRC_EmpiricalDistribution
 
 #include "RangeTree.h"
 #include "RcppArmadillo.h"

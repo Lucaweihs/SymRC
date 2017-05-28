@@ -9,10 +9,10 @@ test_that("Check that multivariate measures agree with t* in 2 dims", {
     X = matrix(rnorm(30), ncol = 1)
     Y = matrix(rnorm(30), ncol = 1)
     a = tStar(X, Y)
-    b = 4 * partialTauStarNaive(X, Y)
-    c = 4 * lexTauStarNaive(X, Y, 0, 0)
-    d = 4 * fullLexTauStarNaive(X, Y)
-    e = 4 * jointTauStarNaive(X, Y, 1, 1)
+    b = partialTauStarNaive(X, Y)
+    c = lexTauStarNaive(X, Y, 0, 0)
+    d = fullLexTauStarNaive(X, Y)
+    e = jointTauStarNaive(X, Y, 1, 1)
 
     expect_equal(a, b)
     expect_equal(a, c)
@@ -24,10 +24,10 @@ test_that("Check that multivariate measures agree with t* in 2 dims", {
     X = matrix(rpois(30, lambda = 2), ncol = 1)
     Y = matrix(rpois(30, lambda = 2), ncol = 1)
     a = tStar(X, Y)
-    b = 4 * partialTauStarNaive(X, Y)
-    c = 4 * lexTauStarNaive(X, Y, 0, 0)
-    d = 4 * fullLexTauStarNaive(X, Y)
-    e = 4 * jointTauStarNaive(X, Y, 1, 1)
+    b = partialTauStarNaive(X, Y)
+    c = lexTauStarNaive(X, Y, 0, 0)
+    d = fullLexTauStarNaive(X, Y)
+    e = jointTauStarNaive(X, Y, 1, 1)
 
     expect_equal(a, b)
     expect_equal(a, c)
@@ -153,7 +153,7 @@ test_that("Check that the RangeTree version of joint tau* agrees with naive", {
     expect_equal(a, b)
   }
 
-  n = 10
+  n = 15
   nXCols = 2
   nYCols = 2
   for (i in 1:10) {

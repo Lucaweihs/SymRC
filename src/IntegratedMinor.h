@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WCM_IntegratedMinor
-#define WCM_IntegratedMinor
+#ifndef SymRC_IntegratedMinor
+#define SymRC_IntegratedMinor
 
 #include "NaiveUStatistics.h"
 #include "EmpiricalDistribution.h"

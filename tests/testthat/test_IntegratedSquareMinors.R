@@ -1,39 +1,6 @@
 library(SymRC)
+source("TestHelpers.R")
 context("Testing the ISM measures.")
-
-hoeffD <- function(x, y) {
-  n = length(x)
-  val = 0;
-  for (i1 in 1:n) {
-    for (i2 in 1:n) {
-      for (i3 in 1:n) {
-        for (i4 in 1:n) {
-          for (i5 in 1:n) {
-            if (length(unique(c(i1,i2,i3,i4,i5))) == 5) {
-              if (max(x[i1], x[i2]) <= x[i5] &&
-                  x[i5] < min(x[i3], x[i4])) {
-                val = val + (max(y[i1], y[i2]) <= y[i5] && y[i5] < min(y[i3], y[i4]))
-                val = val + (max(y[i3], y[i4]) <= y[i5] && y[i5] < min(y[i1], y[i2]))
-                val = val - 2 * (max(y[i1], y[i3]) <= y[i5] && y[i5] < min(y[i2], y[i4]))
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  return(val / (choose(n, 5) * factorial(5)))
-}
-
-indicator <- function(z1, z2, z3, z4, z5, inds0, inds1) {
-  inds0 = inds0 + 1
-  inds1 = inds1 + 1
-  return(all(pmax(z1, z2) <= z5) &&
-            all(z5[inds0] < z3[inds0]) &&
-            all(z3[-inds0] <= z5[-inds0]) &&
-            all(z5[inds1] < z4[inds1]) &&
-            all(z4[-inds1] <= z5[-inds1]))
-}
 
 ismSlowOnce <- function(X, Y, xInds0, xInds1, yInds0, yInds1) {
   if (!is.matrix(X)) {
@@ -109,7 +76,7 @@ test_that("Check that hoeffding's D agrees with naive c++ code in 2 dims", {
     X = matrix(rnorm(10), ncol = 1)
     Y = matrix(rnorm(10), ncol = 1)
     a = ismNaive(X, Y, xInds0, xInds1, yInds0, yInds1)
-    b = hoeffD(X, Y)
+    b = hoeffDSuperSlow(X, Y)
     expect_equal(a, b)
   }
 
@@ -117,7 +84,7 @@ test_that("Check that hoeffding's D agrees with naive c++ code in 2 dims", {
     X = matrix(rpois(10, lambda = 4), ncol = 1)
     Y = matrix(rpois(10, lambda = 4), ncol = 1)
     a = ismNaive(X, Y, xInds0, xInds1, yInds0, yInds1)
-    b = hoeffD(X, Y)
+    b = hoeffDSuperSlow(X, Y)
     expect_equal(a, b)
   }
 })

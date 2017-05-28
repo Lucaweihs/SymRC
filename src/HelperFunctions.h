@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WCM_HelperFunctions
-#define WCM_HelperFunctions
+#ifndef SymRC_HelperFunctions
+#define SymRC_HelperFunctions
 
 // [[Rcpp::depends(RcppArmadillo)]]
 #include "RcppArmadillo.h"

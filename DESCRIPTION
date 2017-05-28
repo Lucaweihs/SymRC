@@ -11,8 +11,9 @@ Description: Computes a statistic based for which
 License: GPL (>= 3)
 LazyData: TRUE
 Imports:
-    Rcpp (>= 0.12.2)
+    Rcpp (>= 0.12.2),
+    TauStar
 LinkingTo: Rcpp, RcppArmadillo
 Suggests:
-    testthat, TauStar
-RoxygenNote: 5.0.1
+    testthat
+RoxygenNote: 6.0.1

@@ -20,6 +20,8 @@
 #include "HelperFunctions.h"
 #include <iostream>
 
+typedef SymRCKernelEvaluator SymRCKE;
+
 double naiveUStatRecurse(const arma::mat& X, const arma::mat& Y,
                          const KernelEvaluator& kernel,
                          int dim, int index,
@@ -68,7 +70,7 @@ double naiveUStat(const arma::mat& X, const arma::mat& Y,
   int order = kernel.order();
   int n = X.n_rows;
   if (order > n) {
-    throw Rcpp::exception("Number of samples must be > kernel order.");
+    throw Rcpp::exception("Number of samples must be >= kernel order.");
   }
 
   arma::uvec index = arma::zeros<arma::uvec>(order);
@@ -95,6 +97,43 @@ double approxNaiveUStat(const arma::mat& X, const arma::mat& Y,
   }
 
   return val / sims;
+}
+
+/*********************************
+ * SymRCKernelEvaluator
+ *********************************/
+
+SymRCKE::SymRCKernelEvaluator(int xDim, int yDim,
+                              const arma::umat& posPerms,
+                              const arma::umat& negPerms):
+  posPerms(posPerms), negPerms(negPerms),
+  xDim(xDim), yDim(yDim), ord(posPerms.n_cols), perms(permutations(ord)) {
+  if (posPerms.n_rows != negPerms.n_rows) {
+    throw Rcpp::exception("negPerms and posPerms must have "
+                            "the same number of columns");
+  }
+}
+
+int SymRCKE::order() const {
+  return ord;
+}
+
+double SymRCKE::eval(const arma::mat& X, const arma::mat& Y) const {
+  double fullSum = 0;
+  for (int i = 0; i < perms.n_rows; i++) {
+    if (!minorIndicatorX(X.rows(perms.row(i)))) {
+      continue;
+    }
+    arma::mat subY = Y.rows(perms.row(i));
+
+    for (int i = 0; i < posPerms.n_rows; i++) {
+      fullSum += minorIndicatorY(subY.rows(posPerms.row(i))) ? 1.0 : 0.0;
+    }
+    for (int i = 0; i < negPerms.n_rows; i++) {
+      fullSum -= minorIndicatorY(subY.rows(negPerms.row(i))) ? 1.0 : 0.0;
+    }
+  }
+  return 2 * posPerms.n_rows * fullSum / perms.n_rows;
 }
 
 /******************************

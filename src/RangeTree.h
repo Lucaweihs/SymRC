@@ -194,17 +194,17 @@ public:
   *
   * @param withCount whether or not to display the points count/multiplicity.
   */
-  void print(bool withCount=true) const {
-    std::cout << "(";
-    for (int i = 0; i < dim() - 1; i++) {
-      std::cout << (*this)[i] << ", ";
-    }
-    if (withCount) {
-      std::cout << (*this)[dim() - 1] << ") : " << count() << std::endl;
-    } else {
-      std::cout << (*this)[dim() - 1] << ") : " << std::endl;
-    }
-  }
+  // void print(bool withCount=true) const {
+  //   std::cout << "(";
+  //   for (int i = 0; i < dim() - 1; i++) {
+  //     std::cout << (*this)[i] << ", ";
+  //   }
+  //   if (withCount) {
+  //     std::cout << (*this)[dim() - 1] << ") : " << count() << std::endl;
+  //   } else {
+  //     std::cout << (*this)[dim() - 1] << ") : " << std::endl;
+  //   }
+  // }
 };
 
 /**
@@ -705,16 +705,16 @@ public:
   *
   * @param numIndents the number of indents to use before every line printed.
   */
-  void print(int numIndents) {
-    for (int i = 0; i < numIndents; i++) { std::cout << "\t"; }
-    if (isLeaf) {
-      point->print(true);
-    } else {
-      point->print(false);
-      left->print(numIndents + 1);
-      right->print(numIndents + 1);
-    }
-  }
+  // void print(int numIndents) {
+  //   for (int i = 0; i < numIndents; i++) { std::cout << "\t"; }
+  //   if (isLeaf) {
+  //     point->print(true);
+  //   } else {
+  //     point->print(false);
+  //     left->print(numIndents + 1);
+  //     right->print(numIndents + 1);
+  //   }
+  // }
 };
 
 /**

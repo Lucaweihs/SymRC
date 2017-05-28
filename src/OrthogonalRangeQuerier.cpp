@@ -110,13 +110,9 @@ unsigned int ort::createTensorRecurse(const arma::uvec& index, arma::uvec& visit
       }
     }
     if (posPart < negPart) {
-      std::cout << "Bad pos = " << posPart << std::endl;
-      std::cout << "Bad neg = " << negPart << std::endl;
       throw Rcpp::exception("posPart should never be less than negPart in createTensorRecurse");
     }
-    //index.t().print();
     tensorAsVec(intInd) = posPart - negPart;
-    //std::cout << "\nvalue = " << tensorAsVec(intInd) << std::endl;
     visited(intInd) = 1;
   }
   return tensorAsVec(intInd);

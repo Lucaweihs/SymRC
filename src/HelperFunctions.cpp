@@ -308,35 +308,35 @@ arma::mat orderStats(arma::mat M) {
   return M;
 }
 
-void printVec(std::vector<double> vec) {
-  if (vec.size() == 0) {
-    std::cout << "empty" << std::endl;
-    return;
-  }
-  for (int i = 0; i < vec.size() - 1; i++) {
-    std::cout << vec[i] << " ";
-  }
-  std::cout << vec[vec.size() - 1] << std::endl;
-}
-
-void printVec(std::vector<int> vec) {
-  if (vec.size() == 0) {
-    std::cout << "empty" << std::endl;
-    return;
-  }
-  for (int i = 0; i < vec.size() - 1; i++) {
-    std::cout << vec[i] << " ";
-  }
-  std::cout << vec[vec.size() - 1] << std::endl;
-}
-
-void printVec(std::vector<bool> vec) {
-  if (vec.size() == 0) {
-    std::cout << "empty" << std::endl;
-    return;
-  }
-  for (int i = 0; i < vec.size() - 1; i++) {
-    std::cout << (vec[i] ? "T" : "F") << " ";
-  }
-  std::cout << (vec[vec.size() - 1] ? "T" : "F") << std::endl;
-}
+// void printVec(std::vector<double> vec) {
+//   if (vec.size() == 0) {
+//     std::cout << "empty" << std::endl;
+//     return;
+//   }
+//   for (int i = 0; i < vec.size() - 1; i++) {
+//     std::cout << vec[i] << " ";
+//   }
+//   std::cout << vec[vec.size() - 1] << std::endl;
+// }
+//
+// void printVec(std::vector<int> vec) {
+//   if (vec.size() == 0) {
+//     std::cout << "empty" << std::endl;
+//     return;
+//   }
+//   for (int i = 0; i < vec.size() - 1; i++) {
+//     std::cout << vec[i] << " ";
+//   }
+//   std::cout << vec[vec.size() - 1] << std::endl;
+// }
+//
+// void printVec(std::vector<bool> vec) {
+//   if (vec.size() == 0) {
+//     std::cout << "empty" << std::endl;
+//     return;
+//   }
+//   for (int i = 0; i < vec.size() - 1; i++) {
+//     std::cout << (vec[i] ? "T" : "F") << " ";
+//   }
+//   std::cout << (vec[vec.size() - 1] ? "T" : "F") << std::endl;
+// }

@@ -24,40 +24,72 @@
 #include "OrthogonalRangeQuerier.h"
 #include "Hoeffding.h"
 
+typedef std::shared_ptr<OrthogonalRangeQuerierBuilder> shr_ptrORQB;
+
 // [[Rcpp::export]]
-double hoeffdingR(const arma::mat& X, const arma::mat& Y) {
-  HoeffdingREvaluator hre(X.n_cols, Y.n_cols);
+double hoeffdingROrthTensor(const arma::mat& X, const arma::mat& Y) {
+  HoeffdingREvaluator hre(X.n_cols, Y.n_cols,
+                          shr_ptrORQB(new OrthogonalRangeTensorBuilder()));
   return hre.eval(X, Y);
 }
 
 // [[Rcpp::export]]
 double hoeffdingRNaive(const arma::mat& X, const arma::mat& Y) {
+  HoeffdingREvaluator hre(X.n_cols, Y.n_cols,
+                          shr_ptrORQB(new NaiveRangeCounterBuilder()));
+  return hre.eval(X, Y);
+}
+
+// [[Rcpp::export]]
+double hoeffdingRFromDef(const arma::mat& X, const arma::mat& Y) {
   HoeffdingRKernelEvaluator hrke(X.n_cols, Y.n_cols);
   return 0.25 * naiveUStat(X, Y, hrke);
 }
 
 // [[Rcpp::export]]
-double hoeffdingD(const arma::mat& X, const arma::mat& Y) {
-  HoeffdingDEvaluator hde(X.n_cols, Y.n_cols);
+double hoeffdingDRangeTree(const arma::mat& X, const arma::mat& Y) {
+  HoeffdingDEvaluator hde(X.n_cols, Y.n_cols,
+                          shr_ptrORQB(
+                            new AlignedRangeTreeBuilder()));
   return hde.eval(X, Y);
 }
 
 // [[Rcpp::export]]
 double hoeffdingDNaive(const arma::mat& X, const arma::mat& Y) {
+  HoeffdingDEvaluator hde(X.n_cols, Y.n_cols,
+                          shr_ptrORQB(
+                            new NaiveRangeCounterBuilder()));
+  return hde.eval(X, Y);
+}
+
+// [[Rcpp::export]]
+double hoeffdingDFromDef(const arma::mat& X, const arma::mat& Y) {
   HoeffdingDKernelEvaluator hdke(X.n_cols, Y.n_cols);
   return 0.25 * naiveUStat(X, Y, hdke);
 }
 
 // [[Rcpp::export]]
-double jointTauStar(const arma::mat& X, const arma::mat& Y,
+double jointTauStarRangeTree(const arma::mat& X, const arma::mat& Y,
                          const arma::uvec& xOnOffVec,
                          const arma::uvec& yOnOffVec) {
-  JointTauStarEvaluator jtse(xOnOffVec, yOnOffVec);
+  JointTauStarEvaluator jtse(
+      xOnOffVec, yOnOffVec,
+      shr_ptrORQB(new AlignedRangeTreeBuilder()));
   return jtse.eval(X, Y);
 }
 
 // [[Rcpp::export]]
 double jointTauStarNaive(const arma::mat& X, const arma::mat& Y,
+                    const arma::uvec& xOnOffVec,
+                    const arma::uvec& yOnOffVec) {
+  JointTauStarEvaluator jtse(
+      xOnOffVec, yOnOffVec,
+      shr_ptrORQB(new NaiveRangeCounterBuilder()));
+  return jtse.eval(X, Y);
+}
+
+// [[Rcpp::export]]
+double jointTauStarFromDef(const arma::mat& X, const arma::mat& Y,
                          const arma::uvec& xOnOffVec,
                          const arma::uvec& yOnOffVec) {
   JointTauStarKernelEvaluator jtske(xOnOffVec, yOnOffVec);
@@ -65,7 +97,7 @@ double jointTauStarNaive(const arma::mat& X, const arma::mat& Y,
 }
 
 // [[Rcpp::export]]
-double jointTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y,
+double jointTauStarApprox(const arma::mat& X, const arma::mat& Y,
                                const arma::uvec& xOnOffVec,
                                const arma::uvec& yOnOffVec,
                                int sims) {
@@ -74,33 +106,27 @@ double jointTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y,
 }
 
 // [[Rcpp::export]]
-double partialTauStar(const arma::mat& X, const arma::mat& Y) {
-  PartialTauStarEvaluator ptse(X.n_cols, Y.n_cols);
-  return ptse.eval(X, Y);
-}
-
-// [[Rcpp::export]]
-double fullLexTauStarNaive(const arma::mat& X, const arma::mat& Y) {
+double fullLexTauStarFromDef(const arma::mat& X, const arma::mat& Y) {
   FullLexTauStarKernelEvaluator fltske(X.n_cols, Y.n_cols);
   return naiveUStat(X, Y, fltske);
 }
 
 // [[Rcpp::export]]
-double fullLexTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y,
+double fullLexTauStarApprox(const arma::mat& X, const arma::mat& Y,
                              int sims) {
   FullLexTauStarKernelEvaluator fltske(X.n_cols, Y.n_cols);
   return approxNaiveUStat(X, Y, fltske, sims);
 }
 
 // [[Rcpp::export]]
-double lexTauStarNaive(const arma::mat& X, const arma::mat& Y,
+double lexTauStarFromDef(const arma::mat& X, const arma::mat& Y,
                        const arma::uvec& xPerm, const arma::uvec& yPerm) {
   LexTauStarKernelEvaluator ltske(X.n_cols, Y.n_cols, xPerm, yPerm);
   return naiveUStat(X, Y, ltske);
 }
 
 // [[Rcpp::export]]
-double lexTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y,
+double lexTauStarApprox(const arma::mat& X, const arma::mat& Y,
                              const arma::uvec& xPerm, const arma::uvec& yPerm,
                              int sims) {
   LexTauStarKernelEvaluator ltske(X.n_cols, Y.n_cols, xPerm, yPerm);
@@ -108,20 +134,36 @@ double lexTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y,
 }
 
 // [[Rcpp::export]]
+double partialTauStarRangeTree(const arma::mat& X, const arma::mat& Y) {
+  PartialTauStarEvaluator ptse(
+      X.n_cols, Y.n_cols,
+      shr_ptrORQB(new AlignedRangeTreeBuilder()));
+  return ptse.eval(X, Y);
+}
+
+// [[Rcpp::export]]
 double partialTauStarNaive(const arma::mat& X, const arma::mat& Y) {
+  PartialTauStarEvaluator ptse(
+      X.n_cols, Y.n_cols,
+      shr_ptrORQB(new NaiveRangeCounterBuilder()));
+  return ptse.eval(X, Y);
+}
+
+// [[Rcpp::export]]
+double partialTauStarFromDef(const arma::mat& X, const arma::mat& Y) {
   PartialTauStarKernelEvaluator ptske(X.n_cols, Y.n_cols);
   return naiveUStat(X, Y, ptske);
 }
 
 // [[Rcpp::export]]
-double partialTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y,
+double partialTauStarApprox(const arma::mat& X, const arma::mat& Y,
                                  int sims) {
   PartialTauStarKernelEvaluator ptske(X.n_cols, Y.n_cols);
   return approxNaiveUStat(X, Y, ptske, sims);
 }
 
 // [[Rcpp::export]]
-double ism(const arma::mat& X, const arma::mat& Y,
+double ismRangeTree(const arma::mat& X, const arma::mat& Y,
            const arma::uvec& xInds0, const arma::uvec& xInds1,
            const arma::uvec& yInds0, const arma::uvec& yInds1) {
   IntegratedMinorEvaluator ime(X.n_cols, Y.n_cols, xInds0, xInds1,
@@ -130,7 +172,7 @@ double ism(const arma::mat& X, const arma::mat& Y,
 }
 
 // [[Rcpp::export]]
-double ismNaive(const arma::mat& X, const arma::mat& Y,
+double ismFromDef(const arma::mat& X, const arma::mat& Y,
                 const arma::uvec& xInds0, const arma::uvec& xInds1,
                 const arma::uvec& yInds0, const arma::uvec& yInds1) {
   IntegratedMinorKernelEvaluator imke(X.n_cols, Y.n_cols, xInds0, xInds1,
@@ -139,7 +181,7 @@ double ismNaive(const arma::mat& X, const arma::mat& Y,
 }
 
 // [[Rcpp::export]]
-double ismNaiveApprox(const arma::mat& X, const arma::mat& Y,
+double ismApprox(const arma::mat& X, const arma::mat& Y,
                       const arma::uvec& xInds0, const arma::uvec& xInds1,
                       const arma::uvec& yInds0, const arma::uvec& yInds1,
                       int sims) {
@@ -155,7 +197,7 @@ double kendallsTauNaive(const arma::mat& X, const arma::mat& Y) {
 }
 
 // [[Rcpp::export]]
-double kendallsTauNaiveApprox(const arma::mat& X,
+double kendallsTauApprox(const arma::mat& X,
                               const arma::mat& Y,
                               int sims) {
   KendallsTauEvaluator ke;
@@ -169,7 +211,7 @@ double spearmansRhoNaive(const arma::mat& X, const arma::mat& Y) {
 }
 
 // [[Rcpp::export]]
-double spearmansRhoNaiveApprox(const arma::mat& X,
+double spearmansRhoApprox(const arma::mat& X,
                                const arma::mat& Y,
                                int sims) {
   SpearmansRhoEvaluator sr;

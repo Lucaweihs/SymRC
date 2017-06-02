@@ -22,7 +22,7 @@ hoeffDSuperSlow <- function(x, y) {
   return(val / (choose(n, 5) * factorial(5)))
 }
 
-hoeffR <- function(x, y) {
+hoeffRSuperSlow <- function(x, y) {
   n = length(x)
   val = 0;
   for (i1 in 1:n) {
@@ -56,4 +56,15 @@ indicator <- function(z1, z2, z3, z4, z5, inds0, inds1) {
            all(z3[-inds0] <= z5[-inds0]) &&
            all(z5[inds1] < z4[inds1]) &&
            all(z4[-inds1] <= z5[-inds1]))
+}
+
+expect_all_equal <- function(...) {
+  things = list(...)
+  if (length(things) <= 1) {
+    stop("expect_all_equal requires at least 2 arguments.")
+  }
+  thing1 = things[[1]]
+  for (i in 2:length(things)) {
+    expect_equal(thing1, things[[i]])
+  }
 }

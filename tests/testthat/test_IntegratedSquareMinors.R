@@ -26,9 +26,6 @@ ismSlowOnce <- function(X, Y, xInds0, xInds1, yInds0, yInds1) {
                 val = val + a
                 val = val + b
                 val = val - 2 * c
-                # if (a || b || c) {
-                #   print(c(i1, i2, i3, i4, i5))
-                # }
               }
             }
           }
@@ -75,7 +72,7 @@ test_that("Check that hoeffding's D agrees with naive c++ code in 2 dims", {
   for (i in 1:5) {
     X = matrix(rnorm(10), ncol = 1)
     Y = matrix(rnorm(10), ncol = 1)
-    a = ismNaive(X, Y, xInds0, xInds1, yInds0, yInds1)
+    a = ismFromDef(X, Y, xInds0, xInds1, yInds0, yInds1)
     b = hoeffDSuperSlow(X, Y)
     expect_equal(a, b)
   }
@@ -83,7 +80,7 @@ test_that("Check that hoeffding's D agrees with naive c++ code in 2 dims", {
   for (i in 1:5) {
     X = matrix(rpois(10, lambda = 4), ncol = 1)
     Y = matrix(rpois(10, lambda = 4), ncol = 1)
-    a = ismNaive(X, Y, xInds0, xInds1, yInds0, yInds1)
+    a = ismFromDef(X, Y, xInds0, xInds1, yInds0, yInds1)
     b = hoeffDSuperSlow(X, Y)
     expect_equal(a, b)
   }
@@ -99,13 +96,13 @@ test_that("Check that hoeffding's D agrees with c++ code in 2 dims", {
         for (i4 in 1:n) {
           for (i5 in 1:n) {
             Y = matrix(c(i1, i2, i3, i4, i5), ncol = 1)
-            a = ismNaive(X, Y, 0, 0, 0, 0)
-            b = ism(X, Y, 0, 0, 0, 0)
+            a = ismFromDef(X, Y, 0, 0, 0, 0)
+            b = ismRangeTree(X, Y, 0, 0, 0, 0)
             flag = flag && (a == b)
 
             Y = matrix(c(i1, i2, i3, i4, i5), ncol = 1)
-            a = ismNaive(Y, X, 0, 0, 0, 0)
-            b = ism(Y, X, 0, 0, 0, 0)
+            a = ismFromDef(Y, X, 0, 0, 0, 0)
+            b = ismRangeTree(Y, X, 0, 0, 0, 0)
             flag = flag && (a == b)
           }
         }
@@ -118,14 +115,14 @@ test_that("Check that hoeffding's D agrees with c++ code in 2 dims", {
   for (i in 1:100) {
     X = matrix(rnorm(10), ncol = 1)
     Y = matrix(rnorm(10), ncol = 1)
-    a = ismNaive(X, Y, 0, 0, 0, 0)
-    b = ism(X, Y, 0, 0, 0, 0)
+    a = ismFromDef(X, Y, 0, 0, 0, 0)
+    b = ismRangeTree(X, Y, 0, 0, 0, 0)
     expect_equal(a, b)
 
     X = matrix(rpois(10, lambda = 4), ncol = 1)
     Y = matrix(rpois(10, lambda = 4), ncol = 1)
-    a = ismNaive(X, Y, 0, 0, 0, 0)
-    b = ism(X, Y, 0, 0, 0, 0)
+    a = ismFromDef(X, Y, 0, 0, 0, 0)
+    b = ismRangeTree(X, Y, 0, 0, 0, 0)
     expect_equal(a, b)
   }
 })
@@ -142,9 +139,9 @@ test_that("Check that naive and fast methods agree in higher dims", {
     n = 7
     X = matrix(rnorm(xDim * n), nrow = n)
     Y = matrix(rnorm(yDim * n), nrow = n)
-    a = ismNaive(X, Y, 0, 1, 0, 1)
+    a = ismFromDef(X, Y, 0, 1, 0, 1)
     b = ismSlow(X, Y, 0, 1, 0, 1)
-    c = ism(X, Y, 0, 1, 0, 1)
+    c = ismRangeTree(X, Y, 0, 1, 0, 1)
     expect_true(a != 0)
     expect_equal(a, b)
     expect_equal(a, c)
@@ -161,9 +158,9 @@ test_that("Check that naive and fast methods agree in higher dims", {
     n = 7
     X = matrix(rpois(xDim * n, lambda = 1), nrow = n)
     Y = matrix(rpois(yDim * n, lambda = 1), nrow = n)
-    a = ismNaive(X, Y, 0, 1, 0, 1)
+    a = ismFromDef(X, Y, 0, 1, 0, 1)
     b = ismSlow(X, Y, 0, 1, 0, 1)
-    c = ism(X, Y, 0, 1, 0, 1)
+    c = ismRangeTree(X, Y, 0, 1, 0, 1)
     expect_true(a != 0)
     expect_equal(a, b)
     expect_equal(a, c)
@@ -180,8 +177,8 @@ test_that("Check that naive and fast methods agree in higher dims", {
     n = 20
     X = matrix(rpois(xDim * n, lambda = 2), nrow = n)
     Y = matrix(rpois(yDim * n, lambda = 2), nrow = n)
-    a = ismNaive(X, Y, c(0,1), c(1,2), c(0,1), 2)
-    b = ism(X, Y, c(0,1), c(1,2), c(0,1), 2)
+    a = ismFromDef(X, Y, c(0,1), c(1,2), c(0,1), 2)
+    b = ismRangeTree(X, Y, c(0,1), c(1,2), c(0,1), 2)
     expect_true(a != 0)
     expect_equal(a, b)
   }
@@ -197,27 +194,10 @@ test_that("Check that naive and fast methods agree in higher dims", {
     n = 20
     X = matrix(rpois(xDim * n, lambda = 2), nrow = n)
     Y = matrix(rpois(yDim * n, lambda = 2), nrow = n)
-    a = ismNaive(X, Y, c(0,1), c(1,2), c(0,1), 1)
-    b = ism(X, Y, c(0,1), c(1,2), c(0,1), 1)
+    a = ismFromDef(X, Y, c(0,1), c(1,2), c(0,1), 1)
+    b = ismRangeTree(X, Y, c(0,1), c(1,2), c(0,1), 1)
     expect_true(a != 0)
     expect_equal(a, b)
   }
 })
 
-# a = sort(sample(1000000, 10000, replace = F))
-# yar = c()
-# for (i in a) {
-#   set.seed(i)
-#   xDim = 3
-#   yDim = 3
-#   n = 20
-#   X = matrix(rpois(xDim * n, lambda = 2), nrow = n)
-#   Y = matrix(rpois(yDim * n, lambda = 2), nrow = n)
-#   if (ism(X, Y, c(0,1), c(1,2), c(0,1), 1) != 0) {
-#     print(ism(X, Y, c(0,1), c(1,2), c(0,1), 1))
-#     yar = c(yar, i)
-#   }
-#   if (length(yar) == 30) {
-#     break
-#   }
-# }

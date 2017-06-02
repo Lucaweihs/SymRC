@@ -40,6 +40,7 @@ private:
   arma::uvec lowerBaseY;
   arma::uvec upperBaseX;
   arma::uvec upperBaseY;
+  std::shared_ptr<OrthogonalRangeQuerierBuilder> orqBuilder;
 
   double countGreaterEqOrLesserEqInXY(
       const arma::uvec& x,
@@ -61,13 +62,14 @@ private:
                   std::shared_ptr<OrthogonalRangeQuerier> pairsOrq) const;
 
   std::shared_ptr<OrthogonalRangeQuerier> createPairsOrq(const arma::umat& X,
-                                            const arma::umat& Y) const;
+                                                         const arma::umat& Y) const;
 
   std::shared_ptr<OrthogonalRangeQuerier> createComparableOrq(const arma::umat& X,
-                                           const arma::umat& Y) const;
+                                                              const arma::umat& Y) const;
 
 public:
-  PartialTauStarEvaluator(int xDim, int yDim);
+  PartialTauStarEvaluator(int xDim, int yDim,
+                          std::shared_ptr<OrthogonalRangeQuerierBuilder> orqb);
   double eval(const arma::mat& X, const arma::mat& Y) const;
 };
 
@@ -93,6 +95,7 @@ private:
   int xDim, yDim;
   arma::uvec xOnOffVec;
   arma::uvec yOnOffVec;
+  std::shared_ptr<OrthogonalRangeQuerierBuilder> orqBuilder;
 
   std::shared_ptr<OrthogonalRangeQuerier> createComparableOrq(
       const arma::umat& X, const arma::umat& Y) const;
@@ -111,7 +114,8 @@ private:
 
 public:
   JointTauStarEvaluator(const arma::uvec& xOnOffVec,
-                        const arma::uvec& yOnOffVec);
+                        const arma::uvec& yOnOffVec,
+                        std::shared_ptr<OrthogonalRangeQuerierBuilder> orqb);
   double eval(const arma::mat& X, const arma::mat& Y) const;
 };
 

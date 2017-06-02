@@ -133,15 +133,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// hoeffdingR
-double hoeffdingR(const arma::mat& X, const arma::mat& Y);
-RcppExport SEXP SymRC_hoeffdingR(SEXP XSEXP, SEXP YSEXP) {
+// hoeffdingROrthTensor
+double hoeffdingROrthTensor(const arma::mat& X, const arma::mat& Y);
+RcppExport SEXP SymRC_hoeffdingROrthTensor(SEXP XSEXP, SEXP YSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    rcpp_result_gen = Rcpp::wrap(hoeffdingR(X, Y));
+    rcpp_result_gen = Rcpp::wrap(hoeffdingROrthTensor(X, Y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -157,15 +157,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// hoeffdingD
-double hoeffdingD(const arma::mat& X, const arma::mat& Y);
-RcppExport SEXP SymRC_hoeffdingD(SEXP XSEXP, SEXP YSEXP) {
+// hoeffdingRFromDef
+double hoeffdingRFromDef(const arma::mat& X, const arma::mat& Y);
+RcppExport SEXP SymRC_hoeffdingRFromDef(SEXP XSEXP, SEXP YSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    rcpp_result_gen = Rcpp::wrap(hoeffdingD(X, Y));
+    rcpp_result_gen = Rcpp::wrap(hoeffdingRFromDef(X, Y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// hoeffdingDRangeTree
+double hoeffdingDRangeTree(const arma::mat& X, const arma::mat& Y);
+RcppExport SEXP SymRC_hoeffdingDRangeTree(SEXP XSEXP, SEXP YSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    rcpp_result_gen = Rcpp::wrap(hoeffdingDRangeTree(X, Y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -181,9 +193,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// jointTauStar
-double jointTauStar(const arma::mat& X, const arma::mat& Y, const arma::uvec& xOnOffVec, const arma::uvec& yOnOffVec);
-RcppExport SEXP SymRC_jointTauStar(SEXP XSEXP, SEXP YSEXP, SEXP xOnOffVecSEXP, SEXP yOnOffVecSEXP) {
+// hoeffdingDFromDef
+double hoeffdingDFromDef(const arma::mat& X, const arma::mat& Y);
+RcppExport SEXP SymRC_hoeffdingDFromDef(SEXP XSEXP, SEXP YSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    rcpp_result_gen = Rcpp::wrap(hoeffdingDFromDef(X, Y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// jointTauStarRangeTree
+double jointTauStarRangeTree(const arma::mat& X, const arma::mat& Y, const arma::uvec& xOnOffVec, const arma::uvec& yOnOffVec);
+RcppExport SEXP SymRC_jointTauStarRangeTree(SEXP XSEXP, SEXP YSEXP, SEXP xOnOffVecSEXP, SEXP yOnOffVecSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -191,7 +215,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
     Rcpp::traits::input_parameter< const arma::uvec& >::type xOnOffVec(xOnOffVecSEXP);
     Rcpp::traits::input_parameter< const arma::uvec& >::type yOnOffVec(yOnOffVecSEXP);
-    rcpp_result_gen = Rcpp::wrap(jointTauStar(X, Y, xOnOffVec, yOnOffVec));
+    rcpp_result_gen = Rcpp::wrap(jointTauStarRangeTree(X, Y, xOnOffVec, yOnOffVec));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -209,9 +233,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// jointTauStarNaiveApprox
-double jointTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y, const arma::uvec& xOnOffVec, const arma::uvec& yOnOffVec, int sims);
-RcppExport SEXP SymRC_jointTauStarNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP xOnOffVecSEXP, SEXP yOnOffVecSEXP, SEXP simsSEXP) {
+// jointTauStarFromDef
+double jointTauStarFromDef(const arma::mat& X, const arma::mat& Y, const arma::uvec& xOnOffVec, const arma::uvec& yOnOffVec);
+RcppExport SEXP SymRC_jointTauStarFromDef(SEXP XSEXP, SEXP YSEXP, SEXP xOnOffVecSEXP, SEXP yOnOffVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type xOnOffVec(xOnOffVecSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type yOnOffVec(yOnOffVecSEXP);
+    rcpp_result_gen = Rcpp::wrap(jointTauStarFromDef(X, Y, xOnOffVec, yOnOffVec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// jointTauStarApprox
+double jointTauStarApprox(const arma::mat& X, const arma::mat& Y, const arma::uvec& xOnOffVec, const arma::uvec& yOnOffVec, int sims);
+RcppExport SEXP SymRC_jointTauStarApprox(SEXP XSEXP, SEXP YSEXP, SEXP xOnOffVecSEXP, SEXP yOnOffVecSEXP, SEXP simsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -220,50 +258,38 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::uvec& >::type xOnOffVec(xOnOffVecSEXP);
     Rcpp::traits::input_parameter< const arma::uvec& >::type yOnOffVec(yOnOffVecSEXP);
     Rcpp::traits::input_parameter< int >::type sims(simsSEXP);
-    rcpp_result_gen = Rcpp::wrap(jointTauStarNaiveApprox(X, Y, xOnOffVec, yOnOffVec, sims));
+    rcpp_result_gen = Rcpp::wrap(jointTauStarApprox(X, Y, xOnOffVec, yOnOffVec, sims));
     return rcpp_result_gen;
 END_RCPP
 }
-// partialTauStar
-double partialTauStar(const arma::mat& X, const arma::mat& Y);
-RcppExport SEXP SymRC_partialTauStar(SEXP XSEXP, SEXP YSEXP) {
+// fullLexTauStarFromDef
+double fullLexTauStarFromDef(const arma::mat& X, const arma::mat& Y);
+RcppExport SEXP SymRC_fullLexTauStarFromDef(SEXP XSEXP, SEXP YSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    rcpp_result_gen = Rcpp::wrap(partialTauStar(X, Y));
+    rcpp_result_gen = Rcpp::wrap(fullLexTauStarFromDef(X, Y));
     return rcpp_result_gen;
 END_RCPP
 }
-// fullLexTauStarNaive
-double fullLexTauStarNaive(const arma::mat& X, const arma::mat& Y);
-RcppExport SEXP SymRC_fullLexTauStarNaive(SEXP XSEXP, SEXP YSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
-    rcpp_result_gen = Rcpp::wrap(fullLexTauStarNaive(X, Y));
-    return rcpp_result_gen;
-END_RCPP
-}
-// fullLexTauStarNaiveApprox
-double fullLexTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y, int sims);
-RcppExport SEXP SymRC_fullLexTauStarNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
+// fullLexTauStarApprox
+double fullLexTauStarApprox(const arma::mat& X, const arma::mat& Y, int sims);
+RcppExport SEXP SymRC_fullLexTauStarApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
     Rcpp::traits::input_parameter< int >::type sims(simsSEXP);
-    rcpp_result_gen = Rcpp::wrap(fullLexTauStarNaiveApprox(X, Y, sims));
+    rcpp_result_gen = Rcpp::wrap(fullLexTauStarApprox(X, Y, sims));
     return rcpp_result_gen;
 END_RCPP
 }
-// lexTauStarNaive
-double lexTauStarNaive(const arma::mat& X, const arma::mat& Y, const arma::uvec& xPerm, const arma::uvec& yPerm);
-RcppExport SEXP SymRC_lexTauStarNaive(SEXP XSEXP, SEXP YSEXP, SEXP xPermSEXP, SEXP yPermSEXP) {
+// lexTauStarFromDef
+double lexTauStarFromDef(const arma::mat& X, const arma::mat& Y, const arma::uvec& xPerm, const arma::uvec& yPerm);
+RcppExport SEXP SymRC_lexTauStarFromDef(SEXP XSEXP, SEXP YSEXP, SEXP xPermSEXP, SEXP yPermSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -271,13 +297,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
     Rcpp::traits::input_parameter< const arma::uvec& >::type xPerm(xPermSEXP);
     Rcpp::traits::input_parameter< const arma::uvec& >::type yPerm(yPermSEXP);
-    rcpp_result_gen = Rcpp::wrap(lexTauStarNaive(X, Y, xPerm, yPerm));
+    rcpp_result_gen = Rcpp::wrap(lexTauStarFromDef(X, Y, xPerm, yPerm));
     return rcpp_result_gen;
 END_RCPP
 }
-// lexTauStarNaiveApprox
-double lexTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y, const arma::uvec& xPerm, const arma::uvec& yPerm, int sims);
-RcppExport SEXP SymRC_lexTauStarNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP xPermSEXP, SEXP yPermSEXP, SEXP simsSEXP) {
+// lexTauStarApprox
+double lexTauStarApprox(const arma::mat& X, const arma::mat& Y, const arma::uvec& xPerm, const arma::uvec& yPerm, int sims);
+RcppExport SEXP SymRC_lexTauStarApprox(SEXP XSEXP, SEXP YSEXP, SEXP xPermSEXP, SEXP yPermSEXP, SEXP simsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -286,7 +312,19 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::uvec& >::type xPerm(xPermSEXP);
     Rcpp::traits::input_parameter< const arma::uvec& >::type yPerm(yPermSEXP);
     Rcpp::traits::input_parameter< int >::type sims(simsSEXP);
-    rcpp_result_gen = Rcpp::wrap(lexTauStarNaiveApprox(X, Y, xPerm, yPerm, sims));
+    rcpp_result_gen = Rcpp::wrap(lexTauStarApprox(X, Y, xPerm, yPerm, sims));
+    return rcpp_result_gen;
+END_RCPP
+}
+// partialTauStarRangeTree
+double partialTauStarRangeTree(const arma::mat& X, const arma::mat& Y);
+RcppExport SEXP SymRC_partialTauStarRangeTree(SEXP XSEXP, SEXP YSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    rcpp_result_gen = Rcpp::wrap(partialTauStarRangeTree(X, Y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -302,22 +340,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// partialTauStarNaiveApprox
-double partialTauStarNaiveApprox(const arma::mat& X, const arma::mat& Y, int sims);
-RcppExport SEXP SymRC_partialTauStarNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
+// partialTauStarFromDef
+double partialTauStarFromDef(const arma::mat& X, const arma::mat& Y);
+RcppExport SEXP SymRC_partialTauStarFromDef(SEXP XSEXP, SEXP YSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    rcpp_result_gen = Rcpp::wrap(partialTauStarFromDef(X, Y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// partialTauStarApprox
+double partialTauStarApprox(const arma::mat& X, const arma::mat& Y, int sims);
+RcppExport SEXP SymRC_partialTauStarApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
     Rcpp::traits::input_parameter< int >::type sims(simsSEXP);
-    rcpp_result_gen = Rcpp::wrap(partialTauStarNaiveApprox(X, Y, sims));
+    rcpp_result_gen = Rcpp::wrap(partialTauStarApprox(X, Y, sims));
     return rcpp_result_gen;
 END_RCPP
 }
-// ism
-double ism(const arma::mat& X, const arma::mat& Y, const arma::uvec& xInds0, const arma::uvec& xInds1, const arma::uvec& yInds0, const arma::uvec& yInds1);
-RcppExport SEXP SymRC_ism(SEXP XSEXP, SEXP YSEXP, SEXP xInds0SEXP, SEXP xInds1SEXP, SEXP yInds0SEXP, SEXP yInds1SEXP) {
+// ismRangeTree
+double ismRangeTree(const arma::mat& X, const arma::mat& Y, const arma::uvec& xInds0, const arma::uvec& xInds1, const arma::uvec& yInds0, const arma::uvec& yInds1);
+RcppExport SEXP SymRC_ismRangeTree(SEXP XSEXP, SEXP YSEXP, SEXP xInds0SEXP, SEXP xInds1SEXP, SEXP yInds0SEXP, SEXP yInds1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -327,13 +377,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::uvec& >::type xInds1(xInds1SEXP);
     Rcpp::traits::input_parameter< const arma::uvec& >::type yInds0(yInds0SEXP);
     Rcpp::traits::input_parameter< const arma::uvec& >::type yInds1(yInds1SEXP);
-    rcpp_result_gen = Rcpp::wrap(ism(X, Y, xInds0, xInds1, yInds0, yInds1));
+    rcpp_result_gen = Rcpp::wrap(ismRangeTree(X, Y, xInds0, xInds1, yInds0, yInds1));
     return rcpp_result_gen;
 END_RCPP
 }
-// ismNaive
-double ismNaive(const arma::mat& X, const arma::mat& Y, const arma::uvec& xInds0, const arma::uvec& xInds1, const arma::uvec& yInds0, const arma::uvec& yInds1);
-RcppExport SEXP SymRC_ismNaive(SEXP XSEXP, SEXP YSEXP, SEXP xInds0SEXP, SEXP xInds1SEXP, SEXP yInds0SEXP, SEXP yInds1SEXP) {
+// ismFromDef
+double ismFromDef(const arma::mat& X, const arma::mat& Y, const arma::uvec& xInds0, const arma::uvec& xInds1, const arma::uvec& yInds0, const arma::uvec& yInds1);
+RcppExport SEXP SymRC_ismFromDef(SEXP XSEXP, SEXP YSEXP, SEXP xInds0SEXP, SEXP xInds1SEXP, SEXP yInds0SEXP, SEXP yInds1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -343,13 +393,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::uvec& >::type xInds1(xInds1SEXP);
     Rcpp::traits::input_parameter< const arma::uvec& >::type yInds0(yInds0SEXP);
     Rcpp::traits::input_parameter< const arma::uvec& >::type yInds1(yInds1SEXP);
-    rcpp_result_gen = Rcpp::wrap(ismNaive(X, Y, xInds0, xInds1, yInds0, yInds1));
+    rcpp_result_gen = Rcpp::wrap(ismFromDef(X, Y, xInds0, xInds1, yInds0, yInds1));
     return rcpp_result_gen;
 END_RCPP
 }
-// ismNaiveApprox
-double ismNaiveApprox(const arma::mat& X, const arma::mat& Y, const arma::uvec& xInds0, const arma::uvec& xInds1, const arma::uvec& yInds0, const arma::uvec& yInds1, int sims);
-RcppExport SEXP SymRC_ismNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP xInds0SEXP, SEXP xInds1SEXP, SEXP yInds0SEXP, SEXP yInds1SEXP, SEXP simsSEXP) {
+// ismApprox
+double ismApprox(const arma::mat& X, const arma::mat& Y, const arma::uvec& xInds0, const arma::uvec& xInds1, const arma::uvec& yInds0, const arma::uvec& yInds1, int sims);
+RcppExport SEXP SymRC_ismApprox(SEXP XSEXP, SEXP YSEXP, SEXP xInds0SEXP, SEXP xInds1SEXP, SEXP yInds0SEXP, SEXP yInds1SEXP, SEXP simsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -360,7 +410,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::uvec& >::type yInds0(yInds0SEXP);
     Rcpp::traits::input_parameter< const arma::uvec& >::type yInds1(yInds1SEXP);
     Rcpp::traits::input_parameter< int >::type sims(simsSEXP);
-    rcpp_result_gen = Rcpp::wrap(ismNaiveApprox(X, Y, xInds0, xInds1, yInds0, yInds1, sims));
+    rcpp_result_gen = Rcpp::wrap(ismApprox(X, Y, xInds0, xInds1, yInds0, yInds1, sims));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -376,16 +426,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// kendallsTauNaiveApprox
-double kendallsTauNaiveApprox(const arma::mat& X, const arma::mat& Y, int sims);
-RcppExport SEXP SymRC_kendallsTauNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
+// kendallsTauApprox
+double kendallsTauApprox(const arma::mat& X, const arma::mat& Y, int sims);
+RcppExport SEXP SymRC_kendallsTauApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
     Rcpp::traits::input_parameter< int >::type sims(simsSEXP);
-    rcpp_result_gen = Rcpp::wrap(kendallsTauNaiveApprox(X, Y, sims));
+    rcpp_result_gen = Rcpp::wrap(kendallsTauApprox(X, Y, sims));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -401,16 +451,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// spearmansRhoNaiveApprox
-double spearmansRhoNaiveApprox(const arma::mat& X, const arma::mat& Y, int sims);
-RcppExport SEXP SymRC_spearmansRhoNaiveApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
+// spearmansRhoApprox
+double spearmansRhoApprox(const arma::mat& X, const arma::mat& Y, int sims);
+RcppExport SEXP SymRC_spearmansRhoApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
     Rcpp::traits::input_parameter< int >::type sims(simsSEXP);
-    rcpp_result_gen = Rcpp::wrap(spearmansRhoNaiveApprox(X, Y, sims));
+    rcpp_result_gen = Rcpp::wrap(spearmansRhoApprox(X, Y, sims));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -453,27 +503,31 @@ static const R_CallMethodDef CallEntries[] = {
     {"SymRC_intPow", (DL_FUNC) &SymRC_intPow, 2},
     {"SymRC_permutations", (DL_FUNC) &SymRC_permutations, 1},
     {"SymRC_orderStats", (DL_FUNC) &SymRC_orderStats, 1},
-    {"SymRC_hoeffdingR", (DL_FUNC) &SymRC_hoeffdingR, 2},
+    {"SymRC_hoeffdingROrthTensor", (DL_FUNC) &SymRC_hoeffdingROrthTensor, 2},
     {"SymRC_hoeffdingRNaive", (DL_FUNC) &SymRC_hoeffdingRNaive, 2},
-    {"SymRC_hoeffdingD", (DL_FUNC) &SymRC_hoeffdingD, 2},
+    {"SymRC_hoeffdingRFromDef", (DL_FUNC) &SymRC_hoeffdingRFromDef, 2},
+    {"SymRC_hoeffdingDRangeTree", (DL_FUNC) &SymRC_hoeffdingDRangeTree, 2},
     {"SymRC_hoeffdingDNaive", (DL_FUNC) &SymRC_hoeffdingDNaive, 2},
-    {"SymRC_jointTauStar", (DL_FUNC) &SymRC_jointTauStar, 4},
+    {"SymRC_hoeffdingDFromDef", (DL_FUNC) &SymRC_hoeffdingDFromDef, 2},
+    {"SymRC_jointTauStarRangeTree", (DL_FUNC) &SymRC_jointTauStarRangeTree, 4},
     {"SymRC_jointTauStarNaive", (DL_FUNC) &SymRC_jointTauStarNaive, 4},
-    {"SymRC_jointTauStarNaiveApprox", (DL_FUNC) &SymRC_jointTauStarNaiveApprox, 5},
-    {"SymRC_partialTauStar", (DL_FUNC) &SymRC_partialTauStar, 2},
-    {"SymRC_fullLexTauStarNaive", (DL_FUNC) &SymRC_fullLexTauStarNaive, 2},
-    {"SymRC_fullLexTauStarNaiveApprox", (DL_FUNC) &SymRC_fullLexTauStarNaiveApprox, 3},
-    {"SymRC_lexTauStarNaive", (DL_FUNC) &SymRC_lexTauStarNaive, 4},
-    {"SymRC_lexTauStarNaiveApprox", (DL_FUNC) &SymRC_lexTauStarNaiveApprox, 5},
+    {"SymRC_jointTauStarFromDef", (DL_FUNC) &SymRC_jointTauStarFromDef, 4},
+    {"SymRC_jointTauStarApprox", (DL_FUNC) &SymRC_jointTauStarApprox, 5},
+    {"SymRC_fullLexTauStarFromDef", (DL_FUNC) &SymRC_fullLexTauStarFromDef, 2},
+    {"SymRC_fullLexTauStarApprox", (DL_FUNC) &SymRC_fullLexTauStarApprox, 3},
+    {"SymRC_lexTauStarFromDef", (DL_FUNC) &SymRC_lexTauStarFromDef, 4},
+    {"SymRC_lexTauStarApprox", (DL_FUNC) &SymRC_lexTauStarApprox, 5},
+    {"SymRC_partialTauStarRangeTree", (DL_FUNC) &SymRC_partialTauStarRangeTree, 2},
     {"SymRC_partialTauStarNaive", (DL_FUNC) &SymRC_partialTauStarNaive, 2},
-    {"SymRC_partialTauStarNaiveApprox", (DL_FUNC) &SymRC_partialTauStarNaiveApprox, 3},
-    {"SymRC_ism", (DL_FUNC) &SymRC_ism, 6},
-    {"SymRC_ismNaive", (DL_FUNC) &SymRC_ismNaive, 6},
-    {"SymRC_ismNaiveApprox", (DL_FUNC) &SymRC_ismNaiveApprox, 7},
+    {"SymRC_partialTauStarFromDef", (DL_FUNC) &SymRC_partialTauStarFromDef, 2},
+    {"SymRC_partialTauStarApprox", (DL_FUNC) &SymRC_partialTauStarApprox, 3},
+    {"SymRC_ismRangeTree", (DL_FUNC) &SymRC_ismRangeTree, 6},
+    {"SymRC_ismFromDef", (DL_FUNC) &SymRC_ismFromDef, 6},
+    {"SymRC_ismApprox", (DL_FUNC) &SymRC_ismApprox, 7},
     {"SymRC_kendallsTauNaive", (DL_FUNC) &SymRC_kendallsTauNaive, 2},
-    {"SymRC_kendallsTauNaiveApprox", (DL_FUNC) &SymRC_kendallsTauNaiveApprox, 3},
+    {"SymRC_kendallsTauApprox", (DL_FUNC) &SymRC_kendallsTauApprox, 3},
     {"SymRC_spearmansRhoNaive", (DL_FUNC) &SymRC_spearmansRhoNaive, 2},
-    {"SymRC_spearmansRhoNaiveApprox", (DL_FUNC) &SymRC_spearmansRhoNaiveApprox, 3},
+    {"SymRC_spearmansRhoApprox", (DL_FUNC) &SymRC_spearmansRhoApprox, 3},
     {"SymRC_orthRangeTensorCount", (DL_FUNC) &SymRC_orthRangeTensorCount, 3},
     {"SymRC_alignedRangeTreeCount", (DL_FUNC) &SymRC_alignedRangeTreeCount, 3},
     {NULL, NULL, 0}

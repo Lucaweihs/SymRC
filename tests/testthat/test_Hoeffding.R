@@ -8,11 +8,11 @@ test_that("Check that hoeffding's D agrees with the naive version", {
   nXCols = 1
   nYCols = 1
   for (i in 1:10) {
-    X = matrix(rpois(nXCols * n, 1), ncol = nXCols)
-    Y = matrix(rpois(nYCols * n, 1), ncol = nYCols)
-    a = hoeffdingD(X, Y)
-    b = hoeffdingDNaive(X, Y)
-    expect_equal(a, b)
+    X = matrix(rnorm(nXCols * n), ncol = nXCols)
+    Y = matrix(rnorm(nYCols * n), ncol = nYCols)
+    expect_all_equal(hoeffdingDFromDef(X, Y),
+                     hoeffdingDNaive(X, Y),
+                     hoeffdingDRangeTree(X, Y))
   }
 
   n = 15
@@ -21,9 +21,9 @@ test_that("Check that hoeffding's D agrees with the naive version", {
   for (i in 1:10) {
     X = matrix(rpois(nXCols * n, 1), ncol = nXCols)
     Y = matrix(rpois(nYCols * n, 1), ncol = nYCols)
-    a = hoeffdingD(X, Y)
-    b = hoeffdingDNaive(X, Y)
-    expect_equal(a, b)
+    expect_all_equal(hoeffdingDFromDef(X, Y),
+                     hoeffdingDNaive(X, Y),
+                     hoeffdingDRangeTree(X, Y))
   }
 
   n = 15
@@ -32,9 +32,9 @@ test_that("Check that hoeffding's D agrees with the naive version", {
   for (i in 1:10) {
     X = matrix(rpois(nXCols * n, 1), ncol = nXCols)
     Y = matrix(rpois(nYCols * n, 1), ncol = nYCols)
-    a = hoeffdingD(X, Y)
-    b = hoeffdingDNaive(X, Y)
-    expect_equal(a, b)
+    expect_all_equal(hoeffdingDFromDef(X, Y),
+                     hoeffdingDNaive(X, Y),
+                     hoeffdingDRangeTree(X, Y))
   }
 
   n = 20
@@ -43,9 +43,9 @@ test_that("Check that hoeffding's D agrees with the naive version", {
   for (i in 1:10) {
     X = matrix(rpois(nXCols * n, 1), ncol = nXCols)
     Y = matrix(rpois(nYCols * n, 1), ncol = nYCols)
-    a = hoeffdingD(X, Y)
-    b = hoeffdingDNaive(X, Y)
-    expect_equal(a, b)
+    expect_all_equal(hoeffdingDFromDef(X, Y),
+                     hoeffdingDNaive(X, Y),
+                     hoeffdingDRangeTree(X, Y))
   }
 
   n = 20
@@ -54,9 +54,9 @@ test_that("Check that hoeffding's D agrees with the naive version", {
   for (i in 1:10) {
     X = matrix(rnorm(nXCols * n), ncol = nXCols)
     Y = matrix(rnorm(nYCols * n), ncol = nYCols)
-    a = hoeffdingD(X, Y)
-    b = hoeffdingDNaive(X, Y)
-    expect_equal(a, b)
+    expect_all_equal(hoeffdingDFromDef(X, Y),
+                     hoeffdingDNaive(X, Y),
+                     hoeffdingDRangeTree(X, Y))
   }
 })
 
@@ -68,9 +68,9 @@ test_that("Check that hoeffding's R agrees with the naive version", {
   for (i in 1:10) {
     X = matrix(rpois(nXCols * n, 1), ncol = nXCols)
     Y = matrix(rpois(nYCols * n, 1), ncol = nYCols)
-    a = hoeffdingR(X, Y)
-    b = hoeffdingRNaive(X, Y)
-    expect_equal(a, b)
+    expect_all_equal(hoeffdingRFromDef(X, Y),
+                     hoeffdingRNaive(X, Y),
+                     hoeffdingROrthTensor(X, Y))
   }
 
   n = 10
@@ -79,9 +79,9 @@ test_that("Check that hoeffding's R agrees with the naive version", {
   for (i in 1:10) {
     X = matrix(rpois(nXCols * n, 1), ncol = nXCols)
     Y = matrix(rpois(nYCols * n, 1), ncol = nYCols)
-    a = hoeffdingR(X, Y)
-    b = hoeffdingRNaive(X, Y)
-    expect_equal(a, b)
+    expect_all_equal(hoeffdingRFromDef(X, Y),
+                     hoeffdingRNaive(X, Y),
+                     hoeffdingROrthTensor(X, Y))
   }
 
   n = 10
@@ -90,9 +90,9 @@ test_that("Check that hoeffding's R agrees with the naive version", {
   for (i in 1:10) {
     X = matrix(rpois(nXCols * n, 1), ncol = nXCols)
     Y = matrix(rpois(nYCols * n, 1), ncol = nYCols)
-    a = hoeffdingR(X, Y)
-    b = hoeffdingRNaive(X, Y)
-    expect_equal(a, b)
+    expect_all_equal(hoeffdingRFromDef(X, Y),
+                     hoeffdingRNaive(X, Y),
+                     hoeffdingROrthTensor(X, Y))
   }
 
   n = 10
@@ -100,9 +100,9 @@ test_that("Check that hoeffding's R agrees with the naive version", {
   nYCols = 2
   for (i in 1:10) {
     X = matrix(rpois(nXCols * n, 1), ncol = nXCols)
-    Y = matrix(rpois(nYCols * n, 1), ncol = nYCols)
-    a = hoeffdingR(X, Y)
-    b = hoeffdingRNaive(X, Y)
-    expect_equal(a, b)
+    Y = matrix(rnorm(nYCols * n), ncol = nYCols)
+    expect_all_equal(hoeffdingRFromDef(X, Y),
+                     hoeffdingRNaive(X, Y),
+                     hoeffdingROrthTensor(X, Y))
   }
 })

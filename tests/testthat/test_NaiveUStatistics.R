@@ -33,7 +33,7 @@ test_that("Naive kendall's tau statistic works", {
 
     a = kendallsTauNaive(X, Y)
     b = kendallsTauTies(X, Y)
-    c = kendallsTauNaiveApprox(X, Y, 100000)
+    c = kendallsTauApprox(X, Y, 100000)
 
     expect_equal(a, b)
     expect_true(abs(a - c) < .02)
@@ -45,7 +45,7 @@ test_that("Naive kendall's tau statistic works", {
 
     a = kendallsTauNaive(X, Y)
     b = kendallsTauTies(X, Y)
-    c = kendallsTauNaiveApprox(X, Y, 100000)
+    c = kendallsTauApprox(X, Y, 100000)
 
     expect_equal(a, b)
     expect_true(abs(a - c) < .02)
@@ -57,7 +57,7 @@ test_that("Naive kendall's tau statistic works", {
 
     a = spearmansRhoNaive(X,Y)
     b = spearmansRhoTies(X,Y)
-    c = spearmansRhoNaiveApprox(X,Y, 100000)
+    c = spearmansRhoApprox(X,Y, 100000)
 
     expect_equal(a, b)
     expect_true(abs(a - c) < .02)

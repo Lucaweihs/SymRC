@@ -143,8 +143,10 @@ int FLTSKE::order() const { return ord; }
  * PartialTauStarEvaluator
  *********************************/
 
-PTSE::PartialTauStarEvaluator(int xDim, int yDim): xDim(xDim), yDim(yDim),
-lowerBaseX(xDim), lowerBaseY(yDim), upperBaseX(xDim), upperBaseY(yDim) {
+PTSE::PartialTauStarEvaluator(
+  int xDim, int yDim, std::shared_ptr<OrthogonalRangeQuerierBuilder> orqb
+  ): xDim(xDim), yDim(yDim), lowerBaseX(xDim), lowerBaseY(yDim),
+  upperBaseX(xDim), upperBaseY(yDim), orqBuilder(orqb) {
   lowerBaseX.fill(0);
   lowerBaseY.fill(0);
   upperBaseX.fill(std::numeric_limits<unsigned int>::max());
@@ -290,9 +292,9 @@ std::shared_ptr<OrthogonalRangeQuerier> PTSE::createComparableOrq(const arma::um
     }
   }
   if (comparablePairs.size() != 0) {
-    return std::shared_ptr<OrthogonalRangeQuerier>(new AlignedRangeTree(vecOfVecsToMat(comparablePairs)));
+    return orqBuilder->build(vecOfVecsToMat(comparablePairs));
   } else {
-    return std::shared_ptr<OrthogonalRangeQuerier>(new AlignedRangeTree(arma::zeros<arma::umat>(0, 2 * (xDim + yDim))));
+    return orqBuilder->build(arma::zeros<arma::umat>(0, 2 * (xDim + yDim)));
   }
 }
 
@@ -316,7 +318,7 @@ std::shared_ptr<OrthogonalRangeQuerier> PTSE::createPairsOrq(const arma::umat& X
     }
   }
   pairs.resize(k, 2 * (xDim + yDim));
-  return std::shared_ptr<OrthogonalRangeQuerier>(new AlignedRangeTree(pairs));
+  return orqBuilder->build(pairs);
 }
 
 double PTSE::disCount(const arma::uvec& x0, const arma::uvec& x1,
@@ -379,8 +381,7 @@ double PTSE::eval(const arma::mat& X, const arma::mat& Y) const {
   arma::umat xJointRanks = toJointRankMatrix(X);
   arma::umat yJointRanks = toJointRankMatrix(Y);
   arma::umat allJointRanks = arma::join_rows(xJointRanks, yJointRanks);
-  std::shared_ptr<OrthogonalRangeQuerier> orq =
-    std::shared_ptr<OrthogonalRangeQuerier>(new AlignedRangeTree(allJointRanks));
+  std::shared_ptr<OrthogonalRangeQuerier> orq = orqBuilder->build(allJointRanks);
   std::shared_ptr<OrthogonalRangeQuerier> compOrq = createComparableOrq(xJointRanks, yJointRanks);
   std::shared_ptr<OrthogonalRangeQuerier> pairsOrq = createPairsOrq(xJointRanks, yJointRanks);
 
@@ -457,9 +458,10 @@ bool JTSKE::minorIndicator(const arma::mat& vecs,
  *********************************/
 
 JTSE::JointTauStarEvaluator(const arma::uvec& xOnOffVec,
-                            const arma::uvec& yOnOffVec): xOnOffVec(xOnOffVec),
+                            const arma::uvec& yOnOffVec,
+                            std::shared_ptr<OrthogonalRangeQuerierBuilder> orqb): xOnOffVec(xOnOffVec),
                             yOnOffVec(yOnOffVec), xDim(xOnOffVec.size()),
-                            yDim(yOnOffVec.size()) {}
+                            yDim(yOnOffVec.size()), orqBuilder(orqb) {}
 
 bool JTSE::lessInPartialOrder(const arma::uvec& v0,
                               const arma::uvec& v1,
@@ -497,9 +499,9 @@ std::shared_ptr<OrthogonalRangeQuerier> JTSE::createComparableOrq(
   }
 
   if (comparablePairs.size() != 0) {
-    return std::shared_ptr<OrthogonalRangeQuerier>(new AlignedRangeTree(vecOfVecsToMat(comparablePairs)));
+    return orqBuilder->build(vecOfVecsToMat(comparablePairs));
   } else {
-    return std::shared_ptr<OrthogonalRangeQuerier>(new AlignedRangeTree(arma::zeros<arma::umat>(0, 2 * (xDim + yDim))));
+    return orqBuilder->build(arma::zeros<arma::umat>(0, 2 * (xDim + yDim)));
   }
 }
 
@@ -618,12 +620,9 @@ double JTSE::eval(const arma::mat& X, const arma::mat& Y) const {
   arma::umat xJointRanks = toJointRankMatrix(X);
   arma::umat yJointRanks = toJointRankMatrix(Y);
   arma::umat allJointRanks = arma::join_rows(xJointRanks, yJointRanks);
-  std::shared_ptr<OrthogonalRangeQuerier> orq =
-    std::shared_ptr<OrthogonalRangeQuerier>(new AlignedRangeTree(allJointRanks));
-  //auto start = std::chrono::steady_clock::now();
-  std::shared_ptr<OrthogonalRangeQuerier> compOrq = createComparableOrq(xJointRanks, yJointRanks);
-  //auto duration = std::chrono::duration_cast<std::chrono::milliseconds >(std::chrono::steady_clock::now() - start);
-  //std::cout << duration.count() / 1000.0 << std::endl;
+  std::shared_ptr<OrthogonalRangeQuerier> orq = orqBuilder->build(allJointRanks);
+  std::shared_ptr<OrthogonalRangeQuerier> compOrq =
+    createComparableOrq(xJointRanks, yJointRanks);
 
   int numSamples = X.n_rows;
 

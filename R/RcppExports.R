@@ -45,88 +45,104 @@ orderStats <- function(M) {
     .Call('SymRC_orderStats', PACKAGE = 'SymRC', M)
 }
 
-hoeffdingR <- function(X, Y) {
-    .Call('SymRC_hoeffdingR', PACKAGE = 'SymRC', X, Y)
+hoeffdingROrthTensor <- function(X, Y) {
+    .Call('SymRC_hoeffdingROrthTensor', PACKAGE = 'SymRC', X, Y)
 }
 
 hoeffdingRNaive <- function(X, Y) {
     .Call('SymRC_hoeffdingRNaive', PACKAGE = 'SymRC', X, Y)
 }
 
-hoeffdingD <- function(X, Y) {
-    .Call('SymRC_hoeffdingD', PACKAGE = 'SymRC', X, Y)
+hoeffdingRFromDef <- function(X, Y) {
+    .Call('SymRC_hoeffdingRFromDef', PACKAGE = 'SymRC', X, Y)
+}
+
+hoeffdingDRangeTree <- function(X, Y) {
+    .Call('SymRC_hoeffdingDRangeTree', PACKAGE = 'SymRC', X, Y)
 }
 
 hoeffdingDNaive <- function(X, Y) {
     .Call('SymRC_hoeffdingDNaive', PACKAGE = 'SymRC', X, Y)
 }
 
-jointTauStar <- function(X, Y, xOnOffVec, yOnOffVec) {
-    .Call('SymRC_jointTauStar', PACKAGE = 'SymRC', X, Y, xOnOffVec, yOnOffVec)
+hoeffdingDFromDef <- function(X, Y) {
+    .Call('SymRC_hoeffdingDFromDef', PACKAGE = 'SymRC', X, Y)
+}
+
+jointTauStarRangeTree <- function(X, Y, xOnOffVec, yOnOffVec) {
+    .Call('SymRC_jointTauStarRangeTree', PACKAGE = 'SymRC', X, Y, xOnOffVec, yOnOffVec)
 }
 
 jointTauStarNaive <- function(X, Y, xOnOffVec, yOnOffVec) {
     .Call('SymRC_jointTauStarNaive', PACKAGE = 'SymRC', X, Y, xOnOffVec, yOnOffVec)
 }
 
-jointTauStarNaiveApprox <- function(X, Y, xOnOffVec, yOnOffVec, sims) {
-    .Call('SymRC_jointTauStarNaiveApprox', PACKAGE = 'SymRC', X, Y, xOnOffVec, yOnOffVec, sims)
+jointTauStarFromDef <- function(X, Y, xOnOffVec, yOnOffVec) {
+    .Call('SymRC_jointTauStarFromDef', PACKAGE = 'SymRC', X, Y, xOnOffVec, yOnOffVec)
 }
 
-partialTauStar <- function(X, Y) {
-    .Call('SymRC_partialTauStar', PACKAGE = 'SymRC', X, Y)
+jointTauStarApprox <- function(X, Y, xOnOffVec, yOnOffVec, sims) {
+    .Call('SymRC_jointTauStarApprox', PACKAGE = 'SymRC', X, Y, xOnOffVec, yOnOffVec, sims)
 }
 
-fullLexTauStarNaive <- function(X, Y) {
-    .Call('SymRC_fullLexTauStarNaive', PACKAGE = 'SymRC', X, Y)
+fullLexTauStarFromDef <- function(X, Y) {
+    .Call('SymRC_fullLexTauStarFromDef', PACKAGE = 'SymRC', X, Y)
 }
 
-fullLexTauStarNaiveApprox <- function(X, Y, sims) {
-    .Call('SymRC_fullLexTauStarNaiveApprox', PACKAGE = 'SymRC', X, Y, sims)
+fullLexTauStarApprox <- function(X, Y, sims) {
+    .Call('SymRC_fullLexTauStarApprox', PACKAGE = 'SymRC', X, Y, sims)
 }
 
-lexTauStarNaive <- function(X, Y, xPerm, yPerm) {
-    .Call('SymRC_lexTauStarNaive', PACKAGE = 'SymRC', X, Y, xPerm, yPerm)
+lexTauStarFromDef <- function(X, Y, xPerm, yPerm) {
+    .Call('SymRC_lexTauStarFromDef', PACKAGE = 'SymRC', X, Y, xPerm, yPerm)
 }
 
-lexTauStarNaiveApprox <- function(X, Y, xPerm, yPerm, sims) {
-    .Call('SymRC_lexTauStarNaiveApprox', PACKAGE = 'SymRC', X, Y, xPerm, yPerm, sims)
+lexTauStarApprox <- function(X, Y, xPerm, yPerm, sims) {
+    .Call('SymRC_lexTauStarApprox', PACKAGE = 'SymRC', X, Y, xPerm, yPerm, sims)
+}
+
+partialTauStarRangeTree <- function(X, Y) {
+    .Call('SymRC_partialTauStarRangeTree', PACKAGE = 'SymRC', X, Y)
 }
 
 partialTauStarNaive <- function(X, Y) {
     .Call('SymRC_partialTauStarNaive', PACKAGE = 'SymRC', X, Y)
 }
 
-partialTauStarNaiveApprox <- function(X, Y, sims) {
-    .Call('SymRC_partialTauStarNaiveApprox', PACKAGE = 'SymRC', X, Y, sims)
+partialTauStarFromDef <- function(X, Y) {
+    .Call('SymRC_partialTauStarFromDef', PACKAGE = 'SymRC', X, Y)
 }
 
-ism <- function(X, Y, xInds0, xInds1, yInds0, yInds1) {
-    .Call('SymRC_ism', PACKAGE = 'SymRC', X, Y, xInds0, xInds1, yInds0, yInds1)
+partialTauStarApprox <- function(X, Y, sims) {
+    .Call('SymRC_partialTauStarApprox', PACKAGE = 'SymRC', X, Y, sims)
 }
 
-ismNaive <- function(X, Y, xInds0, xInds1, yInds0, yInds1) {
-    .Call('SymRC_ismNaive', PACKAGE = 'SymRC', X, Y, xInds0, xInds1, yInds0, yInds1)
+ismRangeTree <- function(X, Y, xInds0, xInds1, yInds0, yInds1) {
+    .Call('SymRC_ismRangeTree', PACKAGE = 'SymRC', X, Y, xInds0, xInds1, yInds0, yInds1)
 }
 
-ismNaiveApprox <- function(X, Y, xInds0, xInds1, yInds0, yInds1, sims) {
-    .Call('SymRC_ismNaiveApprox', PACKAGE = 'SymRC', X, Y, xInds0, xInds1, yInds0, yInds1, sims)
+ismFromDef <- function(X, Y, xInds0, xInds1, yInds0, yInds1) {
+    .Call('SymRC_ismFromDef', PACKAGE = 'SymRC', X, Y, xInds0, xInds1, yInds0, yInds1)
+}
+
+ismApprox <- function(X, Y, xInds0, xInds1, yInds0, yInds1, sims) {
+    .Call('SymRC_ismApprox', PACKAGE = 'SymRC', X, Y, xInds0, xInds1, yInds0, yInds1, sims)
 }
 
 kendallsTauNaive <- function(X, Y) {
     .Call('SymRC_kendallsTauNaive', PACKAGE = 'SymRC', X, Y)
 }
 
-kendallsTauNaiveApprox <- function(X, Y, sims) {
-    .Call('SymRC_kendallsTauNaiveApprox', PACKAGE = 'SymRC', X, Y, sims)
+kendallsTauApprox <- function(X, Y, sims) {
+    .Call('SymRC_kendallsTauApprox', PACKAGE = 'SymRC', X, Y, sims)
 }
 
 spearmansRhoNaive <- function(X, Y) {
     .Call('SymRC_spearmansRhoNaive', PACKAGE = 'SymRC', X, Y)
 }
 
-spearmansRhoNaiveApprox <- function(X, Y, sims) {
-    .Call('SymRC_spearmansRhoNaiveApprox', PACKAGE = 'SymRC', X, Y, sims)
+spearmansRhoApprox <- function(X, Y, sims) {
+    .Call('SymRC_spearmansRhoApprox', PACKAGE = 'SymRC', X, Y, sims)
 }
 
 orthRangeTensorCount <- function(samples, lowerMat, upperMat) {

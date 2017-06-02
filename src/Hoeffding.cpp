@@ -41,8 +41,10 @@ bool hdke::minorIndicatorY(const arma::mat& vecs) const {
   return minorIndicatorX(vecs);
 }
 
-hde::HoeffdingDEvaluator(int xDim, int yDim): xDim(xDim), yDim(yDim),
-lowerBaseX(xDim), lowerBaseY(yDim), upperBaseX(xDim), upperBaseY(yDim) {
+hde::HoeffdingDEvaluator(
+  int xDim, int yDim, std::shared_ptr<OrthogonalRangeQuerierBuilder> orqb):
+  xDim(xDim), yDim(yDim), lowerBaseX(xDim), lowerBaseY(yDim), upperBaseX(xDim),
+  upperBaseY(yDim), orqBuilder(orqb) {
   lowerBaseX.fill(0);
   lowerBaseY.fill(0);
   upperBaseX.fill(std::numeric_limits<unsigned int>::max());
@@ -53,8 +55,7 @@ double hde::eval(const arma::mat& X, const arma::mat& Y) const {
   arma::umat xJointRanks = toJointRankMatrix(X);
   arma::umat yJointRanks = toJointRankMatrix(Y);
   arma::umat allJointRanks = arma::join_rows(xJointRanks, yJointRanks);
-  std::shared_ptr<OrthogonalRangeQuerier> orq =
-    std::shared_ptr<OrthogonalRangeQuerier>(new AlignedRangeTree(allJointRanks));
+  std::shared_ptr<OrthogonalRangeQuerier> orq = orqBuilder->build(allJointRanks);
   int n = xJointRanks.n_rows;
 
   double sum = 0;
@@ -80,8 +81,10 @@ double hde::eval(const arma::mat& X, const arma::mat& Y) const {
   return sum / (1.0 * n * (n - 1) * (n - 2) * (n - 3) * (n - 4));
 }
 
-hre::HoeffdingREvaluator(int xDim, int yDim): xDim(xDim), yDim(yDim),
-lowerBaseX(xDim), lowerBaseY(yDim), upperBaseX(xDim), upperBaseY(yDim) {
+hre::HoeffdingREvaluator(
+  int xDim, int yDim, std::shared_ptr<OrthogonalRangeQuerierBuilder> orqb):
+  xDim(xDim), yDim(yDim), lowerBaseX(xDim), lowerBaseY(yDim), upperBaseX(xDim),
+  upperBaseY(yDim), orqBuilder(orqb) {
   lowerBaseX.fill(0);
   lowerBaseY.fill(0);
   upperBaseX.fill(std::numeric_limits<unsigned int>::max());
@@ -152,8 +155,7 @@ double hre::eval(const arma::mat& X, const arma::mat& Y) const {
   arma::umat xJointRanks = toJointRankMatrix(X);
   arma::umat yJointRanks = toJointRankMatrix(Y);
   arma::umat allJointRanks = arma::join_rows(xJointRanks, yJointRanks);
-  std::shared_ptr<OrthogonalRangeQuerier> orq =
-    std::shared_ptr<OrthogonalRangeQuerier>(new OrthogonalRangeTensor(allJointRanks));
+  std::shared_ptr<OrthogonalRangeQuerier> orq = orqBuilder->build(allJointRanks);
   int n = xJointRanks.n_rows;
 
   arma::uvec index = arma::zeros<arma::uvec>(xDim + yDim);

@@ -21,6 +21,37 @@
 
 typedef OrthogonalRangeTensor ort;
 typedef AlignedRangeTree art;
+typedef NaiveRangeCounter nrc;
+
+/***
+ * NaiveRangeCounter
+ ***/
+
+nrc::NaiveRangeCounter(const arma::umat& jointRanks): jointRanksTranspose(jointRanks.t()) {}
+
+unsigned int nrc::countInRange(const arma::uvec& lower,
+                               const arma::uvec& upper) const {
+  if (size() == 0) {
+    return 0;
+  }
+  unsigned int count = 0;
+  for (int i = 0; i < jointRanksTranspose.n_cols; i++) {
+    if (arma::all(lower <= jointRanksTranspose.col(i)) &&
+        arma::all(jointRanksTranspose.col(i) <= upper)) {
+      count++;
+    }
+  }
+  return count;
+}
+
+int nrc::size() const {
+  return jointRanksTranspose.n_cols;
+}
+
+std::shared_ptr<OrthogonalRangeQuerier>
+  NaiveRangeCounterBuilder::build(const arma::umat& jointRanks) const {
+  return std::shared_ptr<OrthogonalRangeQuerier>(new NaiveRangeCounter(jointRanks));
+}
 
 /***
  * AlignedRangeTree
@@ -56,6 +87,11 @@ unsigned int art::countInRange(const arma::uvec& lower,
 
 int art::size() const {
   return numPoints;
+}
+
+std::shared_ptr<OrthogonalRangeQuerier>
+  AlignedRangeTreeBuilder::build(const arma::umat& jointRanks) const {
+    return std::shared_ptr<OrthogonalRangeQuerier>(new AlignedRangeTree(jointRanks));
 }
 
 /***************************
@@ -162,6 +198,7 @@ int ort::getDimAtIndex(unsigned int i) const {
   return dims(i);
 }
 
-
-
-
+std::shared_ptr<OrthogonalRangeQuerier>
+  OrthogonalRangeTensorBuilder::build(const arma::umat& jointRanks) const {
+    return std::shared_ptr<OrthogonalRangeQuerier>(new OrthogonalRangeTensor(jointRanks));
+}

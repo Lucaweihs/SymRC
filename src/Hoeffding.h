@@ -37,9 +37,11 @@ private:
   arma::uvec lowerBaseY;
   arma::uvec upperBaseX;
   arma::uvec upperBaseY;
+  std::shared_ptr<OrthogonalRangeQuerierBuilder> orqBuilder;
 
 public:
-  HoeffdingDEvaluator(int xDim, int yDim);
+  HoeffdingDEvaluator(int xDim, int yDim,
+                      std::shared_ptr<OrthogonalRangeQuerierBuilder> orqb);
   double eval(const arma::mat& X, const arma::mat& Y) const;
 };
 
@@ -51,9 +53,11 @@ private:
   arma::uvec upperBaseX;
   arma::uvec upperBaseY;
   arma::umat perms;
+  std::shared_ptr<OrthogonalRangeQuerierBuilder> orqBuilder;
 
 public:
-  HoeffdingREvaluator(int xDim, int yDim);
+  HoeffdingREvaluator(int xDim, int yDim,
+                      std::shared_ptr<OrthogonalRangeQuerierBuilder> orqb);
   double eval(const arma::mat& X, const arma::mat& Y) const;
   double evalLoop(int dim,
                        arma::uvec& index,

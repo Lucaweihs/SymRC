@@ -28,6 +28,29 @@ public:
   virtual int size() const = 0;
 };
 
+class OrthogonalRangeQuerierBuilder {
+public:
+  virtual std::shared_ptr<OrthogonalRangeQuerier>
+    build(const arma::umat& jointRanks) const = 0;
+};
+
+class NaiveRangeCounter : public OrthogonalRangeQuerier {
+private:
+  arma::umat jointRanksTranspose;
+
+public:
+  NaiveRangeCounter(const arma::umat& jointRanks);
+  unsigned int countInRange(const arma::uvec& lower,
+                            const arma::uvec& upper) const;
+  int size() const;
+};
+
+class NaiveRangeCounterBuilder : public OrthogonalRangeQuerierBuilder {
+public:
+  virtual std::shared_ptr<OrthogonalRangeQuerier>
+  build(const arma::umat& jointRanks) const;
+};
+
 class AlignedRangeTree : public OrthogonalRangeQuerier {
 private:
   std::vector<bool> withLower;
@@ -42,6 +65,12 @@ public:
   int size() const;
 };
 
+class AlignedRangeTreeBuilder : public OrthogonalRangeQuerierBuilder {
+public:
+  virtual std::shared_ptr<OrthogonalRangeQuerier>
+  build(const arma::umat& jointRanks) const;
+};
+
 class OrthogonalRangeTensor : public OrthogonalRangeQuerier {
 private:
   arma::uvec dims;
@@ -52,7 +81,6 @@ private:
 
   unsigned int indexToInt(const arma::uvec& index) const;
   unsigned int createTensorRecurse(const arma::uvec& index, arma::uvec& visited);
-//  unsigned int indexToInt(const arma::uvec& index);
 
 public:
   OrthogonalRangeTensor(const arma::umat& jointRanks);
@@ -60,6 +88,12 @@ public:
                             const arma::uvec& upper) const;
   int size() const;
   int getDimAtIndex(unsigned int index) const;
+};
+
+class OrthogonalRangeTensorBuilder : public OrthogonalRangeQuerierBuilder {
+public:
+  virtual std::shared_ptr<OrthogonalRangeQuerier>
+  build(const arma::umat& jointRanks) const;
 };
 
 #endif

@@ -18,10 +18,12 @@ covariates in the second group.}
 \itemize{
  \item{\code{"auto"} - Function attemps to automatically pick the fastest
  method for the given data.}
- \item{\code{"naive"} - A naive implementation which takes O(n^5) time.}
- \item{\code{"range-tree"} - A more complicated algorithm which takes
- O(n*log(n)^(l+m)) time. This tends to me much faster than the naive
- algorithm.}
+ \item{\code{"def"} - Computes the U-statistic by definition, takes
+  O(n^5) time.}
+ \item{\code{"standard"} - A better implementation which takes O(n^2) time.}
+ \item{\code{"range-tree"} - A version of the \code{"standard"} algorithm
+ which uses a range tree data structure to do orthogonal range queries. This
+ version of the algorithm takes O(n*log(n)^(l+m)) time.}
 }}
 }
 \value{

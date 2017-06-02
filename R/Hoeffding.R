@@ -11,10 +11,12 @@
 #'\itemize{
 #'  \item{\code{"auto"} - Function attemps to automatically pick the fastest
 #'  method for the given data.}
-#'  \item{\code{"naive"} - A naive implementation which takes O(n^5) time.}
-#'  \item{\code{"range-tree"} - A more complicated algorithm which takes
-#'  O(n*log(n)^(l+m)) time. This tends to me much faster than the naive
-#'  algorithm.}
+#'  \item{\code{"def"} - Computes the U-statistic by definition, takes
+#'   O(n^5) time.}
+#'  \item{\code{"standard"} - A better implementation which takes O(n^2) time.}
+#'  \item{\code{"range-tree"} - A version of the \code{"standard"} algorithm
+#'  which uses a range tree data structure to do orthogonal range queries. This
+#'  version of the algorithm takes O(n*log(n)^(l+m)) time.}
 #' }
 #'
 #' @return the U-statistic for the data
@@ -27,10 +29,12 @@ hoeffD <- function(X, Y, method = "auto") {
     method = "range-tree"
   }
 
-  if (method == "naive") {
+  if (method == "def") {
+    return(hoeffdingDFromDef(X, Y))
+  } else if (method == "standard") {
     return(hoeffdingDNaive(X, Y))
   } else if (method == "range-tree") {
-    return(hoeffdingD(X, Y))
+    return(hoeffdingDRangeTree(X, Y))
   } else {
     stop("Invalid choice of method in hoeffD.")
   }
@@ -49,11 +53,13 @@ hoeffD <- function(X, Y, method = "auto") {
 #'\itemize{
 #'  \item{\code{"auto"} - Function attemps to automatically pick the fastest
 #'  method for the given data.}
-#'  \item{\code{"naive"} - A naive implementation which takes
-#'  O(n^(4+l+m)) time.}
-#'  \item{\code{"orth"} - A more complicated algorithm which takes
-#'  O(n^(l+m)) time. Except in cases where l+m is large and n is small
-#'  this algorithm tends to be significantly faster than the naive version.}
+#'  \item{\code{"def"} - Computes the U-statistic by definition, takes
+#'   O(n^(4 + l + m)) time.}
+#'  \item{\code{"standard"} - A better implementation which takes
+#'  O(n^(1 + l + m)) time.}
+#'  \item{\code{"orth"} - A version of the \code{"standard"} algorithm
+#'  which uses a orthogonal range tensor data structure to do orthogonal
+#'  range queries. This version of the algorithm takes O(n^(l + m)) time.}
 #' }
 #'
 #' @return the U-statistic for the data
@@ -66,10 +72,12 @@ hoeffR <- function(X, Y, method = "auto") {
     method = "orth"
   }
 
-  if (method == "naive") {
+  if (method == "def") {
+    return(hoeffdingRFromDef(X, Y))
+  } else if (method == "standard") {
     return(hoeffdingRNaive(X, Y))
   } else if (method == "orth") {
-    return(hoeffdingR(X, Y))
+    return(hoeffdingROrthTensor(X, Y))
   } else {
     stop("Invalid choice of method in hoeffD.")
   }

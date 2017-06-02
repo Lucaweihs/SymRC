@@ -15,7 +15,8 @@
 #'\itemize{
 #'  \item{\code{"auto"} - Function attemps to automatically pick the fastest
 #'  method for the given data.}
-#'  \item{\code{"naive"} - A naive implementation which takes O(n^4) time.}
+#'  \item{\code{"def"} - Computes the U-statistic by definition, takes
+#'   O(n^4) time.}
 #'  \item{\code{"range-tree"} - A more complicated algorithm which takes
 #'  O(n^2*log(n)^(2*(l+m)) time. While this is asymptotically faster than
 #'  the naive algorithm it, in practice, can be slower due to
@@ -32,13 +33,13 @@ pTStar <- function(X, Y, method = "auto") {
     if (ncol(X) == ncol(Y) && ncol(X) == 1) {
       return(TauStar::tStar(X, Y))
     }
-    method = "naive"
+    method = "standard"
   }
 
   if (method == "naive") {
-    return(partialTauStarNaive(X, Y))
+    return(partialTauStarFromDef(X, Y))
   } else if (method == "range-tree") {
-    return(partialTauStar(X, Y))
+    return(partialTauStarRangeTree(X, Y))
   } else {
     stop("Invalid choice of method in pTStar.")
   }
@@ -68,9 +69,9 @@ jTStar <- function(X, Y, method = "auto") {
   }
 
   if (method == "naive") {
-    return(jointTauStarNaive(X, Y, rep(1, ncol(X)), rep(1, ncol(Y))))
+    return(jointTauStarFromDef(X, Y, rep(1, ncol(X)), rep(1, ncol(Y))))
   } else if (method == "range-tree") {
-    return(jointTauStar(X, Y, rep(1, ncol(X)), rep(1, ncol(Y))))
+    return(jointTauStarRangeTree(X, Y, rep(1, ncol(X)), rep(1, ncol(Y))))
   } else {
     stop("Invalid choice of method in jTStar.")
   }

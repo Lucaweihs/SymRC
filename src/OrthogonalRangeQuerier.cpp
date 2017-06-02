@@ -183,8 +183,6 @@ unsigned int ort::countInRange(const arma::uvec& lower,
     }
   }
   if (posPart < negPart) {
-    std::cout << "Bad pos = " << posPart << std::endl;
-    std::cout << "Bad neg = " << negPart << std::endl;
     throw Rcpp::exception("posPart should never be less than negPart in countInRange");
   }
   return posPart - negPart;

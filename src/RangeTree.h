@@ -33,6 +33,8 @@
 * 2. A Point class which captures the idea of a d-dimensional euclidean point.
 */
 
+// [[Rcpp::plugins(cpp11)]]
+
 #ifndef RANGETREE_H
 #define RANGETREE_H
 
@@ -184,27 +186,27 @@ public:
     return !((*this) == p);
   }
 
-  /**
-  * Prints the point to standard out.
-  *
-  * As an example, a point with euclidean location (3,4,5) and with a
-  * multiplicity/count of 4 will be printed as
-  *
-  * (3, 4, 5) : 4
-  *
-  * @param withCount whether or not to display the points count/multiplicity.
-  */
-  void print(bool withCount=true) const {
-    std::cout << "(";
-    for (int i = 0; i < dim() - 1; i++) {
-      std::cout << (*this)[i] << ", ";
-    }
-    if (withCount) {
-      std::cout << (*this)[dim() - 1] << ") : " << count() << std::endl;
-    } else {
-      std::cout << (*this)[dim() - 1] << ") : " << std::endl;
-    }
-  }
+  // /**
+  // * Prints the point to standard out.
+  // *
+  // * As an example, a point with euclidean location (3,4,5) and with a
+  // * multiplicity/count of 4 will be printed as
+  // *
+  // * (3, 4, 5) : 4
+  // *
+  // * @param withCount whether or not to display the points count/multiplicity.
+  // */
+  // void print(bool withCount=true) const {
+  //   std::cout << "(";
+  //   for (int i = 0; i < dim() - 1; i++) {
+  //     std::cout << (*this)[i] << ", ";
+  //   }
+  //   if (withCount) {
+  //     std::cout << (*this)[dim() - 1] << ") : " << count() << std::endl;
+  //   } else {
+  //     std::cout << (*this)[dim() - 1] << ") : " << std::endl;
+  //   }
+  // }
 };
 
 /**
@@ -1015,23 +1017,23 @@ public:
     }
   }
 
-  /**
-  * Print the structure of the tree rooted at the curret node.
-  *
-  * The printed structure does not reflect any subtrees for other coordinates.
-  *
-  * @param numIndents the number of indents to use before every line printed.
-  */
-  void print(int numIndents) {
-    for (int i = 0; i < numIndents; i++) { std::cout << "\t"; }
-    if (isLeaf) {
-      point->print(true);
-    } else {
-      point->print(false);
-      left->print(numIndents + 1);
-      right->print(numIndents + 1);
-    }
-  }
+  // /**
+  // * Print the structure of the tree rooted at the curret node.
+  // *
+  // * The printed structure does not reflect any subtrees for other coordinates.
+  // *
+  // * @param numIndents the number of indents to use before every line printed.
+  // */
+  // void print(int numIndents) {
+  //   for (int i = 0; i < numIndents; i++) { std::cout << "\t"; }
+  //   if (isLeaf) {
+  //     point->print(true);
+  //   } else {
+  //     point->print(false);
+  //     left->print(numIndents + 1);
+  //     right->print(numIndents + 1);
+  //   }
+  // }
 };
 
 /**
@@ -1222,9 +1224,9 @@ public:
                                getModifiedUpper(upper, withUpper));
   }
 
-  void print() const {
-    root->print(0);
-  }
+  // void print() const {
+  //   root->print(0);
+  // }
 };
 
 /**

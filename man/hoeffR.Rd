@@ -18,11 +18,13 @@ covariates in the second group.}
 \itemize{
  \item{\code{"auto"} - Function attemps to automatically pick the fastest
  method for the given data.}
- \item{\code{"naive"} - A naive implementation which takes
- O(n^(4+l+m)) time.}
- \item{\code{"orth"} - A more complicated algorithm which takes
- O(n^(l+m)) time. Except in cases where l+m is large and n is small
- this algorithm tends to be significantly faster than the naive version.}
+ \item{\code{"def"} - Computes the U-statistic by definition, takes
+  O(n^(4 + l + m)) time.}
+ \item{\code{"standard"} - A better implementation which takes
+ O(n^(1 + l + m)) time.}
+ \item{\code{"orth"} - A version of the \code{"standard"} algorithm
+ which uses a orthogonal range tensor data structure to do orthogonal
+ range queries. This version of the algorithm takes O(n^(l + m)) time.}
 }}
 }
 \value{

@@ -18,7 +18,8 @@ covariates in the second group.}
 \itemize{
  \item{\code{"auto"} - Function attemps to automatically pick the fastest
  method for the given data.}
- \item{\code{"naive"} - A naive implementation which takes O(n^4) time.}
+ \item{\code{"def"} - Computes the U-statistic by definition, takes
+  O(n^4) time.}
  \item{\code{"range-tree"} - A more complicated algorithm which takes
  O(n^2*log(n)^(2*(l+m)) time. While this is asymptotically faster than
  the naive algorithm it, in practice, can be slower due to

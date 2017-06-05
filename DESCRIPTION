@@ -1,13 +1,13 @@
 Package: SymRC
 Type: Package
-Title: Independence Testing with Symmetric Rank Covariance Measures
+Title: Efficient Estimation of Symmetric Rank Covariances
 Version: 0.0.1
 Date: 2016-11-02
 Authors@R: c(person("Luca", "Weihs", email="lucaw@uw.edu", role=c("aut", "cre")))
 Maintainer: Luca Weihs <lucaw@uw.edu>
-Description: Computes a statistic based for which
-    the population quantity is 0 if and only if two groups of variables
-    are independent and is >=0 otherwise.
+Description: Provides functions to estimate a collection of symmetric rank
+  covariances, a set of measures which attempt to quantify the level of dependence
+  between two random vectors X and Y.
 License: GPL (>= 3)
 LazyData: TRUE
 Imports:

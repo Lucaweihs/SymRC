@@ -17,3 +17,4 @@ LinkingTo: Rcpp, RcppArmadillo
 Suggests:
     testthat
 RoxygenNote: 6.0.1
+SystemRequirements: C++11

@@ -53,8 +53,6 @@ public:
 
 class AlignedRangeTree : public OrthogonalRangeQuerier {
 private:
-  std::vector<bool> withLower;
-  std::vector<bool> withUpper;
   const unsigned int numPoints;
   std::shared_ptr<RangeTree::RangeTree<unsigned int,bool> > rtree;
 

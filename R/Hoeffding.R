@@ -25,8 +25,15 @@ hoeffD <- function(X, Y, method = "auto") {
   if (!is.matrix(Y)) { Y = matrix(Y) }
   checkMatrices(X, Y, 5)
 
+  d = ncol(X) + ncol(Y)
+  n = nrow(X)
   if (method == "auto") {
     method = "range-tree"
+    if ((d == 2 && n < 400) ||
+        (d == 3 && n < 3500) ||
+        (d > 3 && d > 1 + log(n / 9, base = log2(n)))) {
+      method = "standard"
+    }
   }
 
   if (method == "def") {

@@ -68,10 +68,6 @@ art::AlignedRangeTree(const arma::umat& jointRanks): numPoints(jointRanks.n_rows
     rtree = std::shared_ptr<RangeTree::RangeTree<unsigned int,bool> >(
       new RangeTree::RangeTree<unsigned int,bool>(points));
   }
-  for (int i = 0; i < jointRanks.n_cols; i++) {
-    withLower.push_back(true);
-    withUpper.push_back(true);
-  }
 }
 
 unsigned int art::countInRange(const arma::uvec& lower,
@@ -80,9 +76,7 @@ unsigned int art::countInRange(const arma::uvec& lower,
     return 0;
   }
   return rtree->countInRange(arma::conv_to<std::vector<unsigned int> >::from(lower),
-                             arma::conv_to<std::vector<unsigned int> >::from(upper),
-                             withLower,
-                             withUpper);
+                             arma::conv_to<std::vector<unsigned int> >::from(upper));
 }
 
 int art::size() const {

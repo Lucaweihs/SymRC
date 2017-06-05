@@ -11,15 +11,17 @@ This package allows for the efficient estimation of symmetric rank covariances (
 
 ## Examples
 
-Lets run a simple permutation test for dependence between two 1-dimensional random variables X and Y.
+Lets run a simple permutation test for dependence between two 1-dimensional 
+random variables X and Y.
 ```
+set.seed(2)
+
 # The data
 n = 100
 X = rnorm(n)
 Y = X^2 + rnorm(n)
 
 # Permutation test using the various measures
-set.seed(123)
 reps = 500
 jTStarValues = numeric(reps)
 hoeffDValues = numeric(reps)
@@ -32,8 +34,11 @@ pValueForJTStar = mean(jTStarValues >= jTStar(X, Y)) # = 0
 pValueForHoeffD = mean(hoeffDValues >= hoeffD(X, Y)) # = 0
 ```
 
-Now lets run another permutation test where X is 2-dimensional and Y is 1-dimensional (Y will equal the XOR of the X entries).
+Now lets run another permutation test where X is 2-dimensional and Y is 
+1-dimensional (Y will equal the XOR of the X entries).
 ```
+set.seed(3)
+
 # The data
 n = 30
 X = matrix(rbinom(2 * n, size = 1, p = 1/2), ncol = 2)
@@ -42,16 +47,17 @@ Y = apply(X, MARGIN = 1, FUN = function(x) {
 })
 
 # Permutation test using pTStar and hoeffR, this takes some time.
-set.seed(123)
 reps = 250
 pTStarValues = numeric(reps)
 hoeffRValues = numeric(reps)
 for (i in 1:reps) {
-  print(i)
+  if (i %% 10 == 0) {
+    cat(paste("Iteration ", i, " of ", reps , ".\n", sep = ""))
+  }
   permutedY = sample(Y)
   pTStarValues[i] = pTStar(X, permutedY, method = "range-tree")
   hoeffRValues[i] = hoeffR(X, permutedY)
 }
 pValueForPRStar = mean(pTStarValues >= pTStar(X, Y)) # = 0.008
-pValueForHoeffR = mean(hoeffRValues >= hoeffR(X, Y)) # = 0.012
+pValueForHoeffR = mean(hoeffRValues >= hoeffR(X, Y)) # = 0.004
 ```

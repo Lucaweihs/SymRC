@@ -33,10 +33,10 @@ pTStar <- function(X, Y, method = "auto") {
     if (ncol(X) == ncol(Y) && ncol(X) == 1) {
       return(TauStar::tStar(X, Y))
     }
-    method = "standard"
+    method = "def"
   }
 
-  if (method == "naive") {
+  if (method == "def") {
     return(partialTauStarFromDef(X, Y))
   } else if (method == "range-tree") {
     return(partialTauStarRangeTree(X, Y))
@@ -65,10 +65,10 @@ jTStar <- function(X, Y, method = "auto") {
     if (ncol(X) == ncol(Y) && ncol(X) == 1) {
       return(TauStar::tStar(X, Y))
     }
-    method = "naive"
+    method = "def"
   }
 
-  if (method == "naive") {
+  if (method == "def") {
     return(jointTauStarFromDef(X, Y, rep(1, ncol(X)), rep(1, ncol(Y))))
   } else if (method == "range-tree") {
     return(jointTauStarRangeTree(X, Y, rep(1, ncol(X)), rep(1, ncol(Y))))

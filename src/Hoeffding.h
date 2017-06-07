@@ -32,7 +32,6 @@ public:
 
 class HoeffdingDEvaluator {
 private:
-  int xDim, yDim;
   arma::uvec lowerBaseX;
   arma::uvec lowerBaseY;
   arma::uvec upperBaseX;
@@ -63,7 +62,7 @@ public:
                        arma::uvec& index,
                        const arma::umat& X,
                        const arma::umat& Y,
-                       std::shared_ptr<OrthogonalRangeQuerier> orq) const;
+                       const std::shared_ptr<OrthogonalRangeQuerier>& orq) const;
 };
 
 class HoeffdingRKernelEvaluator : public SymRCKernelEvaluator {

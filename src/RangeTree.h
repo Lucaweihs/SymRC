@@ -33,8 +33,6 @@
 * 2. A Point class which captures the idea of a d-dimensional euclidean point.
 */
 
-// [[Rcpp::plugins(cpp11)]]
-
 #ifndef RANGETREE_H
 #define RANGETREE_H
 
@@ -83,7 +81,7 @@ public:
   * @param vec the position in euclidean space.
   * @param val the value associated with the point.
   */
-  Point(const std::vector<T>& vec, const S& val): val(val), vec(vec), multiplicity(1) {}
+  Point(const std::vector<T>& vec, const S& val): vec(vec), val(val), multiplicity(1) {}
 
   /**
   * Constructs a point.
@@ -93,7 +91,7 @@ public:
   * @param vec the position in euclidean space.
   * @param val the value associated with the point.
   */
-  Point(const Point<T,S>& p): val(p.val), vec(p.vec), multiplicity(p.count()) {}
+  Point(const Point<T,S>& p): vec(p.vec), val(p.val), multiplicity(p.count()) {}
 
 
   /**
@@ -972,7 +970,6 @@ public:
       throw std::logic_error("Should never have a leaf deciding if its canonical.");
     }
     int compareInd = pointOrdering.getCompareStartIndex();
-    int totalPoints = 0;
     if (lower[compareInd] <= (*point)[compareInd]) {
       nodes.push_back(right);
       if (left->isLeaf) {
@@ -1000,7 +997,6 @@ public:
       throw std::logic_error("Should never have a leaf deciding if its canonical.");
     }
     int compareInd = pointOrdering.getCompareStartIndex();
-    int totalPoints = 0;
     if (upper[compareInd] >= (*point)[compareInd]) {
       nodes.push_back(left);
       if (right->isLeaf) {

@@ -106,8 +106,8 @@ double approxNaiveUStat(const arma::mat& X, const arma::mat& Y,
 SymRCKE::SymRCKernelEvaluator(int xDim, int yDim,
                               const arma::umat& posPerms,
                               const arma::umat& negPerms):
-  posPerms(posPerms), negPerms(negPerms),
-  xDim(xDim), yDim(yDim), ord(posPerms.n_cols), perms(permutations(ord)) {
+  ord(posPerms.n_cols), perms(permutations(ord)),
+  xDim(xDim), yDim(yDim), posPerms(posPerms), negPerms(negPerms) {
   if (posPerms.n_rows != negPerms.n_rows) {
     throw Rcpp::exception("negPerms and posPerms must have "
                             "the same number of columns");

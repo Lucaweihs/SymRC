@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// [[Rcpp::plugins(cpp11)]]
 #include "Hoeffding.h"
 #include "HelperFunctions.h"
 
@@ -43,7 +42,7 @@ bool hdke::minorIndicatorY(const arma::mat& vecs) const {
 
 hde::HoeffdingDEvaluator(
   int xDim, int yDim, std::shared_ptr<OrthogonalRangeQuerierBuilder> orqb):
-  xDim(xDim), yDim(yDim), lowerBaseX(xDim), lowerBaseY(yDim), upperBaseX(xDim),
+  lowerBaseX(xDim), lowerBaseY(yDim), upperBaseX(xDim),
   upperBaseY(yDim), orqBuilder(orqb) {
   lowerBaseX.fill(0);
   lowerBaseY.fill(0);
@@ -96,7 +95,7 @@ double hre::evalLoop(int dim,
                      arma::uvec& index,
                      const arma::umat& X,
                      const arma::umat& Y,
-                     std::shared_ptr<OrthogonalRangeQuerier> orq) const {
+                     const std::shared_ptr<OrthogonalRangeQuerier>& orq) const {
   double sum = 0.0;
   int offset = 0;
   if (dim != 0) {
@@ -112,6 +111,7 @@ double hre::evalLoop(int dim,
   } else {
     arma::uvec x(xDim);
     arma::uvec y(yDim);
+    auto tmp = arma::join_cols(lowerBaseX, lowerBaseY);
     for (int i = offset; i < X.n_rows; i++) {
       index(dim) = i;
       for (int j = 0; j < perms.n_rows; j++) {

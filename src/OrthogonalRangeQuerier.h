@@ -74,8 +74,7 @@ private:
   arma::uvec dims;
   arma::uvec tensorAsVec;
   arma::umat zeroOneMat;
-  std::vector<unsigned int> lower;
-  std::vector<unsigned int> upper;
+  std::vector<bool> zeroOneMatParity;
 
   unsigned int indexToInt(const arma::uvec& index) const;
   unsigned int createTensorRecurse(const arma::uvec& index, arma::uvec& visited);

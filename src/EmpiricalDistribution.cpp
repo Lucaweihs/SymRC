@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// [[Rcpp::plugins(cpp11)]]
 #include "EmpiricalDistribution.h"
 
 typedef EmpiricalDistribution ed;

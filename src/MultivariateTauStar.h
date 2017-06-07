@@ -25,7 +25,6 @@ class FullLexTauStarKernelEvaluator : public KernelEvaluator {
 private:
   static const int ord = 4;
   std::vector<LexTauStarKernelEvaluator> evaluators;
-  int xDim, yDim;
 
 public:
   FullLexTauStarKernelEvaluator(int xDim, int yDim);

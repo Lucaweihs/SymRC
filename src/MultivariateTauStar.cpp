@@ -86,17 +86,6 @@ bool lexLessThan(const arma::vec& v0, const arma::vec& v1,
   return false;
 }
 
-// bool lexLessThan(const arma::vec& v0, const arma::vec& v1) {
-//   for (int i = 0; i < v0.size(); i++) {
-//     if (v0(i) > v1(i)) {
-//       return false;
-//     } else if (v0(i) < v1(i)) {
-//       return true;
-//     }
-//   }
-//   return false;
-// }
-
 bool LTSKE::minorIndicator(const arma::mat& vecs, const arma::uvec& perm) const {
   return lexLessThan(vecs.row(0), vecs.row(2), perm) &&
     lexLessThan(vecs.row(0), vecs.row(3), perm) &&
@@ -116,8 +105,7 @@ bool LTSKE::minorIndicatorY(const arma::mat& vecs) const {
  * FullLexTauStarKernelEvaluator
  *********************************/
 
-FLTSKE::FullLexTauStarKernelEvaluator(int xDim, int yDim):
-  xDim(xDim), yDim(yDim) {
+FLTSKE::FullLexTauStarKernelEvaluator(int xDim, int yDim) {
   arma::umat xPerms = permutations(xDim);
   arma::umat yPerms = permutations(yDim);
 
@@ -459,9 +447,9 @@ bool JTSKE::minorIndicator(const arma::mat& vecs,
 
 JTSE::JointTauStarEvaluator(const arma::uvec& xOnOffVec,
                             const arma::uvec& yOnOffVec,
-                            std::shared_ptr<OrthogonalRangeQuerierBuilder> orqb): xOnOffVec(xOnOffVec),
-                            yOnOffVec(yOnOffVec), xDim(xOnOffVec.size()),
-                            yDim(yOnOffVec.size()), orqBuilder(orqb) {}
+                            std::shared_ptr<OrthogonalRangeQuerierBuilder> orqb):
+  xDim(xOnOffVec.size()), yDim(yOnOffVec.size()), xOnOffVec(xOnOffVec),
+  yOnOffVec(yOnOffVec), orqBuilder(orqb) {}
 
 bool JTSE::lessInPartialOrder(const arma::uvec& v0,
                               const arma::uvec& v1,

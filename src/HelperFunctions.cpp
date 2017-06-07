@@ -252,17 +252,20 @@ double nChooseM(double n, double m) {
     return 0.0;
   }
   double val = 0.0;
-  for (int i = m + 1; i <= n; i++) {
+  for (int i = n - m + 1; i <= n; i++) {
     val += std::log(1.0 * i);
   }
-  for (int i = 2; i <= (n - m); i++) {
+  for (int i = 2; i <= m; i++) {
     val -= std::log(1.0 * i);
   }
   return std::exp(val);
 }
 
 double choose2(double x) {
-  return nChooseM(x, 2.0);
+  if (x < 2) {
+    return 0;
+  }
+  return x * (x - 1) / 2;
 }
 
 int factorial(int n) {

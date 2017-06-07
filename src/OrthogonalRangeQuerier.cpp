@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// [[Rcpp::plugins(cpp11)]]
 #include "OrthogonalRangeQuerier.h"
 #include "HelperFunctions.h"
 
@@ -95,6 +94,9 @@ std::shared_ptr<OrthogonalRangeQuerier>
 ort::OrthogonalRangeTensor(const arma::umat& jointRanks):
   dims(jointRanks.n_cols) {
   zeroOneMat = powerSetMat(jointRanks.n_cols);
+  for (int i = 0; i < zeroOneMat.n_rows; i++) {
+    zeroOneMatParity.push_back(arma::accu(zeroOneMat.row(i)) % 2 == 1);
+  }
   if (arma::any(arma::vectorise(jointRanks) == 0)) {
     throw Rcpp::exception("Joint rank matrix input to OrthogonalRangeTensor"
                             " must have no 0s");
@@ -133,7 +135,7 @@ unsigned int ort::createTensorRecurse(const arma::uvec& index, arma::uvec& visit
     unsigned int posPart = tensorAsVec(indexToInt(index));
     unsigned int negPart = 0;
     for (int i = 1; i < zeroOneMat.n_rows; i++) {
-      if (arma::accu(zeroOneMat.row(i)) % 2 == 1) {
+      if (zeroOneMatParity[i]) {
         posPart += createTensorRecurse(index - zeroOneMat.row(i).t(), visited);
       } else {
         negPart += createTensorRecurse(index - zeroOneMat.row(i).t(), visited);
@@ -150,27 +152,39 @@ unsigned int ort::createTensorRecurse(const arma::uvec& index, arma::uvec& visit
 
 unsigned int ort::countInRange(const arma::uvec& lower,
                                const arma::uvec& upper) const {
-  arma::uvec newLower = lower;
-  arma::uvec newUpper = upper;
-  if (any(newUpper < newLower)) {
+  arma::uvec tmpLower(lower.size());
+  arma::uvec tmpUpper(upper.size());
+  if (arma::any(upper < lower)) {
     return 0;
   }
-  for (int i = 0; i < newLower.size(); i++) {
-    if (newLower(i) != 0) {
-      newLower(i)--;
+  for (int i = 0; i < tmpLower.size(); i++) {
+    if (lower(i) != 0) {
+      tmpLower(i) = lower(i) - 1;
+    } else {
+      tmpLower(i) = 0;
     }
-    if (newUpper(i) >= dims(i)) {
-      newUpper(i) = dims(i) - 1;
+
+    if (upper(i) >= dims(i)) {
+      tmpUpper(i) = dims(i) - 1;
+    } else {
+      tmpUpper(i) = upper(i);
     }
   }
   unsigned int posPart = 0;
   unsigned int negPart = 0;
+
+  arma::uvec index(dims);
   for (int i = 0; i < zeroOneMat.n_rows; i++) {
-    arma::uvec mask = zeroOneMat.row(i).t();
-    unsigned int indexAsInt = indexToInt(
-      newUpper % (1 - mask) + newLower % mask
-    );
-    if (arma::accu(mask) % 2 == 0) {
+    for (int j = 0; j < tmpLower.size(); j++) {
+      if (zeroOneMat(i,j) == 1) {
+        index(j) = tmpLower(j);
+      } else {
+        index(j) = tmpUpper(j);
+      }
+    }
+
+    unsigned int indexAsInt = indexToInt(index);
+    if (!zeroOneMatParity[i]) {
       posPart += tensorAsVec(indexAsInt);
     } else {
       negPart += tensorAsVec(indexAsInt);

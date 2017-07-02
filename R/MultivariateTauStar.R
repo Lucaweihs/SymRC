@@ -22,12 +22,20 @@
 #'  the naive algorithm it, in practice, can be slower due to
 #'  large constant factors hidden by the asymptotic analysis.}
 #' }
+#' This argument is ignored if approx is non-zero.
+#' @param approx if approx is non-zero then instead of computing the u-statistic
+#'               using all of the data we instead approximate it by randomly
+#'               sampling quadruples from the data approx many times.
 #'
-#' @return the U-statistic for the data
-pTStar <- function(X, Y, method = "auto") {
+#' @return the (estimated if approx != 0) U-statistic for the data
+pTStar <- function(X, Y, method = "auto", approx = 0) {
   if (!is.matrix(X)) { X = matrix(X) }
   if (!is.matrix(Y)) { Y = matrix(Y) }
   checkMatrices(X, Y, 4)
+
+  if (approx != 0) {
+    return(partialTauStarApprox(X, Y, approx))
+  }
 
   if (method == "auto") {
     if (ncol(X) == ncol(Y) && ncol(X) == 1) {
@@ -56,16 +64,26 @@ pTStar <- function(X, Y, method = "auto") {
 #' @inheritParams pTStar
 #'
 #' @return the U-statistic for the data
-jTStar <- function(X, Y, method = "auto") {
+jTStar <- function(X, Y, method = "auto", approx = 0) {
   if (!is.matrix(X)) { X = matrix(X) }
   if (!is.matrix(Y)) { Y = matrix(Y) }
   checkMatrices(X, Y, 4)
 
+  if (approx != 0) {
+    return(jointTauStarApprox(X, Y, rep(1, ncol(X)), rep(1, ncol(Y)), approx))
+  }
+
   if (method == "auto") {
-    if (ncol(X) == ncol(Y) && ncol(X) == 1) {
+    d = ncol(X) + ncol(Y)
+    if (d == 2) {
       return(TauStar::tStar(X, Y))
     }
-    method = "def"
+
+    if (nrow(X) <= 10) {
+      method = "def"
+    } else {
+      method = "range-tree"
+    }
   }
 
   if (method == "def") {

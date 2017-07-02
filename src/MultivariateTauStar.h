@@ -44,21 +44,21 @@ private:
   double countGreaterEqOrLesserEqInXY(
       const arma::uvec& x,
       const arma::uvec& y,
-      std::shared_ptr<OrthogonalRangeQuerier> orq,
+      const std::shared_ptr<OrthogonalRangeQuerier>& orq,
       const bool& greaterInX, const bool& greaterInY) const;
 
   double posConCount(const arma::uvec& x0, const arma::uvec& x1,
                      const arma::uvec& y0, const arma::uvec& y1,
-                     std::shared_ptr<OrthogonalRangeQuerier> orq) const;
+                     const std::shared_ptr<OrthogonalRangeQuerier>& orq) const;
 
   double negConCount(const arma::uvec& x0, const arma::uvec& x1,
                      const arma::uvec& y0, const arma::uvec& y1,
-                     std::shared_ptr<OrthogonalRangeQuerier> orq) const;
+                     const std::shared_ptr<OrthogonalRangeQuerier>& orq) const;
 
   double disCount(const arma::uvec& x0, const arma::uvec& x1,
                   const arma::uvec& y0, const arma::uvec& y1,
-                  std::shared_ptr<OrthogonalRangeQuerier> compOrq,
-                  std::shared_ptr<OrthogonalRangeQuerier> pairsOrq) const;
+                  const std::shared_ptr<OrthogonalRangeQuerier>& compOrq,
+                  const std::shared_ptr<OrthogonalRangeQuerier>& pairsOrq) const;
 
   std::shared_ptr<OrthogonalRangeQuerier> createPairsOrq(const arma::umat& X,
                                                          const arma::umat& Y) const;
@@ -101,15 +101,15 @@ private:
 
   double posConCount(const arma::uvec& x0, const arma::uvec& x1,
                      const arma::uvec& y0, const arma::uvec& y1,
-                     std::shared_ptr<OrthogonalRangeQuerier> orq) const;
+                     const std::shared_ptr<OrthogonalRangeQuerier>& orq) const;
 
   double negConCount(const arma::uvec& x0, const arma::uvec& x1,
                      const arma::uvec& y0, const arma::uvec& y1,
-                     std::shared_ptr<OrthogonalRangeQuerier> orq) const;
+                     const std::shared_ptr<OrthogonalRangeQuerier>& orq) const;
 
   double disCount(const arma::uvec& x0, const arma::uvec& x1,
                   const arma::uvec& y0, const arma::uvec& y1,
-                  std::shared_ptr<OrthogonalRangeQuerier> orq) const;
+                  const std::shared_ptr<OrthogonalRangeQuerier>& orq) const;
 
 public:
   JointTauStarEvaluator(const arma::uvec& xOnOffVec,

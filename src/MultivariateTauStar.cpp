@@ -144,7 +144,7 @@ PTSE::PartialTauStarEvaluator(
 double PTSE::countGreaterEqOrLesserEqInXY(
     const arma::uvec& x,
     const arma::uvec& y,
-    std::shared_ptr<OrthogonalRangeQuerier> orq,
+    const std::shared_ptr<OrthogonalRangeQuerier>& orq,
     const bool& greaterInX, const bool& greaterInY) const {
   arma::uvec lower(xDim + yDim);
   arma::uvec upper(xDim + yDim);
@@ -174,7 +174,7 @@ double PTSE::countGreaterEqOrLesserEqInXY(
 
 double PTSE::posConCount(const arma::uvec& x0, const arma::uvec& x1,
                          const arma::uvec& y0, const arma::uvec& y1,
-                         std::shared_ptr<OrthogonalRangeQuerier> orq) const {
+                         const std::shared_ptr<OrthogonalRangeQuerier>& orq) const {
   double val = 0;
   for (int i1 = 0; i1 < 2; i1++) {
     for (int i2 = 0; i2 < 2; i2++) {
@@ -205,7 +205,7 @@ double PTSE::posConCount(const arma::uvec& x0, const arma::uvec& x1,
 
 double PTSE::negConCount(const arma::uvec& x0, const arma::uvec& x1,
                          const arma::uvec& y0, const arma::uvec& y1,
-                         std::shared_ptr<OrthogonalRangeQuerier> orq) const {
+                         const std::shared_ptr<OrthogonalRangeQuerier>& orq) const {
   double val = 0;
   for (int i1 = 0; i1 < 2; i1++) {
     for (int i2 = 0; i2 < 2; i2++) {
@@ -311,8 +311,8 @@ std::shared_ptr<OrthogonalRangeQuerier> PTSE::createPairsOrq(const arma::umat& X
 
 double PTSE::disCount(const arma::uvec& x0, const arma::uvec& x1,
                       const arma::uvec& y0, const arma::uvec& y1,
-                      std::shared_ptr<OrthogonalRangeQuerier> compOrq,
-                      std::shared_ptr<OrthogonalRangeQuerier> pairsOrq) const {
+                      const std::shared_ptr<OrthogonalRangeQuerier>& compOrq,
+                      const std::shared_ptr<OrthogonalRangeQuerier>& pairsOrq) const {
   double count = 0;
   for (int i1 = 0; i1 < 2; i1++) {
     for (int i2 = 0; i2 < 2; i2++) {
@@ -349,11 +349,13 @@ double PTSE::disCount(const arma::uvec& x0, const arma::uvec& x1,
                 lowerY1 = arma::max(lowerY1, y1);
               }
 
-              count += std::pow(-1, i1 + i2 + i3 + i4 + i5 + i6) *
+              int pairity = (i1 + i2 + i3 + i4 + i5 + i6) % 2;
+              double sign = (pairity == 0) ? 1.0 : -1.0;
+              count += sign *
                 pairsOrq->countInRange(toVector(glue(lowerX0, lowerX1, lowerY0, lowerY1)),
                                 toVector(glue(upperX0, upperX1, upperY0, upperY1)));
 
-              count += std::pow(-1, i1 + i2 + i3 + i4 + i5 + i6 + 1) *
+              count += -1.0 * sign *
                 compOrq->countInRange(toVector(glue(lowerX0, lowerX1, lowerY0, lowerY1)),
                                      toVector(glue(upperX0, upperX1, upperY0, upperY1)));
             }
@@ -496,7 +498,7 @@ std::shared_ptr<OrthogonalRangeQuerier> JTSE::createComparableOrq(
 double JTSE::posConCount(
     const arma::uvec& x0, const arma::uvec& x1,
     const arma::uvec& y0, const arma::uvec& y1,
-    std::shared_ptr<OrthogonalRangeQuerier> orq) const {
+    const std::shared_ptr<OrthogonalRangeQuerier>& orq) const {
   arma::uvec lower(xDim + yDim);
   arma::uvec upper(xDim + yDim);
 
@@ -529,7 +531,7 @@ double JTSE::posConCount(
 
 double JTSE::negConCount(const arma::uvec& x0, const arma::uvec& x1,
                          const arma::uvec& y0, const arma::uvec& y1,
-                         std::shared_ptr<OrthogonalRangeQuerier> orq) const {
+                         const std::shared_ptr<OrthogonalRangeQuerier>& orq) const {
   arma::uvec lower(xDim + yDim);
   arma::uvec upper(xDim + yDim);
 
@@ -562,7 +564,7 @@ double JTSE::negConCount(const arma::uvec& x0, const arma::uvec& x1,
 
 double JTSE::disCount(const arma::uvec& x0, const arma::uvec& x1,
                       const arma::uvec& y0, const arma::uvec& y1,
-                      std::shared_ptr<OrthogonalRangeQuerier> orq) const {
+                      const std::shared_ptr<OrthogonalRangeQuerier>& orq) const {
   arma::uvec lower(2 * (xDim + yDim));
   arma::uvec upper(2 * (xDim + yDim));
 

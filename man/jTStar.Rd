@@ -4,7 +4,7 @@
 \alias{jTStar}
 \title{Estimate the Multivariate Joint Tau Star Measure}
 \usage{
-jTStar(X, Y, method = "auto")
+jTStar(X, Y, method = "auto", approx = 0)
 }
 \arguments{
 \item{X}{an n-by-l matrx where n is the sample size and l is the number of
@@ -24,7 +24,12 @@ covariates in the second group.}
  O(n^2*log(n)^(2*(l+m)) time. While this is asymptotically faster than
  the naive algorithm it, in practice, can be slower due to
  large constant factors hidden by the asymptotic analysis.}
-}}
+}
+This argument is ignored if approx is non-zero.}
+
+\item{approx}{if approx is non-zero then instead of computing the u-statistic
+using all of the data we instead approximate it by randomly
+sampling quadruples from the data approx many times.}
 }
 \value{
 the U-statistic for the data

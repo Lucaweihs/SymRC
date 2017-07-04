@@ -59,10 +59,11 @@ public:
                       std::shared_ptr<OrthogonalRangeQuerierBuilder> orqb);
   double eval(const arma::mat& X, const arma::mat& Y) const;
   double evalLoop(int dim,
-                       arma::uvec& index,
-                       const arma::umat& X,
-                       const arma::umat& Y,
-                       const std::shared_ptr<OrthogonalRangeQuerier>& orq) const;
+                  arma::uvec& index,
+                  const arma::umat& X,
+                  const arma::umat& Y,
+                  const std::shared_ptr<OrthogonalRangeQuerier>& orq,
+                  unsigned int& iters) const;
 };
 
 class HoeffdingRKernelEvaluator : public SymRCKernelEvaluator {

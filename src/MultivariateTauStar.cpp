@@ -378,8 +378,14 @@ double PTSE::eval(const arma::mat& X, const arma::mat& Y) const {
   int numSamples = xJointRanks.n_rows;
 
   double sum = 0;
+  unsigned int iters = 0;
   for(int i = 0; i < numSamples - 1; i++) {
     for(int j = i + 1; j < numSamples; j++) {
+      if (iters % 50 == 0) {
+        Rcpp::checkUserInterrupt();
+      }
+      iters++;
+
       arma::uvec x0 = xJointRanks.row(i).t();
       arma::uvec x1 = xJointRanks.row(j).t();
       arma::uvec y0 = yJointRanks.row(i).t();
@@ -616,9 +622,15 @@ double JTSE::eval(const arma::mat& X, const arma::mat& Y) const {
 
   int numSamples = X.n_rows;
 
+  unsigned int iters = 0;
   double sum = 0;
   for(int i = 0; i < numSamples - 1; i++) {
     for(int j = i + 1; j < numSamples; j++) {
+      if (iters % 5000 == 0) {
+        Rcpp::checkUserInterrupt();
+      }
+      iters++;
+
       arma::uvec x0 = xJointRanks.row(i).t();
       arma::uvec x1 = xJointRanks.row(j).t();
       arma::uvec y0 = yJointRanks.row(i).t();

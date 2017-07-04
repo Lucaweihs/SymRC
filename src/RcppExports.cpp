@@ -248,8 +248,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // jointTauStarApprox
-double jointTauStarApprox(const arma::mat& X, const arma::mat& Y, const arma::uvec& xOnOffVec, const arma::uvec& yOnOffVec, int sims);
-RcppExport SEXP SymRC_jointTauStarApprox(SEXP XSEXP, SEXP YSEXP, SEXP xOnOffVecSEXP, SEXP yOnOffVecSEXP, SEXP simsSEXP) {
+double jointTauStarApprox(const arma::mat& X, const arma::mat& Y, const arma::uvec& xOnOffVec, const arma::uvec& yOnOffVec, int sims, int seconds);
+RcppExport SEXP SymRC_jointTauStarApprox(SEXP XSEXP, SEXP YSEXP, SEXP xOnOffVecSEXP, SEXP yOnOffVecSEXP, SEXP simsSEXP, SEXP secondsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -258,7 +258,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::uvec& >::type xOnOffVec(xOnOffVecSEXP);
     Rcpp::traits::input_parameter< const arma::uvec& >::type yOnOffVec(yOnOffVecSEXP);
     Rcpp::traits::input_parameter< int >::type sims(simsSEXP);
-    rcpp_result_gen = Rcpp::wrap(jointTauStarApprox(X, Y, xOnOffVec, yOnOffVec, sims));
+    Rcpp::traits::input_parameter< int >::type seconds(secondsSEXP);
+    rcpp_result_gen = Rcpp::wrap(jointTauStarApprox(X, Y, xOnOffVec, yOnOffVec, sims, seconds));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -353,15 +354,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // partialTauStarApprox
-double partialTauStarApprox(const arma::mat& X, const arma::mat& Y, int sims);
-RcppExport SEXP SymRC_partialTauStarApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP) {
+double partialTauStarApprox(const arma::mat& X, const arma::mat& Y, int sims, int seconds);
+RcppExport SEXP SymRC_partialTauStarApprox(SEXP XSEXP, SEXP YSEXP, SEXP simsSEXP, SEXP secondsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
     Rcpp::traits::input_parameter< int >::type sims(simsSEXP);
-    rcpp_result_gen = Rcpp::wrap(partialTauStarApprox(X, Y, sims));
+    Rcpp::traits::input_parameter< int >::type seconds(secondsSEXP);
+    rcpp_result_gen = Rcpp::wrap(partialTauStarApprox(X, Y, sims, seconds));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -512,7 +514,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"SymRC_jointTauStarRangeTree", (DL_FUNC) &SymRC_jointTauStarRangeTree, 4},
     {"SymRC_jointTauStarNaive", (DL_FUNC) &SymRC_jointTauStarNaive, 4},
     {"SymRC_jointTauStarFromDef", (DL_FUNC) &SymRC_jointTauStarFromDef, 4},
-    {"SymRC_jointTauStarApprox", (DL_FUNC) &SymRC_jointTauStarApprox, 5},
+    {"SymRC_jointTauStarApprox", (DL_FUNC) &SymRC_jointTauStarApprox, 6},
     {"SymRC_fullLexTauStarFromDef", (DL_FUNC) &SymRC_fullLexTauStarFromDef, 2},
     {"SymRC_fullLexTauStarApprox", (DL_FUNC) &SymRC_fullLexTauStarApprox, 3},
     {"SymRC_lexTauStarFromDef", (DL_FUNC) &SymRC_lexTauStarFromDef, 4},
@@ -520,7 +522,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"SymRC_partialTauStarRangeTree", (DL_FUNC) &SymRC_partialTauStarRangeTree, 2},
     {"SymRC_partialTauStarNaive", (DL_FUNC) &SymRC_partialTauStarNaive, 2},
     {"SymRC_partialTauStarFromDef", (DL_FUNC) &SymRC_partialTauStarFromDef, 2},
-    {"SymRC_partialTauStarApprox", (DL_FUNC) &SymRC_partialTauStarApprox, 3},
+    {"SymRC_partialTauStarApprox", (DL_FUNC) &SymRC_partialTauStarApprox, 4},
     {"SymRC_ismRangeTree", (DL_FUNC) &SymRC_ismRangeTree, 6},
     {"SymRC_ismFromDef", (DL_FUNC) &SymRC_ismFromDef, 6},
     {"SymRC_ismApprox", (DL_FUNC) &SymRC_ismApprox, 7},

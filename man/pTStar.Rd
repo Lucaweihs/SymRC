@@ -4,7 +4,8 @@
 \alias{pTStar}
 \title{Estimate the Multivariate Partial Tau Star Measure}
 \usage{
-pTStar(X, Y, method = "auto", approx = 0)
+pTStar(X, Y, method = "auto", approx = FALSE, approxControl = list(nreps =
+  10^4))
 }
 \arguments{
 \item{X}{an n-by-l matrx where n is the sample size and l is the number of
@@ -25,11 +26,20 @@ covariates in the second group.}
  the naive algorithm it, in practice, can be slower due to
  large constant factors hidden by the asymptotic analysis.}
 }
-This argument is ignored if approx is non-zero.}
+This argument is ignored if approx is TRUE.}
 
-\item{approx}{if approx is non-zero then instead of computing the u-statistic
-using all of the data we instead approximate it by randomly
-sampling quadruples from the data approx many times.}
+\item{approx}{if \code{approx} is \code{TRUE} then instead of computing the
+u-statistic using all of the data we instead approximate it by
+random sampling, see \code{approxControl} for how
+to set the number of samples used.}
+
+\item{approxControl}{a named list, should be of the form
+\code{list(nsims = NSIMS)} if you would like to
+approximate the u-statistic using \code{NSIMS} samples,
+if instead you would like use as many samples as possible
+within approximately some number of seconds, say
+\code{NSECONDS}, then use a list of the form
+\code{list(nseconds = NSECONDS)}.}
 }
 \value{
 the (estimated if approx != 0) U-statistic for the data
@@ -37,5 +47,23 @@ the (estimated if approx != 0) U-statistic for the data
 \description{
 Computes, from data, the U-statistic estimating the multivariate partial tau
 star measure. This statistic estimates the dependence between two collections
-of random variables X and Y.
+of random variables X and Y. This U-statistic takes on
+values between 0 and 2/3 when X and Y are 1-dimensional and between 0 and 2
+when either X or Y are more than 1-dimensional.
+}
+\examples{
+# Bivariate dependence
+set.seed(1)
+x = rnorm(30)
+y = x^2 + rnorm(30)
+pTStar(x, y)
+
+# Trivariate dependence
+x1 = rnorm(30)
+x2 = rnorm(30)
+y = (x1 * x2)^2 + rnorm(30)
+pTStar(cbind(x1, x2), y)
+
+# Approximate the above as well as we can in 5 seconds
+pTStar(cbind(x1, x2), y, approx = T, approxControl = list(nseconds = 5))
 }

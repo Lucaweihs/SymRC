@@ -57,8 +57,18 @@ double hde::eval(const arma::mat& X, const arma::mat& Y) const {
   std::shared_ptr<OrthogonalRangeQuerier> orq = orqBuilder->build(allJointRanks);
   int n = xJointRanks.n_rows;
 
+  int d = xJointRanks.n_cols + yJointRanks.n_cols;
+  unsigned int iters = 0;
   double sum = 0;
   for(int i = 0; i < n ; i++) {
+    if ((d == 2 && iters % 120000 == 0) ||
+        (d == 3 && iters % 8000 == 0) ||
+        (d == 4 && iters % 3200 == 0) ||
+        (d >= 4 && iters % 1400 == 0)) {
+      Rcpp::checkUserInterrupt();
+    }
+    iters++;
+
     arma::uvec x = xJointRanks.row(i).t();
     arma::uvec y = yJointRanks.row(i).t();
 
@@ -95,7 +105,8 @@ double hre::evalLoop(int dim,
                      arma::uvec& index,
                      const arma::umat& X,
                      const arma::umat& Y,
-                     const std::shared_ptr<OrthogonalRangeQuerier>& orq) const {
+                     const std::shared_ptr<OrthogonalRangeQuerier>& orq,
+                     unsigned int& iters) const {
   double sum = 0.0;
   int offset = 0;
   if (dim != 0) {
@@ -106,15 +117,24 @@ double hre::evalLoop(int dim,
 
     for (int i = offset; i < X.n_rows - (index.size() - (dim + 1)); i++) {
       index(dim) = i;
-      sum += evalLoop(dim + 1, index, X, Y, orq);
+      sum += evalLoop(dim + 1, index, X, Y, orq, iters);
     }
   } else {
     arma::uvec x(xDim);
     arma::uvec y(yDim);
     auto tmp = arma::join_cols(lowerBaseX, lowerBaseY);
+    int d = X.n_cols + Y.n_cols;
     for (int i = offset; i < X.n_rows; i++) {
       index(dim) = i;
       for (int j = 0; j < perms.n_rows; j++) {
+        if ((d == 2 && iters % 1200000 == 0) ||
+            (d == 3 && iters % 7000 == 0) ||
+            (d == 3 && iters % 500 == 0) ||
+            (d >= 4 && iters % 20 == 0)) {
+          Rcpp::checkUserInterrupt();
+        }
+        iters++;
+
         arma::uvec permIndex = index.elem(perms.row(j));
         for (int k = 0; k < xDim; k++) {
           x(k) = X(permIndex(k), k);
@@ -160,7 +180,8 @@ double hre::eval(const arma::mat& X, const arma::mat& Y) const {
 
   arma::uvec index = arma::zeros<arma::uvec>(xDim + yDim);
 
-  double sum = evalLoop(0, index, xJointRanks, yJointRanks, orq);
+  unsigned int iters = 0;
+  double sum = evalLoop(0, index, xJointRanks, yJointRanks, orq, iters);
   for (int i = 0; i < 4 + xDim + yDim; i++) {
     sum /= n - i;
   }

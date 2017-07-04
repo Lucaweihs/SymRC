@@ -1,7 +1,8 @@
 #' Efficiently Compute the Multivariate Hoeffding's D Statistic
 #'
 #' Computes, from data, the U-statistic estimating Hoeffding's D, a measure
-#' of dependence between random vectors X and Y.
+#' of dependence between random vectors X and Y. This U-statistic takes on
+#' values between 0 and 1/120.
 #'
 #' @export
 #'
@@ -20,6 +21,19 @@
 #' }
 #'
 #' @return the U-statistic for the data
+#'
+#' @examples
+#' # Bivariate dependence
+#' set.seed(1)
+#' x = rnorm(1000)
+#' y = x^2 + rnorm(1000)
+#' hoeffD(x, y)
+#'
+#' # Trivariate dependence
+#' x1 = rnorm(1000)
+#' x2 = rnorm(1000)
+#' y = (x1 * x2)^2 + rnorm(1000)
+#' hoeffD(cbind(x1, x2), y)
 hoeffD <- function(X, Y, method = "auto") {
   if (!is.matrix(X)) { X = matrix(X) }
   if (!is.matrix(Y)) { Y = matrix(Y) }
@@ -50,7 +64,8 @@ hoeffD <- function(X, Y, method = "auto") {
 #' Efficiently Compute the Multivariate Hoeffding's R Statistic
 #'
 #' Computes, from data, the U-statistic estimating Hoeffding's R, a measure
-#' of dependence between random vectors X and Y.
+#' of dependence between random vectors X and Y. This U-statistic takes on
+#' values between 0 and 1/120.
 #'
 #' @export
 #'
@@ -70,6 +85,19 @@ hoeffD <- function(X, Y, method = "auto") {
 #' }
 #'
 #' @return the U-statistic for the data
+#'
+#' @examples
+#' # Bivariate dependence
+#' set.seed(1)
+#' x = rnorm(100)
+#' y = x^2 + rnorm(100)
+#' hoeffR(x, y)
+#'
+#' # Trivariate dependence
+#' x1 = rnorm(100)
+#' x2 = rnorm(100)
+#' y = (x1 * x2)^2 + rnorm(100)
+#' hoeffR(cbind(x1, x2), y)
 hoeffR <- function(X, Y, method = "auto") {
   if (!is.matrix(X)) { X = matrix(X) }
   if (!is.matrix(Y)) { Y = matrix(Y) }

@@ -32,5 +32,19 @@ the U-statistic for the data
 }
 \description{
 Computes, from data, the U-statistic estimating Hoeffding's R, a measure
-of dependence between random vectors X and Y.
+of dependence between random vectors X and Y. This U-statistic takes on
+values between 0 and 1/120.
+}
+\examples{
+# Bivariate dependence
+set.seed(1)
+x = rnorm(100)
+y = x^2 + rnorm(100)
+hoeffR(x, y)
+
+# Trivariate dependence
+x1 = rnorm(100)
+x2 = rnorm(100)
+y = (x1 * x2)^2 + rnorm(100)
+hoeffR(cbind(x1, x2), y)
 }

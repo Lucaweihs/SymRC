@@ -97,11 +97,17 @@ double jointTauStarFromDef(const arma::mat& X, const arma::mat& Y,
 
 // [[Rcpp::export]]
 double jointTauStarApprox(const arma::mat& X, const arma::mat& Y,
-                               const arma::uvec& xOnOffVec,
-                               const arma::uvec& yOnOffVec,
-                               int sims) {
+                          const arma::uvec& xOnOffVec,
+                          const arma::uvec& yOnOffVec,
+                          int sims, int seconds) {
   JointTauStarKernelEvaluator jtske(xOnOffVec, yOnOffVec);
-  return approxNaiveUStat(X, Y, jtske, sims);
+  if (sims != 0) {
+    return approxNaiveUStat(X, Y, jtske, sims);
+  } else if (seconds != 0) {
+    return approxNaiveUStatTime(X, Y, jtske, seconds);
+  } else {
+    Rcpp::stop("sims or seconds must be non-zero.");
+  }
 }
 
 // [[Rcpp::export]]
@@ -156,9 +162,15 @@ double partialTauStarFromDef(const arma::mat& X, const arma::mat& Y) {
 
 // [[Rcpp::export]]
 double partialTauStarApprox(const arma::mat& X, const arma::mat& Y,
-                                 int sims) {
+                            int sims, int seconds) {
   PartialTauStarKernelEvaluator ptske(X.n_cols, Y.n_cols);
-  return approxNaiveUStat(X, Y, ptske, sims);
+  if (sims != 0) {
+    return approxNaiveUStat(X, Y, ptske, sims);
+  } else if (seconds != 0) {
+    return approxNaiveUStatTime(X, Y, ptske, seconds);
+  } else {
+    Rcpp::stop("sims or seconds must be non-zero.");
+  }
 }
 
 // [[Rcpp::export]]

@@ -19,46 +19,36 @@
 #include "NaiveUStatistics.h"
 #include "HelperFunctions.h"
 #include <iostream>
+#include <chrono>
 
 typedef SymRCKernelEvaluator SymRCKE;
 
 double naiveUStatRecurse(const arma::mat& X, const arma::mat& Y,
                          const KernelEvaluator& kernel,
                          int dim, int index,
-                         arma::uvec& currentIndex) {
+                         arma::uvec& currentIndex,
+                         unsigned int& sims) {
   int n = X.n_rows;
   int order = kernel.order();
 
   double val = 0.0;
   if (dim == order - 1) {
     while (index < n) {
+      if (sims % 600000 == 0) {
+        Rcpp::checkUserInterrupt();
+      }
       currentIndex(dim) = index;
       val += kernel.eval(X.rows(currentIndex), Y.rows(currentIndex));
       index++;
+      sims++;
     }
-  // } else if (order - dim - 1 == 5) {
-  //   currentIndex(dim) = index;
-  //   for (int i1 = index + 1; i1 < order - 3; i1++) {
-  //     currentIndex(dim + 1) = i1;
-  //     for (int i2 = i1 + 1; i2 < order - 2; i2++) {
-  //       currentIndex(dim + 2) = i2;
-  //       for (int i3 = i2 + 1; i3 < order - 1; i3++) {
-  //         currentIndex(dim + 3) = i3;
-  //         for (int i4 = i3 + 1; i4 < order; i4++) {
-  //           currentIndex(dim + 4) = i4;
-  //           val += kernel.eval(X.rows(currentIndex), Y.rows(currentIndex));
-  //         }
-  //       }
-  //     }
-  //   }
-  //   return val;
   } else {
     while (index + (order - (dim + 1)) < n) {
       // While there enough datapoints >index to fill up
       // the remaining dimensions, add up the recursed values.
       currentIndex(dim) = index;
       val += naiveUStatRecurse(X, Y, kernel, dim + 1, index + 1,
-                               currentIndex);
+                               currentIndex, sims);
       index++;
     }
   }
@@ -74,7 +64,8 @@ double naiveUStat(const arma::mat& X, const arma::mat& Y,
   }
 
   arma::uvec index = arma::zeros<arma::uvec>(order);
-  return naiveUStatRecurse(X, Y, kernel, 0, 0, index) / nChooseM(1.0 * n, 1.0 * order);
+  unsigned int sims = 0;
+  return naiveUStatRecurse(X, Y, kernel, 0, 0, index, sims) / nChooseM(1.0 * n, 1.0 * order);
 }
 
 double approxNaiveUStat(const arma::mat& X, const arma::mat& Y,
@@ -92,10 +83,49 @@ double approxNaiveUStat(const arma::mat& X, const arma::mat& Y,
     allInds(i) = i;
   }
   for (int i = 0; i < sims; i++) {
+    if (sims % 600000 == 0) {
+      Rcpp::checkUserInterrupt();
+    }
     arma::uvec inds = Rcpp::RcppArmadillo::sample(allInds, order, false);
     val += kernel.eval(X.rows(inds), Y.rows(inds));
   }
 
+  return val / sims;
+}
+
+double approxNaiveUStatTime(const arma::mat& X, const arma::mat& Y,
+                        const KernelEvaluator& kernel, int seconds) {
+  int order = kernel.order();
+  int n = X.n_rows;
+
+  if (order > n) {
+    throw Rcpp::exception("Number of samples must be > kernel order.");
+  }
+
+  double val = 0.0;
+  arma::uvec allInds = arma::zeros<arma::uvec>(n);
+  for (int i = 0; i < n; i++) {
+    allInds(i) = i;
+  }
+
+  int sims = 0;
+  auto start = std::chrono::system_clock::now();
+  while (true) {
+    if (sims % 100000 == 0 &&
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now() - start).count() > 1000 * seconds) {
+      Rcpp::Rcout << std::chrono::duration_cast<std::chrono::seconds>(
+          std::chrono::system_clock::now() - start).count() << std::endl;
+      break;
+    }
+    if (sims % 600000 == 0) {
+      Rcpp::checkUserInterrupt();
+    }
+    arma::uvec inds = Rcpp::RcppArmadillo::sample(allInds, order, false);
+    val += kernel.eval(X.rows(inds), Y.rows(inds));
+    sims++;
+  }
+  Rcpp::Rcout << sims << " simulations completed in given time." << std::endl;
   return val / sims;
 }
 

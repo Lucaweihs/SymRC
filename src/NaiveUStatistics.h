@@ -33,6 +33,9 @@ double naiveUStat(const arma::mat& X, const arma::mat& Y,
 double approxNaiveUStat(const arma::mat& X, const arma::mat& Y,
                         const KernelEvaluator& kernel, int sims);
 
+double approxNaiveUStatTime(const arma::mat& X, const arma::mat& Y,
+                            const KernelEvaluator& kernel, int seconds);
+
 /*********************************
  * SymRCKernelEvaluator
  *********************************/

@@ -81,8 +81,8 @@ jointTauStarFromDef <- function(X, Y, xOnOffVec, yOnOffVec) {
     .Call('SymRC_jointTauStarFromDef', PACKAGE = 'SymRC', X, Y, xOnOffVec, yOnOffVec)
 }
 
-jointTauStarApprox <- function(X, Y, xOnOffVec, yOnOffVec, sims) {
-    .Call('SymRC_jointTauStarApprox', PACKAGE = 'SymRC', X, Y, xOnOffVec, yOnOffVec, sims)
+jointTauStarApprox <- function(X, Y, xOnOffVec, yOnOffVec, sims, seconds) {
+    .Call('SymRC_jointTauStarApprox', PACKAGE = 'SymRC', X, Y, xOnOffVec, yOnOffVec, sims, seconds)
 }
 
 fullLexTauStarFromDef <- function(X, Y) {
@@ -113,8 +113,8 @@ partialTauStarFromDef <- function(X, Y) {
     .Call('SymRC_partialTauStarFromDef', PACKAGE = 'SymRC', X, Y)
 }
 
-partialTauStarApprox <- function(X, Y, sims) {
-    .Call('SymRC_partialTauStarApprox', PACKAGE = 'SymRC', X, Y, sims)
+partialTauStarApprox <- function(X, Y, sims, seconds) {
+    .Call('SymRC_partialTauStarApprox', PACKAGE = 'SymRC', X, Y, sims, seconds)
 }
 
 ismRangeTree <- function(X, Y, xInds0, xInds1, yInds0, yInds1) {

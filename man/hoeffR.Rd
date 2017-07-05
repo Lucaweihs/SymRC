@@ -4,7 +4,7 @@
 \alias{hoeffR}
 \title{Efficiently Compute the Multivariate Hoeffding's R Statistic}
 \usage{
-hoeffR(X, Y, method = "auto")
+hoeffR(X, Y, standardize = FALSE, method = "auto")
 }
 \arguments{
 \item{X}{an n-by-l matrx where n is the sample size and l is the number of
@@ -12,6 +12,14 @@ covariates in the first group.}
 
 \item{Y}{an n-by-m matrx where n is the sample size and m is the number of
 covariates in the second group.}
+
+\item{standardize}{if TRUE then this function returns a estimate of the
+"standardized" version of the statistic which is bounded between -1
+and 1. That is, letting the multivariate measure be denoted m, then
+when \code{standardize = TRUE} this function returns an estimate of
+m(X,Y) / sqrt(m(X,X) * m(Y,Y)). Estimates of m(X,X) and m(X,Y) are
+done using settings defined below, if either m(X,X) or m(Y,Y) equal
+0 then NA is returned and a warning is printed.}
 
 \item{method}{A string indicating which algorithm to use to compute the
        U-statistic. Currently there are three options

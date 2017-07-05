@@ -34,7 +34,17 @@
 #' x2 = rnorm(1000)
 #' y = (x1 * x2)^2 + rnorm(1000)
 #' hoeffD(cbind(x1, x2), y)
-hoeffD <- function(X, Y, method = "auto") {
+hoeffD <- function(X, Y, standardize = FALSE, method = "auto") {
+  if (standardize) {
+    a = hoeffD(X, Y, standardize = F, method = method)
+    b = hoeffD(X, X, standardize = F, method = method)
+    c = hoeffD(Y, Y, standardize = F, method = method)
+    if (b == 0 || c == 0) {
+      warning(paste("denominator in standardization is 0."))
+      return(NA)
+    }
+    return(a / sqrt(b * c))
+  }
   if (!is.matrix(X)) { X = matrix(X) }
   if (!is.matrix(Y)) { Y = matrix(Y) }
   checkMatrices(X, Y, 5)
@@ -98,7 +108,17 @@ hoeffD <- function(X, Y, method = "auto") {
 #' x2 = rnorm(100)
 #' y = (x1 * x2)^2 + rnorm(100)
 #' hoeffR(cbind(x1, x2), y)
-hoeffR <- function(X, Y, method = "auto") {
+hoeffR <- function(X, Y, standardize = FALSE, method = "auto") {
+  if (standardize) {
+    a = hoeffR(X, Y, standardize = F, method = method)
+    b = hoeffR(X, X, standardize = F, method = method)
+    c = hoeffR(Y, Y, standardize = F, method = method)
+    if (b == 0 || c == 0) {
+      warning(paste("denominator in standardization is 0."))
+      return(NA)
+    }
+    return(a / sqrt(b * c))
+  }
   if (!is.matrix(X)) { X = matrix(X) }
   if (!is.matrix(Y)) { Y = matrix(Y) }
   checkMatrices(X, Y, ncol(X) + ncol(Y) + 4)

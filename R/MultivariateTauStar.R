@@ -12,6 +12,13 @@
 #'          covariates in the first group.
 #' @param Y an n-by-m matrx where n is the sample size and m is the number of
 #'          covariates in the second group.
+#' @param standardize if TRUE then this function returns a estimate of the
+#'        "standardized" version of the statistic which is bounded between -1
+#'        and 1. That is, letting the multivariate measure be denoted m, then
+#'        when \code{standardize = TRUE} this function returns an estimate of
+#'        m(X,Y) / sqrt(m(X,X) * m(Y,Y)). Estimates of m(X,X) and m(X,Y) are
+#'        done using settings defined below, if either m(X,X) or m(Y,Y) equal
+#'        0 then NA is returned and a warning is printed.
 #' @param method A string indicating which algorithm to use to compute the
 #'        U-statistic. Currently there are three options
 #'\itemize{
@@ -54,8 +61,22 @@
 #'
 #' # Approximate the above as well as we can in 5 seconds
 #' pTStar(cbind(x1, x2), y, approx = T, approxControl = list(nseconds = 5))
-pTStar <- function(X, Y, method = "auto", approx = FALSE,
+pTStar <- function(X, Y, standardize = FALSE,
+                   method = "auto", approx = FALSE,
                    approxControl = list(nreps = 10^4)) {
+  if (standardize) {
+    a = pTStar(X, Y, standardize = F, method = method, approx = approx,
+               approxControl = approxControl)
+    b = pTStar(X, X, standardize = F, method = method, approx = approx,
+               approxControl = approxControl)
+    c = pTStar(Y, Y, standardize = F, method = method, approx = approx,
+               approxControl = approxControl)
+    if (b == 0 || c == 0) {
+      warning(paste("denominator in standardization is 0."))
+      return(NA)
+    }
+    return(a / sqrt(b * c))
+  }
   if (!is.matrix(X)) { X = matrix(X) }
   if (!is.matrix(Y)) { Y = matrix(Y) }
   checkMatrices(X, Y, 4)
@@ -114,8 +135,22 @@ pTStar <- function(X, Y, method = "auto", approx = FALSE,
 #'
 #' # Approximate the above as well as well as we can in 5 seconds
 #' jTStar(cbind(x1, x2), y, approx = T, approxControl = list(nseconds = 5))
-jTStar <- function(X, Y, method = "auto", approx = FALSE,
+jTStar <- function(X, Y, standardize = FALSE,
+                   method = "auto", approx = FALSE,
                    approxControl = list(nreps = 10^4)) {
+  if (standardize) {
+    a = jTStar(X, Y, standardize = F, method = method, approx = approx,
+               approxControl = approxControl)
+    b = jTStar(X, X, standardize = F, method = method, approx = approx,
+               approxControl = approxControl)
+    c = jTStar(Y, Y, standardize = F, method = method, approx = approx,
+               approxControl = approxControl)
+    if (b == 0 || c == 0) {
+      warning(paste("denominator in standardization is 0."))
+      return(NA)
+    }
+    return(a / sqrt(b * c))
+  }
   if (!is.matrix(X)) { X = matrix(X) }
   if (!is.matrix(Y)) { Y = matrix(Y) }
   checkMatrices(X, Y, 4)

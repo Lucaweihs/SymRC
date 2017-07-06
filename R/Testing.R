@@ -15,7 +15,7 @@
 #'  \item{\code{\link{hoeffR}}}
 #' }
 #' @param resamples the number of times permutation test iterations to use,
-#'                  more iterations means a more stable p-value but long
+#'                  more iterations means a more stable p-value but longer
 #'                  computation time.
 #' @return an "SymRCTest" object (i.e. a list) recording the results of the
 #'         independence test.

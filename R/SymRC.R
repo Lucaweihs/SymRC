@@ -12,6 +12,9 @@
 #'  \item{\code{\link{hoeffR}}}
 #' }
 #'
+#' To test whether or not two random vectors X and Y are dependent (using the
+#' above U-statistics) see the function \code{\link{symRCTest}}.
+#'
 #' @importFrom Rcpp evalCpp
 #' @importFrom TauStar tStar
 #' @useDynLib SymRC

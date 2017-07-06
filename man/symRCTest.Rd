@@ -22,7 +22,7 @@ covariates in the second group.}
 }}
 
 \item{resamples}{the number of times permutation test iterations to use,
-more iterations means a more stable p-value but long
+more iterations means a more stable p-value but longer
 computation time.}
 }
 \value{

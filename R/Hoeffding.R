@@ -36,14 +36,12 @@
 #' hoeffD(cbind(x1, x2), y)
 hoeffD <- function(X, Y, standardize = FALSE, method = "auto") {
   if (standardize) {
-    a = hoeffD(X, Y, standardize = F, method = method)
-    b = hoeffD(X, X, standardize = F, method = method)
-    c = hoeffD(Y, Y, standardize = F, method = method)
-    if (b == 0 || c == 0) {
-      warning(paste("denominator in standardization is 0."))
-      return(NA)
-    }
-    return(a / sqrt(b * c))
+    return(
+      computeStandardizedStat(
+        function(X,Y) { hoeffD(X, Y, standardize = F, method = method) },
+        X, Y
+      )
+    )
   }
   if (!is.matrix(X)) { X = matrix(X) }
   if (!is.matrix(Y)) { Y = matrix(Y) }
@@ -110,14 +108,12 @@ hoeffD <- function(X, Y, standardize = FALSE, method = "auto") {
 #' hoeffR(cbind(x1, x2), y)
 hoeffR <- function(X, Y, standardize = FALSE, method = "auto") {
   if (standardize) {
-    a = hoeffR(X, Y, standardize = F, method = method)
-    b = hoeffR(X, X, standardize = F, method = method)
-    c = hoeffR(Y, Y, standardize = F, method = method)
-    if (b == 0 || c == 0) {
-      warning(paste("denominator in standardization is 0."))
-      return(NA)
-    }
-    return(a / sqrt(b * c))
+    return(
+      computeStandardizedStat(
+        function(X,Y) { hoeffR(X, Y, standardize = F, method = method) },
+        X, Y
+      )
+    )
   }
   if (!is.matrix(X)) { X = matrix(X) }
   if (!is.matrix(Y)) { Y = matrix(Y) }

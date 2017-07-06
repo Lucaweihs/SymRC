@@ -65,17 +65,13 @@ pTStar <- function(X, Y, standardize = FALSE,
                    method = "auto", approx = FALSE,
                    approxControl = list(nreps = 10^4)) {
   if (standardize) {
-    a = pTStar(X, Y, standardize = F, method = method, approx = approx,
-               approxControl = approxControl)
-    b = pTStar(X, X, standardize = F, method = method, approx = approx,
-               approxControl = approxControl)
-    c = pTStar(Y, Y, standardize = F, method = method, approx = approx,
-               approxControl = approxControl)
-    if (b == 0 || c == 0) {
-      warning(paste("denominator in standardization is 0."))
-      return(NA)
-    }
-    return(a / sqrt(b * c))
+    return(
+      computeStandardizedStat(
+        function(X,Y) { pTStar(X, Y, standardize = F, method = method,
+                               approx = approx, approxControl = approxControl) },
+        X, Y
+      )
+    )
   }
   if (!is.matrix(X)) { X = matrix(X) }
   if (!is.matrix(Y)) { Y = matrix(Y) }
@@ -139,17 +135,13 @@ jTStar <- function(X, Y, standardize = FALSE,
                    method = "auto", approx = FALSE,
                    approxControl = list(nreps = 10^4)) {
   if (standardize) {
-    a = jTStar(X, Y, standardize = F, method = method, approx = approx,
-               approxControl = approxControl)
-    b = jTStar(X, X, standardize = F, method = method, approx = approx,
-               approxControl = approxControl)
-    c = jTStar(Y, Y, standardize = F, method = method, approx = approx,
-               approxControl = approxControl)
-    if (b == 0 || c == 0) {
-      warning(paste("denominator in standardization is 0."))
-      return(NA)
-    }
-    return(a / sqrt(b * c))
+    return(
+      computeStandardizedStat(
+        function(X,Y) { jTStar(X, Y, standardize = F, method = method,
+                               approx = approx, approxControl = approxControl) },
+        X, Y
+      )
+    )
   }
   if (!is.matrix(X)) { X = matrix(X) }
   if (!is.matrix(Y)) { Y = matrix(Y) }
